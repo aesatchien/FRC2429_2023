@@ -5,7 +5,7 @@ import rev
 
 import constants
 
-class DriveSubsystem(SubsystemBase):
+class Drivetrain(SubsystemBase):
     def __init__(self):
         super().__init__()
 

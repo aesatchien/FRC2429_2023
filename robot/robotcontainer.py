@@ -3,10 +3,16 @@ from wpilib.interfaces import GenericHID
 
 import commands2
 import commands2.button
-
+import time
 import constants
+from wpilib import Timer
 
-from subsystems.drivesubsystem import DriveSubsystem
+from subsystems.drivetrain import Drivetrain
+from subsystems.arm import Arm
+from subsystems.wrist import Wrist
+from subsystems.elevator import Elevator
+from subsystems.turret import Turret
+
 from commands.drivetrain_drive_by_joystick import DriveByJoystick
 
 
@@ -23,18 +29,21 @@ class RobotContainer:
         self.driver_controller = wpilib.XboxController(constants.k_driver_controller_port)
 
         # The robot's subsystems
-        self.drive = DriveSubsystem()
+        self.drive = Drivetrain()
 
         # self.configureButtonBindings()
 
         # set up default drive command
         self.drive.setDefaultCommand(
-            DriveByJoystick(
-                self.drive,
+            DriveByJoystick(self, self.drive,
                 lambda: -self.driver_controller.getRawAxis(1),
                 lambda: self.driver_controller.getRawAxis(4),
             )
         )
+
+
+    def get_enabled_time(self):  # call when we want to know the start/elapsed time for status and debug messages
+        return Timer.getMatchTime()
 
     def configureButtonBindings(self):
         """
