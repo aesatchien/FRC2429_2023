@@ -24,4 +24,15 @@ k_elevator_motor_port = 10 # sparkmax
 k_wrist_motor_port = 11 # sparkmax
 k_arm_motor_port = 12 # sparkmax
 
-
+# --------------  SIMULATION  ---------------
+k_start_x = 7.647
+k_start_y = 1.935
+k_start_heading = -90  # looking at the drawing originally tried -109
+k_drivetrain_motor_count = 4
+k_wheel_diameter_m = 6 * 0.0254  # wheel diameter in meters
+k_gear_ratio = 5.39  # 4.17 # high gear 2022
+k_track_width_meters = 24 * 0.0254
+robot_characterization = {'ks':0.291, 'kv':1.63, 'ka':0.293, 'track_width':0.89}  # 2022 climberbot
+ks_volts = robot_characterization['ks']  # so far this is only used in the Ramsete command, but in 2021 we used it in tank model as well
+kv_volt_seconds_per_meter = robot_characterization['kv']  # used in physics.py LinearSystemId and Ramsete
+ka_volt_seconds_squared_per_meter = robot_characterization['ka']  # used in physics.py LinearSystemId and Ramsete
