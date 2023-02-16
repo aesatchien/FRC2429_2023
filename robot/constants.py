@@ -24,6 +24,8 @@ k_elevator_motor_port = 10 # sparkmax
 k_wrist_motor_port = 11 # sparkmax
 k_arm_motor_port = 12 # sparkmax
 
+k_elevator_timeoflight = 13  # time of flight CAN ID
+
 # --------------  SIMULATION  ---------------
 k_start_x = 7.647
 k_start_y = 1.935
