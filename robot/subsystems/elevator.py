@@ -17,9 +17,9 @@ class Elevator(SubsystemBase):
         # initialize motors
         self.elevator_controller = rev.CANSparkMax(constants.k_elevator_motor_port, rev.CANSparkMax.MotorType.kBrushless)
 
-        # det up distance sensor
-        self.distance_sensor = TimeOfFlight(constants.k_elevator_timeoflight)
-        self.distance_sensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 50)
+        # set up distance sensor
+        self.elevator_height_sensor = TimeOfFlight(constants.k_elevator_timeoflight)
+        self.elevator_height_sensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 50)
 
         # elevator should probably have positions that we need to map out
         self.positions = {'top':0, 'bottom':0, 'upper_pickup':0, 'lower_pickup':0}
