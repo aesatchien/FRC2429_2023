@@ -1,1 +1,16 @@
-{}
+{
+  "HALProvider": {
+    "Other Devices": {
+      "SPARK MAX [9]": {
+        "header": {
+          "open": true
+        }
+      }
+    }
+  },
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo"
+    }
+  }
+}
