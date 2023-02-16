@@ -8,8 +8,7 @@ class Turret(SubsystemBase):
         super().__init__()
 
         # initialize motors
-        motor_type = rev.CANSparkMaxLowLevel.MotorType.kBrushless
-        self.turret_controller = rev.CANSparkMax(constants.k_turret_motor_port, motor_type)
+        self.turret_controller = rev.CANSparkMax(constants.k_turret_motor_port, rev.CANSparkMax.MotorType.kBrushless)
 
 
 

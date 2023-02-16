@@ -8,8 +8,7 @@ class Arm(SubsystemBase):
         super().__init__()
 
         # initialize motors
-        motor_type = rev.CANSparkMaxLowLevel.MotorType.kBrushless
-        self.arm_controller = rev.CANSparkMax(constants.k_arm_motor_port, motor_type)
+        self.arm_controller = rev.CANSparkMax(constants.k_arm_motor_port, rev.CANSparkMax.MotorType.kBrushless)
 
 
 
