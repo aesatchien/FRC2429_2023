@@ -6,7 +6,6 @@ import ctre
 
 from robotpy_ext.common_drivers.distance_sensors import SharpIR2Y0A02, SharpIR2Y0A41
 
-
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
         self.sol = wpilib.DoubleSolenoid(wpilib.PneumaticsModuleType.CTREPCM, 6, 7)

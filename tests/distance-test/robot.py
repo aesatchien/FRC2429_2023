@@ -3,7 +3,8 @@
 """
 2023 0215 CJH
 Test for getting rage measurements back from the PWF TimeofFlight sensor
-10.24.29.2:5812  - should be a web page that lets you config the TOF sensor
+10.24.29.2:5812  - should be a web page that lets you config the TOF sensor,
+but you may have to install some libraries on the rio - TBD
 """
 
 import wpilib

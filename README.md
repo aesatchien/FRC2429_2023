@@ -9,6 +9,8 @@ FRC robot code for the 2023 robot using robotpy-commands-v2.
 * robot - 2023 robot code - elevator bot with pneumatic gripper
 * gui  - 2023 version of the python dashboard
 * sim  - utilities for the simulation (field images, etc)
+* tests - simple one-file robots for testing a system using wpilib.TimedRobot
+  * distance sensors, drivetrain, elevator/turret/wrist/arm, pneumatics
 * other_robots  - code for practie bots, characterization, etc
 
 
