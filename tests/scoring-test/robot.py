@@ -5,6 +5,7 @@ Test robot designed to:
  drive any of the scoring system motors from a sparkmax/neo combo with a variable output scale
  read from the default encoder
  read from the absolute encoder
+ check a limit switch
 """
 
 import wpilib
@@ -16,6 +17,7 @@ class MyRobot(wpilib.TimedRobot):
 
         self.joystick = wpilib.Joystick(0)
         self.scale = 0.2
+        self.counter = 0
 
         """ CAN IDs
         k_turret_motor_port = 9 # sparkmax
@@ -29,10 +31,14 @@ class MyRobot(wpilib.TimedRobot):
         self.absolute_encoder = self.controller.getAbsoluteEncoder(encoderType=rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
         self.default_encoder = self.controller.getEncoder()
 
+        self.limit_switch_port = 0
+        self.limit_switch = wpilib.DigitalInput(self.limit_switch_port)
+
         # not allowed to have an absolute encoder and an alternate encoder
         #self.alternate_encoder = self.turret_controller.getAlternateEncoder(1)
 
     def teleopPeriodic(self) -> None:
+        self.counter += 1
         b1 = self.joystick.getRawButton(1)
         b2 = self.joystick.getRawButton(2)
         b3 = self.joystick.getRawButton(3)
@@ -51,11 +57,13 @@ class MyRobot(wpilib.TimedRobot):
 
         self.controller.set(stick * self.scale)
 
-        wpilib.SmartDashboard.putNumber("canid", self.can_id)
-        wpilib.SmartDashboard.putNumber("output", stick)
-        wpilib.SmartDashboard.putNumber("encoder", self.default_encoder.getPosition())
-        wpilib.SmartDashboard.putNumber("absolute_encoder", self.absolute_encoder.getPosition())
-        #wpilib.SmartDashboard.putNumber("alternate_encoder", self.alternate_encoder.getPosition())
+        if self.counter % 10 == 0:
+            wpilib.SmartDashboard.putNumber("canid", self.can_id)
+            wpilib.SmartDashboard.putNumber("output", stick)
+            wpilib.SmartDashboard.putNumber("encoder", self.default_encoder.getPosition())
+            wpilib.SmartDashboard.putNumber("absolute_encoder", self.absolute_encoder.getPosition())
+            wpilib.SmartDashboard.putNumber("limit", self.limit_switch.get())
+            #wpilib.SmartDashboard.putNumber("alternate_encoder", self.alternate_encoder.getPosition())`
 
 
 

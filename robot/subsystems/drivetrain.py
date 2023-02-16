@@ -2,12 +2,18 @@ from commands2 import SubsystemBase
 from wpilib.drive import DifferentialDrive
 from wpilib import MotorControllerGroup
 import rev
+import navx
+
+#from misc.sparksim import CANSparkMax  # takes care of switching to PWM for sim
 
 import constants
 
 class Drivetrain(SubsystemBase):
     def __init__(self):
         super().__init__()
+
+        # initialize sensors - use the navx for headings
+        self.navx = navx.AHRS.create_spi()
 
         # initialize motors
         motor_type = rev.CANSparkMaxLowLevel.MotorType.kBrushless

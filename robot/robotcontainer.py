@@ -13,7 +13,7 @@ from subsystems.wrist import Wrist
 from subsystems.elevator import Elevator
 from subsystems.turret import Turret
 
-from commands.drivetrain_drive_by_joystick import DriveByJoystick
+from commands.drive_by_joystick import DriveByJoystick
 
 
 class RobotContainer:
@@ -30,8 +30,12 @@ class RobotContainer:
 
         # The robot's subsystems
         self.drive = Drivetrain()
+        self.turret = Turret()
+        self.arm = Arm()
+        self.wrist = Wrist()
+        self.elevator = Elevator()
 
-        # self.configureButtonBindings()
+        self.configureButtonBindings()
 
         # set up default drive command
         self.drive.setDefaultCommand(

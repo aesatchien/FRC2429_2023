@@ -15,10 +15,13 @@ import wpilib.simulation as simlib  # 2021 name for the simulation library
 from wpimath.system import LinearSystemId
 from wpimath.system.plant import DCMotor
 import wpimath.geometry as geo
-# from networktables import NetworkTables
 import ntcore as nt
+
 import constants
 from pyfrc.physics.core import PhysicsInterface
+
+import robot
+
 
 class PhysicsEngine:
     """
@@ -40,9 +43,9 @@ class PhysicsEngine:
         self.counter = 0
 
         # SparkMAX does not write to its simdevice in the real robot, so use the generic wpilib PWM as a proxy
-        #
         self.l_motor = simlib.PWMSim(1)
         self.r_motor = simlib.PWMSim(3)
+
 
         # Motor simulation definitions. Each correlates to a motor defined in the drivetrain subsystem.
         self.l_spark = simlib.SimDeviceSim('SPARK MAX [1]')  # SparkMAX sim device
@@ -81,7 +84,8 @@ class PhysicsEngine:
         self.navx_yaw = self.navx.getDouble("Yaw")
 
         # giving ourselves boundaries - ToDo: can we ask the field for this?
-        self.x_limit, self.y_limit = 18.29 - 0.25, 9.14 - 0.25  # standard competition field
+        # self.x_limit, self.y_limit = 18.29 - 0.25, 9.14 - 0.25  # standard competition field
+        self.x_limit, self.y_limit = 16.54 - 0.25, 8.01 - 0.25  # standard competition field
         self.sim_padding = 0.0  # how much to allow the robot to go out of bounds
         self.edge_bounce = 0.0  # how much to force the robot to go back by when it hits the boundary
 

@@ -37,7 +37,7 @@ class MyRobot(wpilib.TimedRobot):
         self.counter += 1
         if self.counter % 10 == 0:
             wpilib.SmartDashboard.putNumber("Encoder L", self.encoder_l.get())
-            wpilib.SmartDashboard.putNumber("Encoder R", self.encoder_r.get())`
+            wpilib.SmartDashboard.putNumber("Encoder R", self.encoder_r.get())
 
 
 if __name__ == "__main__":

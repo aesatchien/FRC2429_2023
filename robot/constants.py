@@ -2,6 +2,8 @@
 A place for the constant values in the code that may be used in more than one place. 
 This offers a convenient resources to teams who need to make both quick and universal
 changes.
+
+2023 robot for team 2429 - the blockheads
 """
 
 
@@ -26,6 +28,9 @@ k_arm_motor_port = 12 # sparkmax
 
 k_elevator_timeoflight = 13  # time of flight CAN ID
 
+k_wrist_limit_switch = 1  # DIO for the wrist limit switch
+k_arm_limit_switch = 3
+
 # --------------  SIMULATION  ---------------
 k_start_x = 7.647
 k_start_y = 1.935
@@ -38,3 +43,7 @@ robot_characterization = {'ks':0.291, 'kv':1.63, 'ka':0.293, 'track_width':0.89}
 ks_volts = robot_characterization['ks']  # so far this is only used in the Ramsete command, but in 2021 we used it in tank model as well
 kv_volt_seconds_per_meter = robot_characterization['kv']  # used in physics.py LinearSystemId and Ramsete
 ka_volt_seconds_squared_per_meter = robot_characterization['ka']  # used in physics.py LinearSystemId and Ramsete
+
+# --------------  HELPER FUNCTIONS  ---------------
+def clamp(value: float, bottom: float, top: float) -> float:
+    return max(bottom, min(value, top))
