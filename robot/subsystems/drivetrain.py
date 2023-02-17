@@ -1,6 +1,6 @@
 from commands2 import SubsystemBase
 from wpilib.drive import DifferentialDrive
-from wpilib import MotorControllerGroup
+from wpilib import MotorControllerGroup, PWMSparkMax
 import rev
 import navx
 
@@ -28,8 +28,15 @@ class Drivetrain(SubsystemBase):
 
         self.drive = DifferentialDrive(self.left_motors, self.right_motors)
 
+        # add two dummy PWMs so we can track the SparkMax in the sim (should be updated in sim periodic)
+        self.dummy_motor_left = PWMSparkMax(1)
+        self.dummy_motor_right = PWMSparkMax(3)
+
     def arcade_drive(self, fwd, rot):
         self.drive.arcadeDrive(fwd, rot, squareInputs=True)
+        # need to update the simulated PWMs here
+        self.dummy_motor_left.set(self.spark_neo_left_front.get())
+        self.dummy_motor_right.set(self.spark_neo_right_front.get())
 
 
 

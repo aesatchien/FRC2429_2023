@@ -11,14 +11,24 @@ import wpilib
 import rev
 
 
+# noinspection PyAttributeOutsideInit
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
 
         self.joystick = wpilib.Joystick(0)
 
         self.turret_controller = rev.CANSparkMax(9, rev.CANSparkMax.MotorType.kBrushless)
-        self.absolute_encoder = self.turret_controller.getAbsoluteEncoder(encoderType=rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
+        self.digital_absolute_encoder = self.turret_controller.getAbsoluteEncoder(encoderType=rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
         self.default_encoder = self.turret_controller.getEncoder()
+
+        # need to test this out with several angles
+        self.default_encoder_conversion_factor = 360/462.0  # Armabot has 442:1 gear ratio?  Circle has 360 degrees.
+        self.default_encoder.setPositionConversionFactor(self.default_encoder_conversion_factor)
+
+        # same here, and need the turret encoder to be set to analog (jumper change)
+        self.analog_absolute_encoder = wpilib.AnalogEncoder(1)  # plug the analog encoder into channel 1
+        self.analog_conversion_factor = 5/360.0  # 5V is 360 degrees
+        self.analog_absolute_encoder.setDistancePerRotation(self.analog_conversion_factor)
 
         # not allowed to have an absolute encoder and an alternate encoder
         #self.alternate_encoder = self.turret_controller.getAlternateEncoder(1)
@@ -31,14 +41,16 @@ class MyRobot(wpilib.TimedRobot):
         self.turret_controller.set(stick)
 
         if b1:
-            msg = f'default encoder: {self.default_encoder.getPosition():0.1f}  absolute encoder: {self.absolute_encoder.getPosition():0.1f}'
+            msg = f'default encoder: {self.default_encoder.getPosition():0.1f}  absolute encoder: {self.analog_absolute_encoder.getAbsolutePosition():0.1f}'
             print(msg, end='\r')
         if b2:
-            pass
+            # update the spark's position with the absolute encoder
+            current_angle = self.analog_absolute_encoder.getAbsolutePosition()
+            self.default_encoder.setInverted(current_angle)
 
         wpilib.SmartDashboard.putNumber("output", stick)
         wpilib.SmartDashboard.putNumber("encoder", self.default_encoder.getPosition())
-        wpilib.SmartDashboard.putNumber("absolute_encoder", self.absolute_encoder.getPosition())
+        wpilib.SmartDashboard.putNumber("absolute_encoder", self.analog_absolute_encoder.getAbsolutePosition())
         #wpilib.SmartDashboard.putNumber("alternate_encoder", self.alternate_encoder.getPosition())
 
 

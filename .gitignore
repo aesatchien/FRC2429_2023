@@ -8,6 +8,12 @@
 # too many ini files for the gui
 *.ini
 
+# all the gui and deploy stuff
+*eploy_cfg
+*nstaller_config
+simg*
+
+
 #pycharm directory
 .idea/
 #jupyter stuff

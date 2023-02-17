@@ -1,17 +1,8 @@
-#
-# See the documentation for more details on how this works
-#
-# The idea here is you provide a simulation object that overrides specific
-# pieces of WPILib, and modifies motors/sensors accordingly depending on the
-# state of the simulation. An example of this would be measuring a motor
-# moving for a set period of time, and then changing a limit switch to turn
-# on after that period of time. This can help you do more complex simulations
-# of your robot code without too much extra effort.
-#
+#  2429 robot simulation - 2023 2016 CJH
+
 import math
-from wpilib import RobotController, SmartDashboard
-from wpilib.simulation import DifferentialDrivetrainSim
 import wpilib.simulation as simlib  # 2021 name for the simulation library
+from wpilib import RobotController, SmartDashboard
 from wpimath.system import LinearSystemId
 from wpimath.system.plant import DCMotor
 import wpimath.geometry as geo
@@ -20,8 +11,7 @@ import ntcore as nt
 import constants
 from pyfrc.physics.core import PhysicsInterface
 
-import robot
-
+import robot  # we may be able to import the robot or container and use them
 
 class PhysicsEngine:
     """
@@ -46,7 +36,6 @@ class PhysicsEngine:
         self.l_motor = simlib.PWMSim(1)
         self.r_motor = simlib.PWMSim(3)
 
-
         # Motor simulation definitions. Each correlates to a motor defined in the drivetrain subsystem.
         self.l_spark = simlib.SimDeviceSim('SPARK MAX [1]')  # SparkMAX sim device
         self.r_spark = simlib.SimDeviceSim('SPARK MAX [3]')
@@ -65,7 +54,7 @@ class PhysicsEngine:
         )
 
         # The simulation model of the drivetrain.
-        self.drivesim = DifferentialDrivetrainSim(
+        self.drivesim = simlib.DifferentialDrivetrainSim(
             # The state-space model for a drivetrain.
             self.system,
             # The robot's trackwidth, which is the distance between the wheels on the left side
@@ -106,19 +95,14 @@ class PhysicsEngine:
 
     def update_sim(self, now: float, tm_diff: float) -> None:
         """
-        Called when the simulation parameters for the program need to be
-        updated.
-
+        Called when the simulation parameters for the program need to be updated.
         :param now: The current time as a float
-        :param tm_diff: The amount of time that has passed since the last
-                        time that this function was called
+        :param tm_diff: The amount of time that has passed since the last time that this function was called
         """
-
 
         # ------------------  UPDATE DRIVETRAIN  --------------------
         # Simulate the drivetrain - read the dummy PWMs that are following the SparkMAXes only in sim
-        l_motor = self.l_motor.getSpeed()
-        r_motor = self.r_motor.getSpeed()
+        l_motor, r_motor = self.l_motor.getSpeed(), self.r_motor.getSpeed()
 
         # Update the navx gyro simulation
         # -> FRC gyros like NavX are positive clockwise, but the returned pose is positive counter-clockwise
@@ -159,9 +143,10 @@ class PhysicsEngine:
             self.targets_entry.setDouble(2)
             self.distance_entry.setDouble(hub_dist)
             self.rotation_entry.setDouble(self.pose.rotation().degrees() -hub_rot)
-
             #SmartDashboard.putNumber('sim/state', self.drivesim)
 
+
+    # ------------------  GAME SPECIFIC CALCULATIONS  --------------------
     def distance_to_hub(self):
         hub_x, hub_y  = 8.25, 4.1
         dx = self.pose.X() - hub_x
@@ -191,7 +176,7 @@ class PhysicsEngine:
             self.drivesim.setState([self.x, self.y, self.previous_pose.rotation().radians(),
                                    self.drivesim.getLeftVelocity(), self.drivesim.getRightVelocity(),
                                     self.drivesim.getLeftPosition(), self.drivesim.getRightPosition()])
-            self.previous_pose = self.previous_pose
+            self.pose = self.previous_pose  # what did i mean here?
         else:
             pass
 
