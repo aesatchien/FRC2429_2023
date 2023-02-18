@@ -39,7 +39,7 @@ class RobotContainer:
         self.arm = Arm()
         self.wrist = Wrist()
         self.elevator = Elevator()
-        self.pneumatics = Pneumatics
+        self.pneumatics = Pneumatics()
 
         self.configureButtonBindings()
 
@@ -91,7 +91,7 @@ class RobotContainer:
             self.buttonDown.whenPressed(ElevatorMove(self, self.elevator, setpoint=800, wait_to_finish=True).withTimeout(1))
             self.buttonUp.whenPressed(ElevatorMove(self, self.elevator, setpoint=200, wait_to_finish=True).withTimeout(1))
         # manipulator
-        self.buttonRB.whenPressed(ManipulatorToggle(container=self,pneumatics=self.pneumatics,force='open'))
+        self.buttonRB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='open'))
         self.buttonLB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='close'))
 
         # commands2.button.JoystickButton(self.driverController, 3).whenHeld(

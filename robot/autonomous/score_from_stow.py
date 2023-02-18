@@ -3,6 +3,7 @@ import commands2
 import constants
 from commands.elevator_move import ElevatorMove
 from commands.turret_move import TurretMove
+from commands.manipulator_toggle import ManipulatorToggle
 
 class ScoreFromStow(commands2.SequentialCommandGroup):  # change the name for your command
 
@@ -20,7 +21,7 @@ class ScoreFromStow(commands2.SequentialCommandGroup):  # change the name for yo
         self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=180, wait_to_finish=False))
 
         # Step 2.a
-        # lower wrist to upper scoring position 45°
+        # lower / raise wrist to upper scoring position 45°
 
         # Step 2.b
         # extend the arm fully
@@ -32,4 +33,4 @@ class ScoreFromStow(commands2.SequentialCommandGroup):  # change the name for yo
 
         # Step 5
         # Open the manipulator
-
+        self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='open'))
