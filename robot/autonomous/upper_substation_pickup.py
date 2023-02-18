@@ -2,6 +2,8 @@ import commands2
 
 import constants
 
+from subsystems.elevator import Elevator
+from commands.elevator_move import ElevatorMove
 
 class UpperSubstationPickup(commands2.SequentialCommandGroup):  # change the name for your command
 
@@ -12,6 +14,8 @@ class UpperSubstationPickup(commands2.SequentialCommandGroup):  # change the nam
 
         # Step 1.a
         # raise elevator to appropriate height
+        self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator,
+                                      setpoint=Elevator.positions['upper_pickup'], wait_to_finish=False))
 
         # Step 1.b
         # Get turret into position - center on the cone/cube (vision processor)

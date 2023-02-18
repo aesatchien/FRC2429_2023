@@ -18,7 +18,6 @@ import constants
 #from misc.sparksim import CANSparkMax  # takes care of switching to PWM for sim
 
 
-
 class Turret(SubsystemBase):
     def __init__(self):
         super().__init__()

@@ -11,12 +11,14 @@ from subsystems.arm import Arm
 from subsystems.wrist import Wrist
 from subsystems.elevator import Elevator
 from subsystems.turret import Turret
+from subsystems.pneumatics import Pneumatics
 
 from misc.axis_button import AxisButton
 from commands.drive_by_joystick import DriveByJoystick
 from commands.turret_initialize import TurretInitialize
 from commands.turret_move import TurretMove
 from commands.elevator_move import ElevatorMove
+from commands.manipulator_toggle import ManipulatorToggle
 
 
 class RobotContainer:
@@ -37,6 +39,7 @@ class RobotContainer:
         self.arm = Arm()
         self.wrist = Wrist()
         self.elevator = Elevator()
+        self.pneumatics = Pneumatics
 
         self.configureButtonBindings()
 
@@ -87,7 +90,9 @@ class RobotContainer:
             self.buttonLeft.whenPressed(TurretMove(self, self.turret, setpoint=-10, wait_to_finish=True).withTimeout(2))
             self.buttonDown.whenPressed(ElevatorMove(self, self.elevator, setpoint=800, wait_to_finish=True).withTimeout(1))
             self.buttonUp.whenPressed(ElevatorMove(self, self.elevator, setpoint=200, wait_to_finish=True).withTimeout(1))
-
+        # manipulator
+        self.buttonRB.whenPressed(ManipulatorToggle(container=self,pneumatics=self.pneumatics,force='open'))
+        self.buttonLB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='close'))
 
         # commands2.button.JoystickButton(self.driverController, 3).whenHeld(
         #     HalveDriveSpeed(self.drive)

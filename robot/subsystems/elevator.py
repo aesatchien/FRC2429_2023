@@ -20,6 +20,9 @@ import constants
 
 
 class Elevator(SubsystemBase):
+    # elevator should probably have positions that we need to map out
+    positions = {'top': 980, 'bottom': 20, 'upper_pickup': 600, 'lower_pickup': 300}
+
     def __init__(self):
         super().__init__()
 
@@ -36,9 +39,6 @@ class Elevator(SubsystemBase):
         # set up distance sensor
         self.elevator_height_sensor = TimeOfFlight(constants.k_elevator_timeoflight)
         self.elevator_height_sensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 50)
-
-        # elevator should probably have positions that we need to map out
-        self.positions = {'top':980, 'bottom':20, 'upper_pickup':600, 'lower_pickup':300}
 
         # set soft limits - do not let spark max put out power above/below a certain value
         self.elevator_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, True)
