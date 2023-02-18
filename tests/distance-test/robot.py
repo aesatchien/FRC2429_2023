@@ -14,8 +14,9 @@ from playingwithfusion import TimeOfFlight
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
         self.joystick = wpilib.Joystick(0)
-        self.distance_sensor = TimeOfFlight(0)  # ships with an ID of 0
+        self.distance_sensor = TimeOfFlight(13)  # ships with an ID of 0
         self.distance_sensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 50)
+        # self.distance_sensor.setRangeOfInterest()
         self.counter = 0
         # self.DistSensor.
 
@@ -32,6 +33,7 @@ class MyRobot(wpilib.TimedRobot):
             print(msg, end='\r')
 
         if self.counter % 10 == 0:
+            wpilib.SmartDashboard.putNumber("COUNTER", self.counter)
             wpilib.SmartDashboard.putNumber("distance", self.distance_sensor.getRange())  # should be mm to target
             wpilib.SmartDashboard.putNumber("status", self.distance_sensor.getStatus())  # should be mm to target
 

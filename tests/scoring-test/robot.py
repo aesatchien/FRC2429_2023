@@ -28,8 +28,13 @@ class MyRobot(wpilib.TimedRobot):
 
         self.can_id = 10
         self.controller = rev.CANSparkMax(self.can_id, rev.CANSparkMax.MotorType.kBrushless)
+        self.controller.setInverted(True)
+
         self.absolute_encoder = self.controller.getAbsoluteEncoder(encoderType=rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
         self.default_encoder = self.controller.getEncoder()
+
+        self.default_encoder_conversion_factor = 0.25  # gear reduction is 16:1 and circumference of 16-tooth is 4.05in
+        self.default_encoder.setPositionConversionFactor(self.default_encoder_conversion_factor)
 
         self.limit_switch_port = 0
         self.limit_switch = wpilib.DigitalInput(self.limit_switch_port)
