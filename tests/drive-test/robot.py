@@ -3,9 +3,6 @@
 import wpilib
 import wpilib.drive
 import rev
-import ctre
-
-from robotpy_ext.common_drivers.distance_sensors import SharpIR2Y0A21, SharpIR2Y0A41
 
 
 class MyRobot(wpilib.TimedRobot):
