@@ -31,6 +31,11 @@ k_elevator_timeoflight = 13  # time of flight CAN ID
 k_wrist_limit_switch = 1  # DIO for the wrist limit switch
 k_arm_limit_switch = 3
 
+# --------------  PNEUMATICS  ---------------
+k_manipulator_open_port = 0 # Double solenoid port 1 of two
+k_manipulator_closed_port = 1  #
+
+
 # --------------  SIMULATION  ---------------
 k_start_x = 7.647
 k_start_y = 1.935
