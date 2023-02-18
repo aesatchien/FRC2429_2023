@@ -11,6 +11,7 @@ import wpilib
 import rev
 
 
+
 # noinspection PyAttributeOutsideInit
 class MyRobot(wpilib.TimedRobot):
     def robotInit(self) -> None:
@@ -31,9 +32,11 @@ class MyRobot(wpilib.TimedRobot):
 
         # same here, and need the turret encoder to be set to analog (jumper change)
         self.analog_absolute_encoder = wpilib.AnalogEncoder(1)  # plug the analog encoder into channel 1
-        # self.analog_conversion_factor = 5/360.0  # 5V is 360 degrees
-        self.analog_conversion_factor = 360
+        self.analog_conversion_factor = 360.0  # 5V is 360 degrees
+
         self.analog_absolute_encoder.setDistancePerRotation(self.analog_conversion_factor)
+
+        # self.analog_absolute_encoder.setPositionOffset()
 
         # not allowed to have an absolute encoder and an alternate encoder
         #self.alternate_encoder = self.turret_controller.getAlternateEncoder(1)
@@ -65,7 +68,6 @@ class MyRobot(wpilib.TimedRobot):
             wpilib.SmartDashboard.putNumber("absolute_encoder_abs", self.analog_absolute_encoder.getAbsolutePosition())
             wpilib.SmartDashboard.putNumber("absolute_encoder_dist", absolute_encoder_avg)
             #wpilib.SmartDashboard.putNumber("alternate_encoder", self.alternate_encoder.getPosition())
-
 
 
 if __name__ == "__main__":
