@@ -4,6 +4,7 @@ import typing
 import wpilib
 import commands2
 
+import robotcontainer
 from robotcontainer import RobotContainer
 
 
@@ -35,6 +36,9 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def autonomousInit(self) -> None:
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
+
+        self.container.set_start_time()  # putting this after the scheduler is bad
+
         # self.autonomousCommand = self.container.getAutonomousCommand()
         self.autonomousCommand = None
 
@@ -45,6 +49,9 @@ class MyRobot(commands2.TimedCommandRobot):
         """This function is called periodically during autonomous"""
 
     def teleopInit(self) -> None:
+
+        self.container.set_start_time()  # putting this after the scheduler is bad
+
         # This makes sure that the autonomous stops running when
         # teleop starts running. If you want the autonomous to
         # continue until interrupted by another command, remove

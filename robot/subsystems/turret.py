@@ -23,29 +23,44 @@ class Turret(SubsystemBase):
     def __init__(self):
         super().__init__()
 
-        self.max_angle = 180
-        self.min_angle = -180
+        self.max_angle = 271
+        self.min_angle = -45
 
         # initialize motors
         self.turret_controller = rev.CANSparkMax(constants.k_turret_motor_port, rev.CANSparkMax.MotorType.kBrushless)
-        self.default_encoder = self.turret_controller.getEncoder()
+        self.sparkmax_encoder = self.turret_controller.getEncoder()
         self.default_encoder_conversion_factor = 360 / 462.0  # Armabot has 462:1 gear ratio?  Circle has 360 degrees.
-        self.default_encoder.setPositionConversionFactor(self.default_encoder_conversion_factor)
+        self.sparkmax_encoder.setPositionConversionFactor(self.default_encoder_conversion_factor)
+        self.pid_controller = self.turret_controller.getPIDController()
+
+        # set soft limits - do not let spark max put out power above/below a certain value
+        self.turret_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, True)
+        self.turret_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, True)
+        self.turret_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_angle)
+        self.turret_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_angle)
 
         # same here, and need the turret encoder to be set to analog (jumper change)
-        self.analog_absolute_encoder = wpilib.AnalogEncoder(1)  # plug the analog encoder into channel 1
+        self.analog_abs_encoder = wpilib.AnalogEncoder(1)  # plug the analog encoder into channel 1
         self.analog_conversion_factor = 360.0  # 5V is 360 degrees
-        self.analog_absolute_encoder.setDistancePerRotation(self.analog_conversion_factor)
+        self.analog_abs_encoder.setDistancePerRotation(self.analog_conversion_factor)
 
+        # set the offset on the absolute analog encoder
+        self.absolute_position_offset = 0.842  # this is what the absolute encoder reports when in stow position
+        self.analog_abs_encoder.setPositionOffset(self.absolute_position_offset)  # now stow alignment is angle=0
 
-        # current_angle = self.analog_absolute_encoder.getDistance()
-        # self.default_encoder.setPosition(current_angle)
+    def get_angle(self):  # getter for the relevant turret parameter
+        return self.sparkmax_encoder.getPosition()
 
-    def rotate_to_angle(self, angle):
+    def set_turret_angle(self, angle, mode='smartmotion'):
         """
         We can do this multiple ways -
         1) we can use wpilib with a PID controller
         2) we can make a PID controller ourselves
         3) or we can use the sparkmax's built-in PID / smartmotion
         """
-        pass
+        if mode == 'smartmotion':
+            # use smartmotion to send you there quickly
+            self.pid_controller.setReference(angle, rev.CANSparkMax.ControlType.kSmartMotion)
+        elif mode == 'position':
+            # just use the position PID
+            self.pid_controller.setReference(angle, rev.CANSparkMax.ControlType.kPosition)
