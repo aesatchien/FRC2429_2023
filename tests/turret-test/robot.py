@@ -21,6 +21,7 @@ class MyRobot(wpilib.TimedRobot):
         self.encoder_distance_values = [0] * self.sample_count
         self.encoder_absolute_values = [0] * self.sample_count
         self.counter = 0
+        self.scale = 0.1
 
         self.absolute_position_offset = 0.842  # this is what the absolute encoder reports when in stow position
 
@@ -55,7 +56,7 @@ class MyRobot(wpilib.TimedRobot):
         b3 = self.joystick.getRawButton(3)
 
         stick = - self.joystick.getY()
-        self.turret_controller.set(stick)
+        self.turret_controller.set(stick * self.scale)
 
         self.encoder_distance_values[self.counter % self.sample_count] = self.analog_abs_encoder.getDistance()
         self.encoder_absolute_values[self.counter % self.sample_count] = self.analog_abs_encoder.getAbsolutePosition()

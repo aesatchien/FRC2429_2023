@@ -13,9 +13,11 @@ Elevator needs to:
 """
 from commands2 import SubsystemBase
 import rev
+from wpilib import SmartDashboard
 from playingwithfusion import TimeOfFlight
 
 import constants
+from misc.configure_controllers import configure_controller
 #from misc.sparksim import CANSparkMax  # takes care of switching to PWM for sim
 
 
@@ -33,9 +35,11 @@ class Elevator(SubsystemBase):
         self.elevator_controller = rev.CANSparkMax(constants.k_elevator_motor_port, rev.CANSparkMax.MotorType.kBrushless)
         self.elevator_controller.setInverted(True)  # true for elevator
         self.sparkmax_encoder = self.elevator_controller.getEncoder()
-        encoder_conversion_factor = 0.253 * 25.4   # 16x reduction motor to shaft, one sprocket rot is 4.05in so 0.253
-        self.sparkmax_encoder.setPositionConversionFactor(encoder_conversion_factor)  # mm per revolution
+        self.sparkmax_encoder.setPositionConversionFactor(constants.k_elevator_encoder_conversion_factor)  # mm per revolution
+        self.sparkmax_encoder.setVelocityConversionFactor(constants.k_elevator_encoder_conversion_factor)  # necessary for smartmotion to behave
         self.pid_controller = self.elevator_controller.getPIDController()
+        configure_controller(sparkmax=self.elevator_controller, pid_controller=self.pid_controller, slot=0, id=0,
+                             pid_dict=constants.k_PID_dict_vel_elevator, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # set up distance sensor
         self.elevator_height_sensor = TimeOfFlight(constants.k_elevator_timeoflight)
@@ -48,8 +52,10 @@ class Elevator(SubsystemBase):
         self.elevator_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_height)
 
         # initialize the height of the elevator  - sensor is in mm, so stick with that
-        initial_position = self.elevator_height_sensor.getRange()
-        self.sparkmax_encoder.setPosition(initial_position)
+        initial_height = self.elevator_height_sensor.getRange()
+        self.sparkmax_encoder.setPosition(initial_height)
+        self.height = initial_height
+        SmartDashboard.putNumber('elevator_height', self.height)
 
     def get_height(self):  # getter for the relevant elevator parameter
         return self.sparkmax_encoder.getPosition()
@@ -67,3 +73,6 @@ class Elevator(SubsystemBase):
         elif mode == 'position':
             # just use the position PID
             self.pid_controller.setReference(height, rev.CANSparkMax.ControlType.kPosition)
+
+        self.height = height
+        SmartDashboard.putNumber('elevator_height', self.height)
