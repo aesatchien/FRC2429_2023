@@ -3,6 +3,7 @@ from wpilib import SmartDashboard
 from subsystems.pneumatics import Pneumatics
 
 class ManipulatorToggle(commands2.CommandBase):
+    # Takes {open, close, or None} to {open, close or toggle} the manipulator
 
     def __init__(self, container, pneumatics:Pneumatics, force=None) -> None:
         super().__init__()
@@ -14,7 +15,6 @@ class ManipulatorToggle(commands2.CommandBase):
 
     def initialize(self) -> None:
         if self.force == 'open':
-            self.pneumatics.set_manipulator_piston()
             self.pneumatics.set_manipulator_piston(position='open')
         elif self.force == 'close':
             self.pneumatics.set_manipulator_piston(position='close')

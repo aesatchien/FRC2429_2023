@@ -31,6 +31,7 @@ class Elevator(SubsystemBase):
 
         # initialize motors
         self.elevator_controller = rev.CANSparkMax(constants.k_elevator_motor_port, rev.CANSparkMax.MotorType.kBrushless)
+        self.elevator_controller.setInverted(True)  # true for elevator
         self.sparkmax_encoder = self.elevator_controller.getEncoder()
         encoder_conversion_factor = 0.253 * 25.4   # 16x reduction motor to shaft, one sprocket rot is 4.05in so 0.253
         self.sparkmax_encoder.setPositionConversionFactor(encoder_conversion_factor)  # mm per revolution

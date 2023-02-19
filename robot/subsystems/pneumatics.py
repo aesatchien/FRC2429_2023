@@ -6,7 +6,6 @@ manipulator needs to reliably open and close on a double solenoid
 import wpilib
 from commands2 import SubsystemBase
 from wpilib import SmartDashboard, Solenoid, Compressor, AnalogInput, DoubleSolenoid
-
 import constants
 
 
@@ -32,6 +31,7 @@ class Pneumatics(SubsystemBase):
         SmartDashboard.putBoolean('manipulator_open', self.manipulator_open)
         SmartDashboard.putBoolean('compressor_close_loop', self.close_loop_enable)
 
+    # --------   MANIPULATOR CODE   --------------
     def set_manipulator_piston(self, position='open'):
         if position == 'open':
             self.manipulator_open = True
@@ -49,6 +49,8 @@ class Pneumatics(SubsystemBase):
     def get_manipulator_state(self):
         return self.manipulator_piston.get()
 
+
+    # --------   COMPRESSOR CODE   --------------
     def stop_compressor(self):
         self.compressor.disable()   # should now be disable, as of 2022
         self.close_loop_enable = False
@@ -68,7 +70,6 @@ class Pneumatics(SubsystemBase):
     def periodic(self) -> None:
         
         self.counter += 1
-
         if self.counter % 25 == 1:
             # the compressor turns itself off and on, so we have to ask it its state
             SmartDashboard.putBoolean('compressor_state', self.compressor.enabled())

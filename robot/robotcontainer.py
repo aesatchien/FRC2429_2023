@@ -20,6 +20,9 @@ from commands.turret_move import TurretMove
 from commands.elevator_move import ElevatorMove
 from commands.manipulator_toggle import ManipulatorToggle
 
+from autonomous.score_from_stow import ScoreFromStow
+from autonomous.upper_substation_pickup import UpperSubstationPickup
+
 
 class RobotContainer:
     """
@@ -93,6 +96,11 @@ class RobotContainer:
         # manipulator
         self.buttonRB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='open'))
         self.buttonLB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='close'))
+
+        # lots of putdatas for testing on the dash
+        wpilib.SmartDashboard.putData(ScoreFromStow(container=self))
+        wpilib.SmartDashboard.putData(UpperSubstationPickup(container=self))
+
 
         # commands2.button.JoystickButton(self.driverController, 3).whenHeld(
         #     HalveDriveSpeed(self.drive)

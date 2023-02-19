@@ -27,6 +27,7 @@ class Turret(SubsystemBase):
 
         # initialize motors
         self.turret_controller = rev.CANSparkMax(constants.k_turret_motor_port, rev.CANSparkMax.MotorType.kBrushless)
+        self.turret_controller.setInverted(True)  # true for turret
         self.sparkmax_encoder = self.turret_controller.getEncoder()
         self.default_encoder_conversion_factor = 360 / 462.0  # Armabot has 462:1 gear ratio?  Circle has 360 degrees.
         self.sparkmax_encoder.setPositionConversionFactor(self.default_encoder_conversion_factor)
