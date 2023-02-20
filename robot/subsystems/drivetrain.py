@@ -95,11 +95,13 @@ class Drivetrain(SubsystemBase):
             encoder.setPositionConversionFactor(constants.k_sparkmax_conversion_factor_meters)  # want in m
             encoder.setPositionConversionFactor(constants.k_sparkmax_conversion_factor_meters / 60)  # wand in m/s
         # send controller info, burn if necessary
-        for controller, pid_controller in zip(self.controllers, self.pid_controllers):
-            configure_sparkmax(sparkmax=controller, pid_controller=pid_controller, id=0, slot=0,
+        ids = [constants.k_left_motor1_port, constants.k_right_motor1_port]
+        for controller, pid_controller, id in zip(self.controllers, self.pid_controllers, ids):
+            configure_sparkmax(sparkmax=controller, pid_controller=pid_controller, can_id=id, slot=0,
                                burn_flash=constants.k_burn_flash, pid_dict=constants.k_PID_dict_pos, pid_only=False)
-            configure_sparkmax(sparkmax=controller, pid_controller=pid_controller, id=1, slot=1,
+            configure_sparkmax(sparkmax=controller, pid_controller=pid_controller, can_id=id, slot=1,
                                burn_flash=constants.k_burn_flash, pid_dict=constants.k_PID_dict_vel, pid_only=False)
+
 
     def set_brake_mode(self, mode):
         """ Sets the brake mode for the drivetrain to coast or brake"""

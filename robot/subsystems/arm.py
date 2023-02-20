@@ -30,7 +30,7 @@ class Arm(SubsystemBase):
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_arm_encoder_conversion_factor)
         self.pid_controller = self.arm_controller.getPIDController()
 
-        configure_sparkmax(sparkmax=self.arm_controller, pid_controller=self.pid_controller, slot=0, id=0,
+        configure_sparkmax(sparkmax=self.arm_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_arm_motor_port,
                            pid_dict=constants.k_PID_dict_vel_arm, pid_only=True, burn_flash=constants.k_burn_flash)
         # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
 

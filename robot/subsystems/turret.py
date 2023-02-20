@@ -35,7 +35,7 @@ class Turret(SubsystemBase):
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_turret_encoder_conversion_factor)
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_turret_encoder_conversion_factor)  # needed for smartmotion
         self.pid_controller = self.turret_controller.getPIDController()
-        configure_sparkmax(sparkmax=self.turret_controller, pid_controller=self.pid_controller, slot=0, id=0,
+        configure_sparkmax(sparkmax=self.turret_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_turret_motor_port,
                            pid_dict=constants.k_PID_dict_vel_turret, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # set soft limits - do not let spark max put out power above/below a certain value

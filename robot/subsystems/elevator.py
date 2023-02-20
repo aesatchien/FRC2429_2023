@@ -38,7 +38,7 @@ class Elevator(SubsystemBase):
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_elevator_encoder_conversion_factor)  # mm per revolution
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_elevator_encoder_conversion_factor)  # necessary for smartmotion to behave
         self.pid_controller = self.elevator_controller.getPIDController()
-        configure_sparkmax(sparkmax=self.elevator_controller, pid_controller=self.pid_controller, slot=0, id=0,
+        configure_sparkmax(sparkmax=self.elevator_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_elevator_motor_port,
                            pid_dict=constants.k_PID_dict_vel_elevator, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # set up distance sensor
