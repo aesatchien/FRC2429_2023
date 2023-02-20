@@ -16,7 +16,7 @@ import wpilib
 from wpilib import SmartDashboard
 
 import constants
-from misc.configure_controllers import configure_controller
+from misc.configure_controllers import configure_sparkmax
 #from misc.sparksim import CANSparkMax  # takes care of switching to PWM for sim
 
 
@@ -35,8 +35,8 @@ class Turret(SubsystemBase):
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_turret_encoder_conversion_factor)
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_turret_encoder_conversion_factor)  # needed for smartmotion
         self.pid_controller = self.turret_controller.getPIDController()
-        configure_controller(sparkmax=self.turret_controller, pid_controller=self.pid_controller, slot=0, id=0,
-                             pid_dict=constants.k_PID_dict_vel_turret, pid_only=True, burn_flash=constants.k_burn_flash)
+        configure_sparkmax(sparkmax=self.turret_controller, pid_controller=self.pid_controller, slot=0, id=0,
+                           pid_dict=constants.k_PID_dict_vel_turret, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # set soft limits - do not let spark max put out power above/below a certain value
         self.turret_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, True)
@@ -74,7 +74,7 @@ class Turret(SubsystemBase):
             self.pid_controller.setReference(angle, rev.CANSparkMax.ControlType.kPosition)
 
         self.angle = angle
-        SmartDashboard.putNumber('turret_angle', self.angle)
+        SmartDashboard.putNumber('turret_setpoint', self.angle)
 
     def periodic(self) -> None:
         self.counter += 1

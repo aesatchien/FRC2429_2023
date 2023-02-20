@@ -6,7 +6,7 @@ from commands2 import SubsystemBase
 import rev
 from wpilib import SmartDashboard
 import constants
-from misc.configure_controllers import configure_controller
+from misc.configure_controllers import configure_sparkmax
 #from misc.sparksim import CANSparkMax  # takes care of switching to PWM for sim
 
 
@@ -30,8 +30,8 @@ class Wrist(SubsystemBase):
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_wrist_encoder_conversion_factor)  # mm per revolution
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_wrist_encoder_conversion_factor)  # necessary for smartmotion to behave
         self.pid_controller = self.wrist_controller.getPIDController()
-        configure_controller(sparkmax=self.wrist_controller, pid_controller=self.pid_controller, slot=0, id=0,
-                             pid_dict=constants.k_PID_dict_vel_wrist, pid_only=True, burn_flash=constants.k_burn_flash)
+        configure_sparkmax(sparkmax=self.wrist_controller, pid_controller=self.pid_controller, slot=0, id=0,
+                           pid_dict=constants.k_PID_dict_vel_wrist, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
 

@@ -17,7 +17,7 @@ from wpilib import SmartDashboard
 from playingwithfusion import TimeOfFlight
 
 import constants
-from misc.configure_controllers import configure_controller
+from misc.configure_controllers import configure_sparkmax
 #from misc.sparksim import CANSparkMax  # takes care of switching to PWM for sim
 
 
@@ -38,8 +38,8 @@ class Elevator(SubsystemBase):
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_elevator_encoder_conversion_factor)  # mm per revolution
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_elevator_encoder_conversion_factor)  # necessary for smartmotion to behave
         self.pid_controller = self.elevator_controller.getPIDController()
-        configure_controller(sparkmax=self.elevator_controller, pid_controller=self.pid_controller, slot=0, id=0,
-                             pid_dict=constants.k_PID_dict_vel_elevator, pid_only=True, burn_flash=constants.k_burn_flash)
+        configure_sparkmax(sparkmax=self.elevator_controller, pid_controller=self.pid_controller, slot=0, id=0,
+                           pid_dict=constants.k_PID_dict_vel_elevator, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # set up distance sensor
         self.elevator_height_sensor = TimeOfFlight(constants.k_elevator_timeoflight)

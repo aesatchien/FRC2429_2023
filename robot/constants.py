@@ -13,6 +13,13 @@ k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
 # ID for the driver's joystick (template)
 k_driver_controller_port = 0
 k_co_driver_controller_port = 1
+k_controller_thrust_axis = 1
+k_controller_twist_axis = 4
+k_thrust_scale = 0.7 #halfed
+k_twist_scale = 0.45
+
+k_max_thrust_velocity = 2.75  # m/s
+k_max_twist_velocity = 1.25 # Bradley
 
 # --------------  DRIVETRAIN  ---------------
 # The CAN IDs for the drivetrain SparkMAX motor controllers
@@ -20,6 +27,21 @@ k_left_motor1_port = 1
 k_left_motor2_port = 2
 k_right_motor1_port = 3
 k_right_motor2_port = 4
+
+# drivetrain constants
+k_wheel_diameter_in = 6  # wheel diameter in inches
+k_wheel_diameter_m =  k_wheel_diameter_in * 0.0254  # wheel diameter in meters
+k_robot_length = 33 * 0.0254
+k_track_width_meters = 27 * 0.0254
+k_robot_wheelbase = 18 * 0.5 * 0.0254
+k_gear_ratio = 10.72  # REV 6in slow (10T) is 11.79:  medium (11T) is 10.72.  Both use the 30/68, so 2.26 * 52/PinionT
+k_sparkmax_conversion_factor_meters = k_wheel_diameter_m * 3.14159 / k_gear_ratio  # used in drivetrain
+
+k_PID_dict_pos = {'kP': 0.002, 'kI': 0, 'kD': 0.002, 'kIz': 0, 'kFF': 0.008, 'kArbFF':0, 'kMaxOutput': 0.99, 'kMinOutput': -0.99,
+                'SM_MaxVel': 5000 / k_sparkmax_conversion_factor_meters, 'SM_MaxAccel': 5000 / k_sparkmax_conversion_factor_meters}
+k_PID_dict_vel = {'kP': 0.05 , 'kI': 0.0005, 'kD': 0.00, 'kIz': 0.2, 'kFF': 0.17, 'kArbFF':0, 'kMaxOutput': 0.99,
+                'kMinOutput': -0.99, 'SM_MaxVel':5000/k_sparkmax_conversion_factor_meters,
+                         'SM_MaxAccel':5000/k_sparkmax_conversion_factor_meters}
 
 # --------------  SCORING  SUBSYSTEMS ---------------
 

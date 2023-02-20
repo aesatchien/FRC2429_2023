@@ -13,7 +13,7 @@ from commands2 import SubsystemBase
 from wpilib import SmartDashboard
 import rev
 import constants
-from misc.configure_controllers import configure_controller
+from misc.configure_controllers import configure_sparkmax
 
 class Arm(SubsystemBase):
     def __init__(self):
@@ -30,8 +30,8 @@ class Arm(SubsystemBase):
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_arm_encoder_conversion_factor)
         self.pid_controller = self.arm_controller.getPIDController()
 
-        configure_controller(sparkmax=self.arm_controller, pid_controller=self.pid_controller, slot=0, id=0,
-                             pid_dict=constants.k_PID_dict_vel_arm, pid_only=True, burn_flash=constants.k_burn_flash)
+        configure_sparkmax(sparkmax=self.arm_controller, pid_controller=self.pid_controller, slot=0, id=0,
+                           pid_dict=constants.k_PID_dict_vel_arm, pid_only=True, burn_flash=constants.k_burn_flash)
         # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
 
         # set soft limits - do not let spark max put out power above/below a certain value

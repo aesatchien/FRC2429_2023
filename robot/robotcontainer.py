@@ -15,6 +15,7 @@ from subsystems.pneumatics import Pneumatics
 
 from misc.axis_button import AxisButton
 from commands.drive_by_joystick import DriveByJoystick
+from commands.drive_velocity_stick import DriveByJoystickVelocity
 from commands.turret_initialize import TurretInitialize
 from commands.turret_move import TurretMove
 from commands.elevator_move import ElevatorMove
@@ -46,13 +47,12 @@ class RobotContainer:
 
         self.configureButtonBindings()
 
-        # set up default drive command
-        self.drive.setDefaultCommand(
-            DriveByJoystick(self, self.drive,
-                lambda: -self.driver_controller.getRawAxis(1),
-                lambda: self.driver_controller.getRawAxis(4),
-            )
-        )
+        # Set up default drive command
+        if wpilib.RobotBase.isSimulation():
+            self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
+                    lambda: self.driver_controller.getRawAxis(4),))
+        else:
+            self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
 
         # initialize the turret
         commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
