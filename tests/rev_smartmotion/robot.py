@@ -21,11 +21,11 @@ class Robot(wpilib.TimedRobot):
         # smart motion does weird things on the decel if you don't.
         # also note that if you do change these, the PIDs will have to change as well
         # the default values below are good for conversion factors of 1.
-        position_conversion_factor = 0.1  # test to see if this changes PIDFs on velocity
+        position_conversion_factor = 1  # test to see if this changes PIDFs on velocity
 
         self.motor = rev.CANSparkMax(can_id, rev.CANSparkMax.MotorType.kBrushless)
-
         self.motor.restoreFactoryDefaults()
+        self.motor.setInverted(True)
 
         self.pid_controller = self.motor.getPIDController()
         self.encoder = self.motor.getEncoder()

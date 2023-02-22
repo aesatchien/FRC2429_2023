@@ -22,8 +22,8 @@ class DriveByJoystickVelocity(commands2.CommandBase):
         self.deadband = 0.05
         self.multipliers = [1.0, -1.0]
 
-        self.max_arcade_thrust = constants.k_thrust_scale
-        self.max_arcade_twist = constants.k_twist_scale
+        self.max_arcade_thrust = constants.k_arcade_thrust_scale
+        self.max_arcade_twist = constants.k_arcade_twist_scale
         self.previous_thrust = 0
 
         # Last year we limited the thrust differential to 0.04 - 0.05 was too tippy
