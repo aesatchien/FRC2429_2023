@@ -20,14 +20,14 @@ class DriveByJoystickVelocity(commands2.CommandBase):
         self.max_thrust_velocity = constants.k_max_thrust_velocity  # 2.75 m/s
         self.max_twist_velocity = constants.k_max_twist_velocity  # 1.25 m/s
         self.deadband = 0.05
-        self.multipliers = [1.0, -1.0]
+        self.multipliers = [1.0, 1.0]
 
         self.max_arcade_thrust = constants.k_arcade_thrust_scale
         self.max_arcade_twist = constants.k_arcade_twist_scale
         self.previous_thrust = 0
 
         # Last year we limited the thrust differential to 0.04 - 0.05 was too tippy
-        self.max_thrust_differential = 0.04  # how high can we go on this?
+        self.max_thrust_differential = 0.05  # how high can we go on this?
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""

@@ -19,7 +19,7 @@ class Pneumatics(SubsystemBase):
         self.pressure_sensor = AnalogInput(0)  # may skip this unless we really want one
         self.close_loop_enable = True
 
-        competition = True  # need to put this in robot container, not here
+        competition = False  # need to put this in robot container, not here
         if competition:
             self.start_compressor()
         else:

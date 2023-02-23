@@ -18,8 +18,8 @@ k_controller_twist_axis = 4
 k_arcade_thrust_scale = 0.7 #halfed  # used in drive by joystick
 k_arcade_twist_scale = 0.45
 
-k_max_thrust_velocity = 2.75  # m/s
-k_max_twist_velocity = 1.25 # Bradley
+k_max_thrust_velocity = 120  # meters per MINUTE  for smartmotion
+k_max_twist_velocity = 90 # meters per MINUTE - for smartmotion
 
 # --------------  DRIVETRAIN  ---------------
 # The CAN IDs for the drivetrain SparkMAX motor controllers
@@ -37,11 +37,13 @@ k_robot_wheelbase = 18 * 0.5 * 0.0254
 k_gear_ratio = 10.72  # REV 6in slow (10T) is 11.79:  medium (11T) is 10.72.  Both use the 30/68, so 2.26 * 52/PinionT
 k_sparkmax_conversion_factor_meters = k_wheel_diameter_m * 3.14159 / k_gear_ratio  # used in drivetrain
 
+# testing ON BLOCKS shows that flat out at 90% power we top out at 4m/s - still pretty fast
+# kff = 0.24 using k and k/60  but this screws smart motion - it ain't that smart so 0.0040 is the kFF and m/min is vel
+
 k_PID_dict_pos = {'kP': 0.002, 'kI': 0, 'kD': 0.002, 'kIz': 0, 'kFF': 0.008, 'kArbFF':0, 'kMaxOutput': 0.99, 'kMinOutput': -0.99,
                 'SM_MaxVel': 5000 / k_sparkmax_conversion_factor_meters, 'SM_MaxAccel': 5000 / k_sparkmax_conversion_factor_meters}
-k_PID_dict_vel = {'kP': 0.05 , 'kI': 0.0005, 'kD': 0.00, 'kIz': 0.2, 'kFF': 0.17, 'kArbFF':0, 'kMaxOutput': 0.99,
-                'kMinOutput': -0.99, 'SM_MaxVel':5000/k_sparkmax_conversion_factor_meters,
-                         'SM_MaxAccel':5000/k_sparkmax_conversion_factor_meters}
+k_PID_dict_vel = {'kP': 0.0 , 'kI': 0.000, 'kD': 0.00, 'kIz': 0.001, 'kFF': 0.0040, 'kArbFF':0, 'kMaxOutput': 0.95,
+                'kMinOutput': -0.95, 'SM_MaxVel':180, 'SM_MaxAccel':120}  # 180 is 3 m/s and 3m/s/s
 
 # --------------  SCORING  SUBSYSTEMS ---------------
 

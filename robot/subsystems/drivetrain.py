@@ -45,7 +45,8 @@ class Drivetrain(SubsystemBase):
         # set up the wpilib drive object
         self.left_motors = MotorControllerGroup(self.spark_neo_left_front)
         self.right_motors = MotorControllerGroup(self.spark_neo_right_front)
-        self.right_motors.setInverted(True)
+        self.left_motors.setInverted(False)
+        self.right_motors.setInverted(False)
         self.drive = DifferentialDrive(self.left_motors, self.right_motors)
         self.drive.setMaxOutput(1.0)  # default, not necessary but here for training students
         self.drive.setSafetyEnabled(True)  # default, not necessary but here for training students
@@ -93,7 +94,7 @@ class Drivetrain(SubsystemBase):
     def configure_controllers(self):
         for encoder in self.encoders:
             encoder.setPositionConversionFactor(constants.k_sparkmax_conversion_factor_meters)  # want in m
-            encoder.setPositionConversionFactor(constants.k_sparkmax_conversion_factor_meters / 60)  # wand in m/s
+            encoder.setPositionConversionFactor(constants.k_sparkmax_conversion_factor_meters)  # want in m/s but screws up smartmotion, so m/min
         # send controller info, burn if necessary
         ids = [constants.k_left_motor1_port, constants.k_right_motor1_port]
         for controller, pid_controller, id in zip(self.controllers, self.pid_controllers, ids):

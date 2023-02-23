@@ -127,7 +127,9 @@
               "Y-axis/Automatic bounds": false,
               "Y-axis/Upper bound": 10.0,
               "Y-axis/Lower bound": 0.0,
-              "Y-axis/Unit": "ul"
+              "Y-axis/Unit": "ul",
+              "Visible data/SmartDashboard/Process Variable": true,
+              "Visible data/SmartDashboard/SetPoint": true
             }
           },
           "0,3": {
@@ -146,7 +148,8 @@
               "Y-axis/Automatic bounds": true,
               "Y-axis/Upper bound": 1.0,
               "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul"
+              "Y-axis/Unit": "ul",
+              "Visible data/SmartDashboard/Output": true
             }
           },
           "5,1": {
@@ -173,9 +176,9 @@
               "_title": "Set Velocity",
               "_glyph": 148,
               "_showGlyph": false,
-              "Slider Settings/Min": -1800.0,
-              "Slider Settings/Max": 1800.0,
-              "Slider Settings/Block increment": 100.0,
+              "Slider Settings/Min": -240.0,
+              "Slider Settings/Max": 240.0,
+              "Slider Settings/Block increment": 1.0,
               "Visuals/Display value": true
             }
           },
@@ -249,8 +252,8 @@
     }
   ],
   "windowGeometry": {
-    "x": 278.0,
-    "y": 42.0,
+    "x": 63.0,
+    "y": 13.0,
     "width": 1793.0,
     "height": 905.0
   }
