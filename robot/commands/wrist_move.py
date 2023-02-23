@@ -4,20 +4,36 @@ from subsystems.wrist import Wrist
 
 class WristMove(commands2.CommandBase):
 
-    def __init__(self, container, wrist:Wrist, setpoint, wait_to_finish=True) -> None:
+    def __init__(self, container, wrist:Wrist, setpoint=None, direction=None, wait_to_finish=True) -> None:
         super().__init__()
         self.setName('Wrist Move')
         self.container = container
         self.wrist = wrist
         self.setpoint = setpoint
+        self.direction = direction
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
 
         self.addRequirements(self.wrist)  # commandsv2 version of requirements
 
     def initialize(self) -> None:
         self.print_start_message()
+        position = self.wrist.get_angle()
         # tell the elevator to go to position
-        self.wrist.set_wrist_angle(angle=self.setpoint, mode='smartmotion')
+        if self.setpoint is None:
+            if self.direction == 'up':
+                allowed_positions = [x for x in sorted(self.wrist.positions.values()) if x > position]
+                print(allowed_positions)
+                temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
+            else:
+                allowed_positions = [x for x in sorted(self.wrist.positions.values()) if x < position]
+                print(allowed_positions)
+                temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
+
+            self.wrist.set_wrist_angle(angle=temp_setpoint, mode='smartmotion')
+            print(f'Setting wrist from {position:.0f} to {temp_setpoint}')
+        else:
+            self.wrist.set_wrist_angle(angle=self.setpoint, mode='smartmotion')
+            print(f'Setting wrist from {position:.0f} to {self.setpoint}')
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work
         pass

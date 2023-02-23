@@ -26,25 +26,25 @@ class Pneumatics(SubsystemBase):
             self.stop_compressor()
 
         # Decide on init piston position - always closed because we will hold a game piece
-        self.manipulator_open = False
+        self.manipulator_closed = True
 
-        SmartDashboard.putBoolean('manipulator_open', self.manipulator_open)
+        SmartDashboard.putBoolean('manipulator_closed', self.manipulator_closed)
         SmartDashboard.putBoolean('compressor_close_loop', self.close_loop_enable)
 
     # --------   MANIPULATOR CODE   --------------
     def set_manipulator_piston(self, position='open'):
         if position == 'open':
-            self.manipulator_open = True
+            self.manipulator_closed = False
             self.manipulator_piston.set(DoubleSolenoid.Value.kForward)
         elif position == 'close':
-            self.manipulator_open = False
+            self.manipulator_closed = True
             self.manipulator_piston.set(DoubleSolenoid.Value.kReverse)
-        SmartDashboard.putBoolean('manipulator_open', self.manipulator_open)
+        SmartDashboard.putBoolean('manipulator_closed', self.manipulator_closed)
 
     def toggle_manipulator(self):
         self.manipulator_piston.toggle()
-        self.manipulator_open = not self.manipulator_open
-        SmartDashboard.putBoolean('manipulator_open', self.manipulator_open)
+        self.manipulator_closed = not self.manipulator_closed
+        SmartDashboard.putBoolean('manipulator_closed', self.manipulator_closed)
 
     def get_manipulator_state(self):
         return self.manipulator_piston.get()

@@ -178,19 +178,19 @@ background-color:rgb(80, 235, 0);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="qlabel_high_gear_indicator">
+      <widget class="QLabel2" name="qlabel_manipulator_closed_indicator">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>120</y>
          <width>161</width>
-         <height>31</height>
+         <height>71</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>MS Shell Dlg 2</family>
-         <pointsize>11</pointsize>
+         <pointsize>14</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -201,7 +201,8 @@ border-radius: 7px;
 background-color:rgb(80, 235, 0);</string>
        </property>
        <property name="text">
-        <string>High Gear</string>
+        <string>MANIPULATOR
+CLOSED</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -221,15 +222,145 @@ background-color:rgb(80, 235, 0);</string>
        </rect>
       </property>
       <property name="title">
-       <string>Intake/Indexer</string>
+       <string>Scoring components</string>
       </property>
-      <widget class="QLabel2" name="qlabel_intake_indicator">
+      <widget class="QLabel" name="label_2">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>20</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Turret Angle</string>
+       </property>
+      </widget>
+      <widget class="QLCDNumber" name="qlcd_turret_angle">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>20</y>
-         <width>161</width>
-         <height>61</height>
+         <y>40</y>
+         <width>111</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="digitCount">
+        <number>4</number>
+       </property>
+      </widget>
+      <widget class="QLCDNumber" name="qlcd_elevator_height">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>110</y>
+         <width>111</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="digitCount">
+        <number>4</number>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_4">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>90</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Elevator Height</string>
+       </property>
+      </widget>
+      <widget class="QLCDNumber" name="qlcd_arm_extension">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>180</y>
+         <width>111</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Comic Sans MS</family>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+       <property name="digitCount">
+        <number>4</number>
+       </property>
+       <property name="segmentStyle">
+        <enum>QLCDNumber::Filled</enum>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>160</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Arm Extension</string>
+       </property>
+      </widget>
+      <widget class="QLabel" name="label_10">
+       <property name="geometry">
+        <rect>
+         <x>20</x>
+         <y>230</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Wrist Angle</string>
+       </property>
+      </widget>
+      <widget class="QLCDNumber" name="qlcd_wrist_angle">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>250</y>
+         <width>111</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>Comic Sans MS</family>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="lineWidth">
+        <number>1</number>
+       </property>
+       <property name="digitCount">
+        <number>4</number>
+       </property>
+       <property name="segmentStyle">
+        <enum>QLCDNumber::Filled</enum>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_turret_right_indicator">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>39</y>
+         <width>41</width>
+         <height>21</height>
         </rect>
        </property>
        <property name="font">
@@ -237,17 +368,17 @@ background-color:rgb(80, 235, 0);</string>
          <family>MS Shell Dlg 2</family>
          <pointsize>14</pointsize>
          <weight>75</weight>
-         <italic>false</italic>
          <bold>true</bold>
         </font>
        </property>
        <property name="styleSheet">
         <string notr="true">border: 7px;
 border-radius: 7px;
-background-color:rgb(80, 235, 0);</string>
+color:rgb(255, 255, 255);
+background-color:rgb(0, 20, 250);</string>
        </property>
        <property name="text">
-        <string>INTAKE ON</string>
+        <string>--&gt;</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -256,19 +387,19 @@ background-color:rgb(80, 235, 0);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel2" name="qlabel_intake_piston_indicator">
+      <widget class="QLabel2" name="qlabel_turret_left_indicator">
        <property name="geometry">
         <rect>
-         <x>10</x>
-         <y>90</y>
-         <width>161</width>
-         <height>31</height>
+         <x>130</x>
+         <y>62</y>
+         <width>41</width>
+         <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>MS Shell Dlg 2</family>
-         <pointsize>12</pointsize>
+         <pointsize>14</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -276,10 +407,11 @@ background-color:rgb(80, 235, 0);</string>
        <property name="styleSheet">
         <string notr="true">border: 7px;
 border-radius: 7px;
-background-color:rgb(80, 235, 0);</string>
+color:rgb(255, 255, 255);
+background-color:rgb(0, 20, 250);</string>
        </property>
        <property name="text">
-        <string>EXTENDED</string>
+        <string>&lt;--</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -288,19 +420,118 @@ background-color:rgb(80, 235, 0);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel2" name="qlabel_indexer_indicator">
+      <widget class="QLabel2" name="qlabel_arm_extend_ndicator_2">
        <property name="geometry">
         <rect>
-         <x>10</x>
+         <x>130</x>
+         <y>178</y>
+         <width>41</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+color:rgb(255, 255, 255);
+background-color:rgb(0, 20, 250);</string>
+       </property>
+       <property name="text">
+        <string>--&gt;</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_turret_arm_retract_indicator">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>201</y>
+         <width>41</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>14</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+color:rgb(255, 255, 255);
+background-color:rgb(0, 20, 250);</string>
+       </property>
+       <property name="text">
+        <string>&lt;--</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_elevator_up_indicator">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
+         <y>107</y>
+         <width>41</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+color:rgb(255, 255, 255);
+background-color:rgb(0, 20, 250);</string>
+       </property>
+       <property name="text">
+        <string>UP</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_elevator_down_indicator">
+       <property name="geometry">
+        <rect>
+         <x>130</x>
          <y>130</y>
-         <width>161</width>
-         <height>41</height>
+         <width>41</width>
+         <height>21</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>MS Shell Dlg 2</family>
-         <pointsize>12</pointsize>
+         <pointsize>10</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -308,10 +539,77 @@ background-color:rgb(80, 235, 0);</string>
        <property name="styleSheet">
         <string notr="true">border: 7px;
 border-radius: 7px;
-background-color:rgb(80, 235, 0);</string>
+color:rgb(255, 255, 255);
+background-color:rgb(0, 20, 250);</string>
        </property>
        <property name="text">
-        <string>INDEXER ON</string>
+        <string>DOWN</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_wrist_down_indicator">
+       <property name="geometry">
+        <rect>
+         <x>129</x>
+         <y>270</y>
+         <width>41</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+color:rgb(255, 255, 255);
+background-color:rgb(0, 20, 250);</string>
+       </property>
+       <property name="text">
+        <string>DOWN</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_wrist_up_indicator">
+       <property name="geometry">
+        <rect>
+         <x>129</x>
+         <y>247</y>
+         <width>41</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+color:rgb(255, 255, 255);
+background-color:rgb(0, 20, 250);</string>
+       </property>
+       <property name="text">
+        <string>UP</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -338,21 +636,21 @@ background-color:rgb(80, 235, 0);</string>
        </font>
       </property>
       <property name="title">
-       <string>Shooter</string>
+       <string>TBD</string>
       </property>
       <widget class="QLabel" name="qlabel_shooter_speed_indicator">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>20</y>
+         <y>70</y>
          <width>161</width>
-         <height>61</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>MS Shell Dlg 2</family>
-         <pointsize>14</pointsize>
+         <pointsize>11</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -373,45 +671,19 @@ background-color:rgb(80, 235, 0);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLCDNumber" name="qlcd_shooter_rpm">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>180</y>
-         <width>151</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <family>Comic Sans MS</family>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="lineWidth">
-        <number>1</number>
-       </property>
-       <property name="digitCount">
-        <number>4</number>
-       </property>
-       <property name="segmentStyle">
-        <enum>QLCDNumber::Filled</enum>
-       </property>
-      </widget>
       <widget class="QLabel2" name="qlabel_shooter_indicator">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>90</y>
+         <y>110</y>
          <width>161</width>
-         <height>63</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
          <family>MS Shell Dlg 2</family>
-         <pointsize>12</pointsize>
+         <pointsize>11</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -431,44 +703,19 @@ background-color:rgb(80, 235, 0);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel2" name="qlabel_indexer_indicator">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>160</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
-       </property>
-       <property name="text">
-        <string>Shooter RPM</string>
-       </property>
-      </widget>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="geometry">
-       <rect>
-        <x>540</x>
-        <y>0</y>
-        <width>181</width>
-        <height>301</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Climber</string>
-      </property>
-      <widget class="QLabel" name="qlabel_climber_indicator">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
+         <y>30</y>
          <width>161</width>
-         <height>61</height>
+         <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>14</pointsize>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>11</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -479,7 +726,7 @@ border-radius: 7px;
 background-color:rgb(80, 235, 0);</string>
        </property>
        <property name="text">
-        <string>CLIMBER ON</string>
+        <string>INDEXER ON</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -488,31 +735,19 @@ background-color:rgb(80, 235, 0);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLCDNumber" name="qlcd_climber_current">
+      <widget class="QLabel2" name="qlabel_intake_piston_indicator">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>100</y>
-         <width>151</width>
-         <height>41</height>
-        </rect>
-       </property>
-       <property name="digitCount">
-        <number>4</number>
-       </property>
-      </widget>
-      <widget class="QLabel" name="qlabel_long_arm_indicator">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>226</y>
+         <y>150</y>
          <width>161</width>
          <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>11</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -523,7 +758,40 @@ border-radius: 7px;
 background-color:rgb(80, 235, 0);</string>
        </property>
        <property name="text">
-        <string>Long Arm</string>
+        <string>EXTENDED</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_intake_indicator">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>190</y>
+         <width>161</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+background-color:rgb(80, 235, 0);</string>
+       </property>
+       <property name="text">
+        <string>INTAKE ON</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -536,14 +804,15 @@ background-color:rgb(80, 235, 0);</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>260</y>
+         <y>230</y>
          <width>161</width>
          <height>31</height>
         </rect>
        </property>
        <property name="font">
         <font>
-         <pointsize>12</pointsize>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>11</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -563,43 +832,80 @@ background-color:rgb(80, 235, 0);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel" name="label_2">
+     </widget>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="geometry">
+       <rect>
+        <x>540</x>
+        <y>0</y>
+        <width>181</width>
+        <height>301</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Autonomous Commands</string>
+      </property>
+      <widget class="QLabel2" name="qlabel_score_from_stow_indicator">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>84</y>
-         <width>131</width>
-         <height>16</height>
+         <y>20</y>
+         <width>161</width>
+         <height>51</height>
         </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+background-color:rgb(80, 235, 0);</string>
        </property>
        <property name="text">
-        <string>Climber Current</string>
+        <string>SCORE 
+FROM STOW</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLCDNumber" name="qlcd_climber_position">
+      <widget class="QLabel2" name="qlabel_upper_pickup_indicator">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>160</y>
-         <width>151</width>
-         <height>41</height>
+         <y>77</y>
+         <width>161</width>
+         <height>31</height>
         </rect>
        </property>
-       <property name="digitCount">
-        <number>4</number>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
        </property>
-      </widget>
-      <widget class="QLabel" name="label_4">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>140</y>
-         <width>131</width>
-         <height>16</height>
-        </rect>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+background-color:rgb(80, 235, 0);</string>
        </property>
        <property name="text">
-        <string>Climber Position</string>
+        <string>Upper Pickup</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
        </property>
       </widget>
      </widget>
@@ -829,7 +1135,7 @@ background-color:rgb(80, 235, 0);</string>
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_3">
      <attribute name="title">
@@ -966,7 +1272,7 @@ background-color:rgb(10, 10, 227);</string>
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap>png/field_small.PNG</pixmap>
+       <pixmap>png/field_small.png</pixmap>
       </property>
      </widget>
      <zorder>qlabel_field_image</zorder>
@@ -1174,6 +1480,8 @@ background-color:rgb(0, 20, 250);</string>
    <header>qlabel2.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -15,6 +15,7 @@ from commands2 import SubsystemBase
 import rev
 from wpilib import SmartDashboard
 from playingwithfusion import TimeOfFlight
+import wpilib
 
 import constants
 from misc.configure_controllers import configure_sparkmax
@@ -27,6 +28,7 @@ class Elevator(SubsystemBase):
 
     def __init__(self):
         super().__init__()
+        self.counter = 0
 
         self.max_height = 900  # the bottom of the carriage is 39in (991mm)  above the bottom at max height
         self.min_height = 100  # mm for now
@@ -58,7 +60,10 @@ class Elevator(SubsystemBase):
         SmartDashboard.putNumber('elevator_height', self.height)
 
     def get_height(self):  # getter for the relevant elevator parameter
-        return self.sparkmax_encoder.getPosition()
+        if wpilib.RobotBase.isReal():
+            return self.sparkmax_encoder.getPosition()
+        else:
+            return self.height
 
     def set_elevator_height(self, height, mode='smartmotion'):
         """
@@ -76,3 +81,11 @@ class Elevator(SubsystemBase):
 
         self.height = height
         SmartDashboard.putNumber('elevator_height', self.height)
+
+    def periodic(self) -> None:
+        self.counter += 1
+        if self.counter % 25 == 0:
+            if wpilib.RobotBase.isReal():
+                SmartDashboard.putNumber('elevator_height', self.sparkmax_encoder.getPosition())
+            else:
+                SmartDashboard.putNumber('elevator_height', self.height)

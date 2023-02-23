@@ -4,6 +4,7 @@ Shares the following with networktables:  wrist_position
 """
 from commands2 import SubsystemBase
 import rev
+import wpilib
 from wpilib import SmartDashboard
 import constants
 from misc.configure_controllers import configure_sparkmax
@@ -47,7 +48,10 @@ class Wrist(SubsystemBase):
         SmartDashboard.putNumber('wrist_angle', self.angle)
 
     def get_angle(self):  # getter for the relevant elevator parameter
-        return self.sparkmax_encoder.getPosition()
+        if wpilib.RobotBase.isReal():
+            return self.sparkmax_encoder.getPosition()
+        else:
+            return self.angle
 
     def set_wrist_angle(self, angle, mode='smartmotion'):
         if mode == 'smartmotion':

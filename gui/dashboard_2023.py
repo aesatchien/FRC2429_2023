@@ -15,8 +15,7 @@ from PyQt5.QtCore import Qt, QTimer, QEvent, QThread, QObject, pyqtSignal
 
 import qlabel2
 
-import networktables
-from _pyntcore._ntcore import NetworkTableType
+from ntcore import NetworkTableType, NetworkTableInstance
 
 #print(f'Initializing GUI ...', flush=True)
 
@@ -72,9 +71,11 @@ class Ui(QtWidgets.QMainWindow):
         uic.loadUi('layout_2023.ui', self)  # if this isn't in the directory, you got no program
 
         # set up network tables
-        self.ntinst = networktables.NetworkTablesInstance.getDefault()
+        self.ntinst = NetworkTableInstance.getDefault()
         self.servers = ["127.0.0.1", "10.24.29.2"] #  "roboRIO-2429-FRC.local"]  # need to add the USB one here
-        self.ntinst.startClient(servers=self.servers)
+        self.ntinst.startClient3(identity='PyQt Dashboard')
+        self.ntinst.setServer("127.0.0.1",0)
+        #self.ntinst.setServerTeam(2429)
         self.connected = self.ntinst.isConnected()
         self.sorted_tree = None  # keep a global list of all the nt addresses
         self.autonomous_list = []  # set up an autonomous list
@@ -122,9 +123,14 @@ class Ui(QtWidgets.QMainWindow):
         self.show()
 
         # set up the refresh
+        self.counter = 1
+        self.previous_time = time.time()
+
+        # set up the refresh
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_widgets)
         self.timer.start(self.refresh_time)
+
 
         # if you need to print out the list of children
         # children = [(child.objectName()) for child in self.findChildren(QtWidgets.QWidget) if child.objectName()]
@@ -270,27 +276,32 @@ class Ui(QtWidgets.QMainWindow):
         'qcombobox_autonomous_routines': {'widget':self.qcombobox_autonomous_routines, 'nt':r'/SmartDashboard/autonomous routines/options', 'command':None,
                                           'selected': r'/SmartDashboard/autonomous routines/selected'},
         'qlabel_camera_view': {'widget':self.qlabel_camera_view, 'nt':None, 'command':None},
-        'qlabel_climber_indicator':{'widget':self.qlabel_climber_indicator, 'nt':'/SmartDashboard/climber_state', 'command': None},
         'qlabel_compressor_indicator': {'widget':self.qlabel_compressor_indicator, 'nt':'/SmartDashboard/compressor_state', 'command': None},
         'qlabel_compressor_enabled_indicator': {'widget': self.qlabel_compressor_enabled_indicator, 'nt': '/SmartDashboard/compressor_close_loop',
                                                 'command': '/SmartDashboard/CompressorToggle/running'},
-        'qlabel_high_gear_indicator': {'widget': self.qlabel_high_gear_indicator, 'nt': '/SmartDashboard/pneumatics_high_gear', 'command': None},
+        'qlabel_elevator_down_indicator': {'widget': self.qlabel_elevator_down_indicator,
+                                              'nt': '/SmartDashboard/ElevatorMoveDown/running', 'command': '/SmartDashboard/ElevatorMoveDown/running'},
+        'qlabel_elevator_up_indicator': {'widget': self.qlabel_elevator_up_indicator,
+                                              'nt': '/SmartDashboard/ElevatorMoveUp/running', 'command': '/SmartDashboard/ElevatorMoveUp/running'},
+        'qlabel_manipulator_closed_indicator': {'widget': self.qlabel_manipulator_closed_indicator, 'nt': '/SmartDashboard/manipulator_closed', 'command': '/SmartDashboard/ManipulatorToggle/running'},
         'qlabel_indexer_indicator': {'widget':self.qlabel_indexer_indicator, 'nt':'/SmartDashboard/indexer_state',
                                      'command': '/SmartDashboard/IndexerHold/running'},
         'qlabel_intake_indicator': {'widget': self.qlabel_intake_indicator, 'nt': '/SmartDashboard/intake_motor_state',
                                     'command': '/SmartDashboard/IntakeMotorToggle/running'},
         'qlabel_intake_piston_indicator': {'widget':self.qlabel_intake_piston_indicator, 'nt':'/SmartDashboard/intake_extended',
                                            'command': '/SmartDashboard/IntakePistonToggle/running'},
-        'qlabel_long_arm_indicator': {'widget':self.qlabel_long_arm_indicator, 'nt':'/SmartDashboard/climber_long_arm', 'command': None},
+        'qlabel_upper_pickup_indicator': {'widget':self.qlabel_upper_pickup_indicator, 'nt':'/SmartDashboard/UpperStationPickup/running', 'command': '/SmartDashboard/UpperStationPickup/running'},
         'qlabel_matchtime': {'widget': self.qlabel_matchtime, 'nt': '/SmartDashboard/match_time', 'command': None},
         'qlabel_nt_connected': {'widget': self.qlabel_nt_connected, 'nt': None, 'command': None},
+        'qlabel_score_from_stow_indicator': {'widget': self.qlabel_score_from_stow_indicator, 'nt': '/SmartDashboard/ScoreFromStow/running', 'command': '/SmartDashboard/ScoreFromStow/running'},
         'qlabel_shooter_indicator': {'widget':self.qlabel_shooter_indicator, 'nt':'/SmartDashboard/shooter_state',
                                      'command': '/SmartDashboard/ShooterToggle/running'},
         'qlabel_shooter_speed_indicator': {'widget':self.qlabel_shooter_speed_indicator, 'nt':'/SmartDashboard/shooter_ready', 'command': None},
         'qlabel_short_arm_indicator': {'widget':self.qlabel_short_arm_indicator, 'nt':'/SmartDashboard/climber_short_arm', 'command': None},
-        'qlcd_climber_current': {'widget':self.qlcd_climber_current, 'nt':'/SmartDashboard/climber_current', 'command': None},
-        'qlcd_climber_position': {'widget': self.qlcd_climber_position, 'nt': '/SmartDashboard/climber_position', 'command': None},
-        'qlcd_shooter_rpm': {'widget':self.qlcd_shooter_rpm, 'nt':'/SmartDashboard/shooter_rpm', 'command': None},
+        'qlcd_turret_angle': {'widget':self.qlcd_turret_angle, 'nt':'/SmartDashboard/turret_angle', 'command': None},
+        'qlcd_elevator_height': {'widget': self.qlcd_elevator_height, 'nt': '/SmartDashboard/elevator_height', 'command': None},
+        'qlcd_arm_extension': {'widget':self.qlcd_arm_extension, 'nt':'/SmartDashboard/arm_extension', 'command': None},
+        'qlcd_wrist_angle': {'widget': self.qlcd_wrist_angle, 'nt': '/SmartDashboard/wrist_angle', 'command': None},
         'hub_targets': {'widget': None, 'nt': '/BallCam//green/targets', 'command': None},
         'hub_rotation': {'widget': None, 'nt': '/BallCam//green/rotation', 'command': None},
         'hub_distance': {'widget': None, 'nt': '/BallCam//green/distance', 'command': None},
@@ -399,6 +410,13 @@ class Ui(QtWidgets.QMainWindow):
         drive_pose = self.widget_dict['drive_pose']['entry'].getDoubleArray([0,0,0])
         self.qlabel_robot.move(int(-bot_width/2 + width * drive_pose[0] / x_lim ), int(-bot_height/2 + height * (1 - drive_pose[1] / y_lim)))
         ## print(f'Pose X:{drive_pose[0]:2.2f} Pose Y:{drive_pose[1]:2.2f} Pose R:{drive_pose[2]:2.2f}', end='\r', flush=True)
+
+        self.counter += 1
+        if self.counter % 100 == 0:  # display an FPS
+            current_time = time.time()
+            msg = f'Current Updates/s : {100/(current_time - self.previous_time):.1f}'
+            self.statusBar().showMessage(msg)
+            self.previous_time = current_time
 
     def qt_tree_widget_nt_clicked(self, item):
         # send the clicked item from the tree to the filter for the nt selction combo box

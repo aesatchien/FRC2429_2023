@@ -27,6 +27,8 @@ class Turret(SubsystemBase):
         self.max_angle = 271
         self.min_angle = -45
         self.counter = 0
+        # turret should probably have positions that we need to map out
+        positions = {'full': 270, 'score': 180, 'middle': 90, 'stow': 0}
 
         # initialize motors
         self.turret_controller = rev.CANSparkMax(constants.k_turret_motor_port, rev.CANSparkMax.MotorType.kBrushless)
@@ -79,4 +81,4 @@ class Turret(SubsystemBase):
     def periodic(self) -> None:
         self.counter += 1
         if self.counter % 50 == 0:
-            SmartDashboard.putNumber('turret_encoder', self.sparkmax_encoder.getPosition())
+            SmartDashboard.putNumber('turret_angle', self.sparkmax_encoder.getPosition())
