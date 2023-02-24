@@ -420,7 +420,7 @@ background-color:rgb(0, 20, 250);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel2" name="qlabel_arm_extend_ndicator_2">
+      <widget class="QLabel2" name="qlabel_arm_extend_indicator">
        <property name="geometry">
         <rect>
          <x>130</x>
@@ -453,7 +453,7 @@ background-color:rgb(0, 20, 250);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel2" name="qlabel_turret_arm_retract_indicator">
+      <widget class="QLabel2" name="qlabel_arm_retract_indicator">
        <property name="geometry">
         <rect>
          <x>130</x>

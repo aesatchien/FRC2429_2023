@@ -21,10 +21,10 @@ class Arm(SubsystemBase):
         super().__init__()
         self.counter = 0
 
-        self.max_extension = 750  # need to see what is max legal amount
+        self.max_extension = 751  # need to see what is max legal amount
         self.min_extension = 0  # mm for now
         # arm should probably have positions that we need to map out
-        positions = {'full': 750, 'middle': 375, 'stow': 0}
+        self.positions = {'full': 750, 'middle': 375, 'stow': 0}
 
         # initialize motors
         self.arm_controller = rev.CANSparkMax(constants.k_arm_motor_port, rev.CANSparkMax.MotorType.kBrushless)
@@ -50,7 +50,10 @@ class Arm(SubsystemBase):
         SmartDashboard.putNumber('arm_extension', self.extension)
 
     def get_extension(self):  # getter for the relevant elevator parameter
-        return self.sparkmax_encoder.getPosition()
+        if wpilib.RobotBase.isReal():
+            return self.sparkmax_encoder.getPosition()
+        else:
+            return self.extension
 
     def set_arm_extension(self, distance, mode='smartmotion'):
         if mode == 'smartmotion':
@@ -59,7 +62,6 @@ class Arm(SubsystemBase):
         elif mode == 'position':
             # just use the position PID
             self.pid_controller.setReference(distance, rev.CANSparkMax.ControlType.kPosition)
-
         self.extension = distance
         SmartDashboard.putNumber('arm_extension', self.extension)
 
@@ -70,4 +72,5 @@ class Arm(SubsystemBase):
                 SmartDashboard.putNumber('arm_extension', self.sparkmax_encoder.getPosition())
             else:
                 dummy_extension = (self.max_extension - self.min_extension)/2 * (1+ math.sin(self.counter/1000))
-                SmartDashboard.putNumber('arm_extension', dummy_extension)
+                # SmartDashboard.putNumber('arm_extension', dummy_extension)
+                SmartDashboard.putNumber('arm_extension', self.extension)

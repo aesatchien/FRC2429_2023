@@ -17,6 +17,7 @@ from misc.axis_button import AxisButton
 from commands.drive_by_joystick import DriveByJoystick
 from commands.drive_velocity_stick import DriveByJoystickVelocity
 from commands.turret_initialize import TurretInitialize
+from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
 from commands.elevator_move import ElevatorMove
 from commands.wrist_move import WristMove
@@ -108,6 +109,8 @@ class RobotContainer:
             wpilib.SmartDashboard.putData(key='ElevatorMoveDown', data=ElevatorMove(container=self, elevator=self.elevator, direction='down', wait_to_finish=False))
             wpilib.SmartDashboard.putData(key='WristMoveUp', data=WristMove(container=self, wrist=self.wrist, direction='up', wait_to_finish=False))
             wpilib.SmartDashboard.putData(key='WristMoveDown', data=WristMove(container=self, wrist=self.wrist, direction='down', wait_to_finish=False))
+            wpilib.SmartDashboard.putData(key='ArmMoveUp', data=ArmMove(container=self, arm=self.arm, direction='up', wait_to_finish=False))
+            wpilib.SmartDashboard.putData(key='ArmMoveDown', data=ArmMove(container=self, arm=self.arm, direction='down', wait_to_finish=False))
 
 
         # commands2.button.JoystickButton(self.driverController, 3).whenHeld(
