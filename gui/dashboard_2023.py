@@ -72,9 +72,9 @@ class Ui(QtWidgets.QMainWindow):
 
         # set up network tables
         self.ntinst = NetworkTableInstance.getDefault()
-        self.servers = ["127.0.0.1", "10.24.29.2"] #  "roboRIO-2429-FRC.local"]  # need to add the USB one here
+        self.servers = ["10.24.29.2", "127.0.0.1"] #  "roboRIO-2429-FRC.local"]  # need to add the USB one here
         self.ntinst.startClient3(identity='PyQt Dashboard')
-        self.server_index = 0
+        self.server_index = 0  # manually do a round-robin later
         # self.ntinst.setServer("127.0.0.1",0)
         #self.ntinst.setServer(servers=self.servers)  # does not seem to work in round-robin in 2023 code
         self.ntinst.setServerTeam(2429)
