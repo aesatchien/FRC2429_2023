@@ -22,6 +22,10 @@ class UpperSubstationPickup(commands2.SequentialCommandGroup):  # change the nam
         self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator,
                                       setpoint=Elevator.positions['upper_pickup'], wait_to_finish=False))
 
+        # Step
+        # Make sure the manipulator is open
+        self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='open'))
+
         # Step 1.b
         # Get turret into position - center on the cone/cube (vision processor)  TODO
 

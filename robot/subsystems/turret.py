@@ -27,8 +27,9 @@ class Turret(SubsystemBase):
         self.max_angle = 271
         self.min_angle = -45
         self.counter = 0
+        self.angle = 0  # just to initialize
         # turret should probably have positions that we need to map out
-        positions = {'full': 270, 'score': 180, 'middle': 90, 'stow': 0}
+        self.positions = {'full': 270, 'score': 180, 'middle': 90, 'stow': 0}
 
         # initialize motors
         self.turret_controller = rev.CANSparkMax(constants.k_turret_motor_port, rev.CANSparkMax.MotorType.kBrushless)
@@ -59,7 +60,10 @@ class Turret(SubsystemBase):
         SmartDashboard.putNumber('turret_angle', self.angle)
 
     def get_angle(self):  # getter for the relevant turret parameter
-        return self.sparkmax_encoder.getPosition()
+        if wpilib.RobotBase.isReal():
+            return self.sparkmax_encoder.getPosition()
+        else:
+            return self.angle
 
     def set_turret_angle(self, angle, mode='smartmotion'):
         """
@@ -80,5 +84,8 @@ class Turret(SubsystemBase):
 
     def periodic(self) -> None:
         self.counter += 1
-        if self.counter % 50 == 0:
-            SmartDashboard.putNumber('turret_angle', self.sparkmax_encoder.getPosition())
+        if self.counter % 25 == 0:
+            if wpilib.RobotBase.isReal():
+                SmartDashboard.putNumber('turret_angle', self.sparkmax_encoder.getPosition())
+            else:
+                SmartDashboard.putNumber('turret_angle', self.angle)

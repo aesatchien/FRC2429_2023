@@ -74,8 +74,10 @@ class Ui(QtWidgets.QMainWindow):
         self.ntinst = NetworkTableInstance.getDefault()
         self.servers = ["127.0.0.1", "10.24.29.2"] #  "roboRIO-2429-FRC.local"]  # need to add the USB one here
         self.ntinst.startClient3(identity='PyQt Dashboard')
-        self.ntinst.setServer("127.0.0.1",0)
-        #self.ntinst.setServerTeam(2429)
+        self.server_index = 0
+        # self.ntinst.setServer("127.0.0.1",0)
+        #self.ntinst.setServer(servers=self.servers)  # does not seem to work in round-robin in 2023 code
+        self.ntinst.setServerTeam(2429)
         self.connected = self.ntinst.isConnected()
         self.sorted_tree = None  # keep a global list of all the nt addresses
         self.autonomous_list = []  # set up an autonomous list
@@ -221,7 +223,12 @@ class Ui(QtWidgets.QMainWindow):
             self.qlabel_camera_view.repaint()"""
 
     def test(self):  # test function for checking new signals
-        print('Test was called', flush=True)
+        # print('Test was called', flush=True)
+        current_server = self.servers[self.server_index]
+        self.server_index = (self.server_index + 1 ) % len(self.servers)
+        self.ntinst.setServer(server_name=self.servers[self.server_index])
+        print(f'Changed server from {current_server} to {self.servers[self.server_index]}')
+
 
     def filter_nt_keys_combo(self):  # used to simplify the nt key list combo box entries
         if self.sorted_tree is not None:
@@ -302,6 +309,12 @@ class Ui(QtWidgets.QMainWindow):
                                      'command': '/SmartDashboard/ShooterToggle/running'},
         'qlabel_shooter_speed_indicator': {'widget':self.qlabel_shooter_speed_indicator, 'nt':'/SmartDashboard/shooter_ready', 'command': None},
         'qlabel_short_arm_indicator': {'widget':self.qlabel_short_arm_indicator, 'nt':'/SmartDashboard/climber_short_arm', 'command': None},
+        'qlabel_turret_down_indicator': {'widget': self.qlabel_turret_down_indicator,
+                                            'nt': '/SmartDashboard/TurretMoveDown/running',
+                                            'command': '/SmartDashboard/TurretMoveDown/running'},
+        'qlabel_turret_up_indicator': {'widget': self.qlabel_turret_up_indicator,
+                                          'nt': '/SmartDashboard/TurretMoveUp/running',
+                                          'command': '/SmartDashboard/TurretMoveUp/running'},
         'qlabel_wrist_down_indicator': {'widget': self.qlabel_wrist_down_indicator, 'nt': '/SmartDashboard/WristMoveDown/running',
                                                'command': '/SmartDashboard/WristMoveDown/running'},
         'qlabel_wrist_up_indicator': {'widget': self.qlabel_wrist_up_indicator, 'nt': '/SmartDashboard/WristMoveUp/running',
