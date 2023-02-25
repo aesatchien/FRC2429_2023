@@ -57,13 +57,20 @@ class Elevator(SubsystemBase):
         initial_height = self.elevator_height_sensor.getRange()
         self.sparkmax_encoder.setPosition(initial_height)
         self.height = initial_height
+        self.setpoint = self.height  # initial setting should be ?
         SmartDashboard.putNumber('elevator_height', self.height)
+        SmartDashboard.putNumber('elevator_setpoint', self.setpoint)
 
     def get_height(self):  # getter for the relevant elevator parameter
         if wpilib.RobotBase.isReal():
             return self.sparkmax_encoder.getPosition()
         else:
             return self.height
+
+    def reset_height(self, height):
+        self.height = height
+        self.sparkmax_encoder.setPosition(height)
+        SmartDashboard.putNumber('elevator_height', self.height)
 
     def set_elevator_height(self, height, mode='smartmotion'):
         """
@@ -79,13 +86,15 @@ class Elevator(SubsystemBase):
             # just use the position PID
             self.pid_controller.setReference(height, rev.CANSparkMax.ControlType.kPosition)
 
-        self.height = height
-        SmartDashboard.putNumber('elevator_height', self.height)
+        self.setpoint = height
+        SmartDashboard.putNumber('elevator_setpoint', self.setpoint)
+
+        if wpilib.RobotBase.isSimulation():
+            self.height = height
+            SmartDashboard.putNumber('elevator_height', self.height)
 
     def periodic(self) -> None:
         self.counter += 1
         if self.counter % 25 == 0:
-            if wpilib.RobotBase.isReal():
-                SmartDashboard.putNumber('elevator_height', self.sparkmax_encoder.getPosition())
-            else:
-                SmartDashboard.putNumber('elevator_height', self.height)
+            self.height = self.get_height()
+            SmartDashboard.putNumber('elevator_height', self.height)

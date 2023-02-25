@@ -17,7 +17,7 @@ class Wrist(SubsystemBase):
 
     def __init__(self):
         super().__init__()
-
+        self. counter = 0
         # defining angles so 0 is horizontal
         self.max_angle = 125  # call all the way up 125 degrees  todo: remeasure
         self.min_angle = -30
@@ -45,7 +45,9 @@ class Wrist(SubsystemBase):
         # initialize the location of the wrist - say it's fully up at start
         self.sparkmax_encoder.setPosition(self.max_angle)
         self.angle = self.max_angle
+        self.setpoint = self.angle
         SmartDashboard.putNumber('wrist_angle', self.angle)
+        SmartDashboard.putNumber('wrist_setpoint', self.setpoint)
 
     def get_angle(self):  # getter for the relevant elevator parameter
         if wpilib.RobotBase.isReal():
@@ -61,5 +63,13 @@ class Wrist(SubsystemBase):
             # just use the position PID
             self.pid_controller.setReference(angle, rev.CANSparkMax.ControlType.kPosition)
         self.angle = angle
-        SmartDashboard.putNumber('wrist_angle', angle)
+        self.setpoint = angle
+        SmartDashboard.putNumber('wrist_setpoint', angle)
+        if wpilib.RobotBase.isSimulation():
+            SmartDashboard.putNumber('wrist_angle', self.angle)
 
+    def periodic(self) -> None:
+        self.counter += 1
+        if self.counter % 25 == 0:
+            self.angle = self.get_angle()
+            SmartDashboard.putNumber('wrist_angle', self.angle)

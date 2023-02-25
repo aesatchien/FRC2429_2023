@@ -57,7 +57,9 @@ class Turret(SubsystemBase):
         self.analog_abs_encoder.setPositionOffset(self.absolute_position_offset)  # now stow alignment is angle=0
 
         self.angle = self.get_angle()
+        self.setpoint = self.angle  # initial setting should be?
         SmartDashboard.putNumber('turret_angle', self.angle)
+        SmartDashboard.putNumber('turret_setpoint', self.setpoint)
 
     def get_angle(self):  # getter for the relevant turret parameter
         if wpilib.RobotBase.isReal():
@@ -80,12 +82,14 @@ class Turret(SubsystemBase):
             self.pid_controller.setReference(angle, rev.CANSparkMax.ControlType.kPosition)
 
         self.angle = angle
+        self.setpoint = angle
         SmartDashboard.putNumber('turret_setpoint', self.angle)
+
+        if wpilib.RobotBase.isSimulation():
+            SmartDashboard.putNumber('turret_angle', self.angle)
 
     def periodic(self) -> None:
         self.counter += 1
         if self.counter % 25 == 0:
-            if wpilib.RobotBase.isReal():
-                SmartDashboard.putNumber('turret_angle', self.sparkmax_encoder.getPosition())
-            else:
-                SmartDashboard.putNumber('turret_angle', self.angle)
+            self.angle = self.get_angle()
+            SmartDashboard.putNumber('turret_angle', self.angle)

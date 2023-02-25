@@ -46,8 +46,10 @@ class Arm(SubsystemBase):
 
         # initialize the extension of the arm - say it's fully closed at start
         self.extension = 0
+        self.setpoint = self.extension  # initial setting should be ?
         self.sparkmax_encoder.setPosition(0)
         SmartDashboard.putNumber('arm_extension', self.extension)
+        SmartDashboard.putNumber('arm_setpoint', self.setpoint)
 
     def get_extension(self):  # getter for the relevant elevator parameter
         if wpilib.RobotBase.isReal():
@@ -62,15 +64,16 @@ class Arm(SubsystemBase):
         elif mode == 'position':
             # just use the position PID
             self.pid_controller.setReference(distance, rev.CANSparkMax.ControlType.kPosition)
-        self.extension = distance
-        SmartDashboard.putNumber('arm_extension', self.extension)
+
+        self.setpoint = distance
+        SmartDashboard.putNumber('arm_setpoint', self.setpoint)
+
+        if wpilib.RobotBase.isSimulation():
+            self.extension = distance
+            SmartDashboard.putNumber('arm_extension', self.extension)
 
     def periodic(self) -> None:
         self.counter += 1
         if self.counter % 25 == 0:
-            if wpilib.RobotBase.isReal():
-                SmartDashboard.putNumber('arm_extension', self.sparkmax_encoder.getPosition())
-            else:
-                dummy_extension = (self.max_extension - self.min_extension)/2 * (1+ math.sin(self.counter/1000))
-                # SmartDashboard.putNumber('arm_extension', dummy_extension)
-                SmartDashboard.putNumber('arm_extension', self.extension)
+            self.extension = self.get_extension()
+            SmartDashboard.putNumber('arm_extension', self.extension)

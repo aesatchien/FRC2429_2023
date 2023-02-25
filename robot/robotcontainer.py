@@ -92,27 +92,27 @@ class RobotContainer:
         # testing turret and elevator
         enable_testing = True
         if enable_testing:
-            self.buttonRight.whenPressed(TurretMove(self, self.turret, setpoint=10, wait_to_finish=True).withTimeout(2))
-            self.buttonLeft.whenPressed(TurretMove(self, self.turret, setpoint=-10, wait_to_finish=True).withTimeout(2))
-            self.buttonDown.whenPressed(ElevatorMove(self, self.elevator, setpoint=800, wait_to_finish=True).withTimeout(1))
-            self.buttonUp.whenPressed(ElevatorMove(self, self.elevator, setpoint=200, wait_to_finish=True).withTimeout(1))
+            self.buttonRight.whenPressed(TurretMove(self, self.turret, direction='up', wait_to_finish=True).withTimeout(2))
+            self.buttonLeft.whenPressed(TurretMove(self, self.turret, direction='down', wait_to_finish=True).withTimeout(2))
+            self.buttonDown.whenPressed(ElevatorMove(self, self.elevator, direction='up', wait_to_finish=True).withTimeout(1))
+            self.buttonUp.whenPressed(ElevatorMove(self, self.elevator, direction='down', wait_to_finish=True).withTimeout(1))
             # manipulator
             self.buttonRB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='open'))
             self.buttonLB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='close'))
 
-            # lots of putdatas for testing on the dash
-            wpilib.SmartDashboard.putData(ScoreFromStow(container=self))
-            wpilib.SmartDashboard.putData(UpperSubstationPickup(container=self))
-            wpilib.SmartDashboard.putData(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
-            wpilib.SmartDashboard.putData(CompressorToggle(container=self, pneumatics=self.pneumatics))
-            wpilib.SmartDashboard.putData(key='ElevatorMoveUp', data=ElevatorMove(container=self, elevator=self.elevator, direction='up', wait_to_finish=False))
-            wpilib.SmartDashboard.putData(key='ElevatorMoveDown', data=ElevatorMove(container=self, elevator=self.elevator, direction='down', wait_to_finish=False))
-            wpilib.SmartDashboard.putData(key='WristMoveUp', data=WristMove(container=self, wrist=self.wrist, direction='up', wait_to_finish=False))
-            wpilib.SmartDashboard.putData(key='WristMoveDown', data=WristMove(container=self, wrist=self.wrist, direction='down', wait_to_finish=False))
-            wpilib.SmartDashboard.putData(key='ArmMoveUp', data=ArmMove(container=self, arm=self.arm, direction='up', wait_to_finish=False))
-            wpilib.SmartDashboard.putData(key='ArmMoveDown', data=ArmMove(container=self, arm=self.arm, direction='down', wait_to_finish=False))
-            wpilib.SmartDashboard.putData(key='TurretMoveUp', data=TurretMove(container=self, turret=self.turret, direction='up', wait_to_finish=False))
-            wpilib.SmartDashboard.putData(key='TurretMoveDown', data=TurretMove(container=self, turret=self.turret, direction='down', wait_to_finish=False))
+        # lots of putdatas for testing on the dash
+        wpilib.SmartDashboard.putData(ScoreFromStow(container=self))
+        wpilib.SmartDashboard.putData(UpperSubstationPickup(container=self))
+        wpilib.SmartDashboard.putData(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
+        wpilib.SmartDashboard.putData(CompressorToggle(container=self, pneumatics=self.pneumatics))
+        wpilib.SmartDashboard.putData(key='ElevatorMoveUp', data=ElevatorMove(container=self, elevator=self.elevator, direction='up', wait_to_finish=False))
+        wpilib.SmartDashboard.putData(key='ElevatorMoveDown', data=ElevatorMove(container=self, elevator=self.elevator, direction='down', wait_to_finish=False))
+        wpilib.SmartDashboard.putData(key='WristMoveUp', data=WristMove(container=self, wrist=self.wrist, direction='up', wait_to_finish=False))
+        wpilib.SmartDashboard.putData(key='WristMoveDown', data=WristMove(container=self, wrist=self.wrist, direction='down', wait_to_finish=False))
+        wpilib.SmartDashboard.putData(key='ArmMoveUp', data=ArmMove(container=self, arm=self.arm, direction='up', wait_to_finish=False))
+        wpilib.SmartDashboard.putData(key='ArmMoveDown', data=ArmMove(container=self, arm=self.arm, direction='down', wait_to_finish=False))
+        wpilib.SmartDashboard.putData(key='TurretMoveUp', data=TurretMove(container=self, turret=self.turret, direction='up', wait_to_finish=False))
+        wpilib.SmartDashboard.putData(key='TurretMoveDown', data=TurretMove(container=self, turret=self.turret, direction='down', wait_to_finish=False))
 
 
         # commands2.button.JoystickButton(self.driverController, 3).whenHeld(
