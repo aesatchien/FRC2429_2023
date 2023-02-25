@@ -23,6 +23,7 @@ from commands.elevator_move import ElevatorMove
 from commands.wrist_move import WristMove
 from commands.manipulator_toggle import ManipulatorToggle
 from commands.compressor_toggle import CompressorToggle
+from commands.elevator_drive import ElevatorDrive
 
 from autonomous.score_from_stow import ScoreFromStow
 from autonomous.upper_substation_pickup import UpperSubstationPickup
@@ -89,6 +90,11 @@ class RobotContainer:
         self.buttonLeftAxis = AxisButton(self.driver_controller, 2)
         self.buttonRightAxis = AxisButton(self.driver_controller, 3)
 
+        # co-pilot controller
+        self.co_driver_controller = wpilib.XboxController(constants.k_co_driver_controller_port)
+        self.co_buttonLB = JoystickButton(self.co_driver_controller, 5)
+        self.co_buttonRB = JoystickButton(self.co_driver_controller, 6)
+
         # testing turret and elevator
         enable_testing = True
         if enable_testing:
@@ -99,6 +105,8 @@ class RobotContainer:
             # manipulator
             self.buttonRB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='open'))
             self.buttonLB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='close'))
+
+            self.co_buttonRB.whileHeld(ElevatorDrive(container=self, elevator=self.elevator, button=self.co_buttonRB))
 
         # lots of putdatas for testing on the dash
         wpilib.SmartDashboard.putData(ScoreFromStow(container=self))

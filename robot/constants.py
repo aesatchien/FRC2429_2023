@@ -17,9 +17,13 @@ k_controller_thrust_axis = 1
 k_controller_twist_axis = 4
 k_arcade_thrust_scale = 0.7 #halfed  # used in drive by joystick
 k_arcade_twist_scale = 0.45
-
 k_max_thrust_velocity = 120  # meters per MINUTE  for smartmotion
 k_max_twist_velocity = 90 # meters per MINUTE - for smartmotion
+
+#  co-driver
+k_controller_elevator_axis = 1
+k_controller_turret_axis = 4
+
 
 # --------------  DRIVETRAIN  ---------------
 # The CAN IDs for the drivetrain SparkMAX motor controllers
