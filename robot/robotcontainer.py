@@ -123,7 +123,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='ArmMoveDown', data=ArmMove(container=self, arm=self.arm, direction='down', wait_to_finish=False))
         wpilib.SmartDashboard.putData(key='TurretMoveUp', data=TurretMove(container=self, turret=self.turret, direction='up', wait_to_finish=False))
         wpilib.SmartDashboard.putData(key='TurretMoveDown', data=TurretMove(container=self, turret=self.turret, direction='down', wait_to_finish=False))
-        wpilib.SmartDashboard.putData(ArmCalibration(container=self, arm=self.arm, power=0.1).withTimeout(5))
+        wpilib.SmartDashboard.putData(key='ArmCalibration', data=ArmCalibration(container=self, arm=self.arm).withTimeout(5))
 
         # commands2.button.JoystickButton(self.driverController, 3).whenHeld(
         #     HalveDriveSpeed(self.drive)

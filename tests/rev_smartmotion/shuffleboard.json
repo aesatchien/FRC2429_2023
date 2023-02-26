@@ -2,7 +2,7 @@
   "tabPane": [
     {
       "title": "SmartDashboard",
-      "autoPopulate": true,
+      "autoPopulate": false,
       "autoPopulatePrefix": "SmartDashboard/",
       "widgetPane": {
         "gridSize": 128.0,
@@ -125,8 +125,8 @@
               "Graph/Visible time": 30.0,
               "Graph/X-axis auto scrolling": true,
               "Y-axis/Automatic bounds": false,
-              "Y-axis/Upper bound": 10.0,
-              "Y-axis/Lower bound": 0.0,
+              "Y-axis/Upper bound": 100.0,
+              "Y-axis/Lower bound": -350.0,
               "Y-axis/Unit": "ul",
               "Visible data/SmartDashboard/Process Variable": true,
               "Visible data/SmartDashboard/SetPoint": true
@@ -176,8 +176,8 @@
               "_title": "Set Velocity",
               "_glyph": 148,
               "_showGlyph": false,
-              "Slider Settings/Min": -240.0,
-              "Slider Settings/Max": 240.0,
+              "Slider Settings/Min": -1000.0,
+              "Slider Settings/Max": 1000.0,
               "Slider Settings/Block increment": 1.0,
               "Visuals/Display value": true
             }
@@ -195,7 +195,7 @@
               "_showGlyph": false
             }
           },
-          "6,2": {
+          "5,2": {
             "size": [
               1,
               1
@@ -208,7 +208,7 @@
               "_showGlyph": false
             }
           },
-          "7,2": {
+          "6,2": {
             "size": [
               1,
               1
@@ -233,6 +233,26 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "8,1": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/Current",
+              "_title": "Current",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Graph/Visible time": 30.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul",
+              "Visible data/SmartDashboard/Current": true
+            }
           }
         }
       }
@@ -252,8 +272,8 @@
     }
   ],
   "windowGeometry": {
-    "x": 63.0,
-    "y": 13.0,
+    "x": 102.0,
+    "y": 8.0,
     "width": 1793.0,
     "height": 905.0
   }

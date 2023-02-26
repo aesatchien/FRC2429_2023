@@ -24,7 +24,7 @@ class Wrist(SubsystemBase):
 
         # initialize motors
         self.wrist_controller = rev.CANSparkMax(constants.k_wrist_motor_port, rev.CANSparkMax.MotorType.kBrushless)
-        self.wrist_controller.setInverted(True)  # verified that this is true for the directions we want
+        self.wrist_controller.setInverted(True)  # verified that this is true for the directions we want on wrist
         self.sparkmax_encoder = self.wrist_controller.getEncoder()
 
         # update sparkmax with appropriate system gains and constraints

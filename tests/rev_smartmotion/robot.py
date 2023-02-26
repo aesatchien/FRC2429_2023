@@ -15,14 +15,14 @@ import wpilib
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
-        can_id = 1  # change as needed
-        drivetrain = True
+        can_id = 10  # change as needed
+        drivetrain = False
 
         # if you are going to change position factor, you should also change velocity.
         # smart motion does weird things on the decel if you don't.
         # also note that if you do change these, the PIDs will have to change as well
         # the default values below are good for conversion factors of 1.
-        position_conversion_factor = 0.04466  # test to see if this changes PIDFs on velocity
+        position_conversion_factor = 4.11  # test to see if this changes PIDFs on velocity
 
         self.motor = rev.CANSparkMax(can_id, rev.CANSparkMax.MotorType.kBrushless)
         self.motor.restoreFactoryDefaults()
@@ -40,6 +40,7 @@ class Robot(wpilib.TimedRobot):
         self.encoder = self.motor.getEncoder()
         self.encoder.setPositionConversionFactor(position_conversion_factor)
         self.encoder.setVelocityConversionFactor(position_conversion_factor)
+        #self.encoder.setPosition()
 
         self.counter = 0
 
@@ -157,6 +158,7 @@ class Robot(wpilib.TimedRobot):
         else:
             wpilib.SmartDashboard.putNumber("Process Variable", pv)
             wpilib.SmartDashboard.putNumber("Output", self.motor.getAppliedOutput())
+            wpilib.SmartDashboard.putNumber("Current", self.motor.getOutputCurrent())
 
 
 if __name__ == "__main__":

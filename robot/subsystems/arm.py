@@ -21,10 +21,10 @@ class Arm(SubsystemBase):
         super().__init__()
         self.counter = 0
 
-        self.max_extension = 551  # need to see what is max legal amount
-        self.min_extension = 0  # mm for now
+        self.max_extension = 455  # need to see what is max legal amount
+        self.min_extension = 10  # mm for now
         # arm should probably have positions that we need to map out
-        self.positions = {'full': 550, 'middle': 225, 'stow': 0}
+        self.positions = {'full': 450, 'middle': 225, 'stow': 10}
 
         # initialize motors
         self.arm_controller = rev.CANSparkMax(constants.k_arm_motor_port, rev.CANSparkMax.MotorType.kBrushless)
@@ -34,15 +34,18 @@ class Arm(SubsystemBase):
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_arm_encoder_conversion_factor)
         self.pid_controller = self.arm_controller.getPIDController()
 
-        configure_sparkmax(sparkmax=self.arm_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_arm_motor_port,
-                           pid_dict=constants.k_PID_dict_vel_arm, pid_only=True, burn_flash=constants.k_burn_flash)
-        # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
 
         # set soft limits - do not let spark max put out power above/below a certain value
         self.arm_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, True)
         self.arm_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, True)
         self.arm_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_extension)
         self.arm_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_extension)
+
+
+        configure_sparkmax(sparkmax=self.arm_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_arm_motor_port,
+                           pid_dict=constants.k_PID_dict_vel_arm, pid_only=True, burn_flash=constants.k_burn_flash)
+        # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
+
 
         # initialize the extension of the arm - say it's fully closed at start
         self.extension = 0

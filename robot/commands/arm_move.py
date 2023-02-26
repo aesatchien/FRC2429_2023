@@ -12,6 +12,7 @@ class ArmMove(commands2.CommandBase):
         self.setpoint = setpoint
         self.direction = direction
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
+        self.tolerance = 10  # mm tolerance in choosing next cycle position
 
         self.addRequirements(self.arm)  # commandsv2 version of requirements
 
@@ -22,11 +23,11 @@ class ArmMove(commands2.CommandBase):
         # tell the elevator to go to position
         if self.setpoint is None:
             if self.direction == 'up':
-                allowed_positions = [x for x in sorted(self.arm.positions.values()) if x > position]
+                allowed_positions = [x for x in sorted(self.arm.positions.values()) if x > position + self.tolerance]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
             else:
-                allowed_positions = [x for x in sorted(self.arm.positions.values()) if x < position]
+                allowed_positions = [x for x in sorted(self.arm.positions.values()) if x < position - self.tolerance]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
 
