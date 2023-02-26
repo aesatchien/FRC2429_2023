@@ -23,7 +23,8 @@ from commands.elevator_move import ElevatorMove
 from commands.wrist_move import WristMove
 from commands.manipulator_toggle import ManipulatorToggle
 from commands.compressor_toggle import CompressorToggle
-#from commands.elevator_drive import ElevatorDrive
+from commands.elevator_drive import ElevatorDrive
+from commands.arm_calibration import ArmCalibration
 
 from autonomous.score_from_stow import ScoreFromStow
 from autonomous.upper_substation_pickup import UpperSubstationPickup
@@ -122,7 +123,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='ArmMoveDown', data=ArmMove(container=self, arm=self.arm, direction='down', wait_to_finish=False))
         wpilib.SmartDashboard.putData(key='TurretMoveUp', data=TurretMove(container=self, turret=self.turret, direction='up', wait_to_finish=False))
         wpilib.SmartDashboard.putData(key='TurretMoveDown', data=TurretMove(container=self, turret=self.turret, direction='down', wait_to_finish=False))
-
+        wpilib.SmartDashboard.putData(ArmCalibration(container=self, arm=self.arm, power=0.1).withTimeout(5))
 
         # commands2.button.JoystickButton(self.driverController, 3).whenHeld(
         #     HalveDriveSpeed(self.drive)
