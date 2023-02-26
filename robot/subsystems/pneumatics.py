@@ -14,8 +14,16 @@ class Pneumatics(SubsystemBase):
         super().__init__()
         self.setName('Pneumatics')
         self.counter = 0
-        self.compressor = Compressor(0, wpilib.PneumaticsModuleType.CTREPCM)
-        self.manipulator_piston = DoubleSolenoid(wpilib.PneumaticsModuleType.CTREPCM, constants.k_manipulator_open_port, constants.k_manipulator_closed_port)
+
+        # rev version
+        self.hub = wpilib.PneumaticHub(14)  # need to figure out the REV ecosystem  it was not allowing us to actuate 20130225
+        self.manipulator_piston = self.hub.makeDoubleSolenoid(constants.k_manipulator_open_port, constants.k_manipulator_closed_port)
+        self.compressor = Compressor(14, wpilib.PneumaticsModuleType.REVPH)
+        # ctre version
+        #self.compressor = Compressor(0, wpilib.PneumaticsModuleType.CTREPCM)
+        #self.manipulator_piston = DoubleSolenoid(wpilib.PneumaticsModuleType.CTREPCM,
+        #   constants.k_manipulator_open_port, constants.k_manipulator_closed_port)
+
         self.pressure_sensor = AnalogInput(0)  # may skip this unless we really want one
         self.close_loop_enable = True
 
@@ -27,6 +35,7 @@ class Pneumatics(SubsystemBase):
 
         # Decide on init piston position - always closed because we will hold a game piece
         self.manipulator_closed = True
+        self.manipulator_piston.set(DoubleSolenoid.Value.kReverse)  # must initialize, or no toggling
 
         SmartDashboard.putBoolean('manipulator_closed', self.manipulator_closed)
         SmartDashboard.putBoolean('compressor_close_loop', self.close_loop_enable)

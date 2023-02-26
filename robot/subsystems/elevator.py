@@ -48,8 +48,8 @@ class Elevator(SubsystemBase):
         self.elevator_height_sensor.setRangingMode(TimeOfFlight.RangingMode.kShort, 50)
 
         # set soft limits - do not let spark max put out power above/below a certain value
-        self.elevator_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, True)
-        self.elevator_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, True)
+        self.elevator_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, constants.k_enable_soft_limts)
+        self.elevator_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limts)
         self.elevator_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_height)
         self.elevator_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_height)
 

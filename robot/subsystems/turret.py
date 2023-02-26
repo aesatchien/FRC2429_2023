@@ -42,8 +42,8 @@ class Turret(SubsystemBase):
                            pid_dict=constants.k_PID_dict_vel_turret, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # set soft limits - do not let spark max put out power above/below a certain value
-        self.turret_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, True)
-        self.turret_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, True)
+        self.turret_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, constants.k_enable_soft_limts)
+        self.turret_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limts)
         self.turret_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_angle)
         self.turret_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_angle)
 

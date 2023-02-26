@@ -7,7 +7,8 @@ changes.
 """
 
 k_competition_mode = False  # use for compressor and some joystick settings
-k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
+k_burn_flash = True  # if we want to burn the settings to the sparkmaxes
+k_enable_soft_limts = False
 
 # --------------  OI  ---------------
 # ID for the driver's joystick (template)

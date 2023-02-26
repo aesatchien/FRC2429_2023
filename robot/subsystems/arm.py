@@ -21,14 +21,14 @@ class Arm(SubsystemBase):
         super().__init__()
         self.counter = 0
 
-        self.max_extension = 751  # need to see what is max legal amount
+        self.max_extension = 551  # need to see what is max legal amount
         self.min_extension = 0  # mm for now
         # arm should probably have positions that we need to map out
-        self.positions = {'full': 750, 'middle': 375, 'stow': 0}
+        self.positions = {'full': 550, 'middle': 225, 'stow': 0}
 
         # initialize motors
         self.arm_controller = rev.CANSparkMax(constants.k_arm_motor_port, rev.CANSparkMax.MotorType.kBrushless)
-        self.arm_controller.setInverted(False)  # todo: need to check on this for the arm
+        self.arm_controller.setInverted(True)  # todo: arm needs to be true
         self.sparkmax_encoder = self.arm_controller.getEncoder()
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_arm_encoder_conversion_factor)  # mm per revolution
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_arm_encoder_conversion_factor)

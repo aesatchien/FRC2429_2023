@@ -24,7 +24,7 @@ class Wrist(SubsystemBase):
 
         # initialize motors
         self.wrist_controller = rev.CANSparkMax(constants.k_wrist_motor_port, rev.CANSparkMax.MotorType.kBrushless)
-        self.wrist_controller.setInverted(False)  # todo need to check on this for the wrist
+        self.wrist_controller.setInverted(True)  # verified that this is true for the directions we want
         self.sparkmax_encoder = self.wrist_controller.getEncoder()
 
         # update sparkmax with appropriate system gains and constraints
@@ -37,8 +37,8 @@ class Wrist(SubsystemBase):
         # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
 
         # set soft limits - do not let spark max put out power above/below a certain value
-        self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, True)
-        self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, True)
+        self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, constants.k_enable_soft_limts)
+        self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limts)
         self.wrist_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_angle)
         self.wrist_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_angle)
 

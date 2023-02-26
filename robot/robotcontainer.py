@@ -23,7 +23,7 @@ from commands.elevator_move import ElevatorMove
 from commands.wrist_move import WristMove
 from commands.manipulator_toggle import ManipulatorToggle
 from commands.compressor_toggle import CompressorToggle
-from commands.elevator_drive import ElevatorDrive
+#from commands.elevator_drive import ElevatorDrive
 
 from autonomous.score_from_stow import ScoreFromStow
 from autonomous.upper_substation_pickup import UpperSubstationPickup
@@ -106,9 +106,10 @@ class RobotContainer:
             self.buttonRB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='open'))
             self.buttonLB.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics, force='close'))
 
-            self.co_buttonRB.whileHeld(ElevatorDrive(container=self, elevator=self.elevator, button=self.co_buttonRB))
+            #self.co_buttonRB.whileHeld(ElevatorDrive(container=self, elevator=self.elevator, button=self.co_buttonRB))
 
         # lots of putdatas for testing on the dash
+        wpilib.SmartDashboard.putData(TurretInitialize(container=self, turret=self.turret))
         wpilib.SmartDashboard.putData(ScoreFromStow(container=self))
         wpilib.SmartDashboard.putData(UpperSubstationPickup(container=self))
         wpilib.SmartDashboard.putData(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
