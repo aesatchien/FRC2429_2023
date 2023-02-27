@@ -2,16 +2,22 @@ import commands2
 
 class CompressorToggle(commands2.CommandBase):
 
-    def __init__(self, container, pneumatics) -> None:
+    def __init__(self, container, pneumatics, force=None) -> None:
         super().__init__()
         self.setName('CompressorToggle')
         self.pneumatics = pneumatics
         self.container = container
+        self.force = force
+
         self.addRequirements(pneumatics)  # commandsv2 version of requirements
 
     def initialize(self) -> None:
-
-        self.pneumatics.toggle_compressor()
+        if self.force == "start":
+            self.pneumatics.start_compressor()
+        elif self.force == "stop":
+            self.pneumatics.stop_compressor()
+        else:
+            self.pneumatics.toggle_compressor()
         
         """Called just before this Command runs the first time."""
         self.start_time = round(self.container.get_enabled_time(), 2)

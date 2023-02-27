@@ -1,9 +1,9 @@
 import wpilib
-from wpilib.interfaces import GenericHID
 
 import commands2
 from commands2.button import JoystickButton, POVButton
 import time
+import enum
 import constants
 
 from subsystems.drivetrain import Drivetrain
@@ -25,9 +25,11 @@ from commands.manipulator_toggle import ManipulatorToggle
 from commands.compressor_toggle import CompressorToggle
 from commands.elevator_drive import ElevatorDrive
 from commands.arm_calibration import ArmCalibration
+from commands.generic_drive import GenericDrive
 
 from autonomous.score_from_stow import ScoreFromStow
 from autonomous.upper_substation_pickup import UpperSubstationPickup
+from autonomous.charge_station_balance import ChargeStationBalance
 
 
 class RobotContainer:
@@ -37,6 +39,16 @@ class RobotContainer:
     periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
     subsystems, commands, and button mappings) should be declared here.
     """
+
+    # class CommandSelector(enum.Enum):
+    #     TURRET_CW = enum.auto()
+    #     TURRET_CCW = enum.auto()
+    #     ELEVATOR_UP = enum.auto()
+    #     ELEVATOR_DOWN = enum.auto()
+    #     ARM_OUT = enum.auto()
+    #     ARM_IN = enum.auto()
+    #     WRIST_UP = enum.auto()
+    #     WRIST_DOWN = enum.auto()
 
     def __init__(self) -> None:
 
@@ -57,7 +69,7 @@ class RobotContainer:
             self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
                     lambda: self.driver_controller.getRawAxis(4),))
         else:
-            self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
+            self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, controller=self.driver_controller, slowmode_button=self.buttonRightAxis, control_type='velocity', scaling=1))
 
         # initialize the turret
         commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
@@ -93,8 +105,36 @@ class RobotContainer:
 
         # co-pilot controller
         self.co_driver_controller = wpilib.XboxController(constants.k_co_driver_controller_port)
+        self.co_buttonA = JoystickButton(self.co_driver_controller, 1)
+        self.co_buttonB = JoystickButton(self.co_driver_controller, 2)
+        self.co_buttonX = JoystickButton(self.co_driver_controller, 3)
+        self.co_buttonY = JoystickButton(self.co_driver_controller, 4)
         self.co_buttonLB = JoystickButton(self.co_driver_controller, 5)
         self.co_buttonRB = JoystickButton(self.co_driver_controller, 6)
+        self.co_buttonBack = JoystickButton(self.co_driver_controller, 7)
+        self.co_buttonStart = JoystickButton(self.co_driver_controller, 8)
+        self.co_buttonUp = POVButton(self.co_driver_controller, 0)
+        self.co_buttonDown = POVButton(self.co_driver_controller, 180)
+        self.co_buttonLeft = POVButton(self.co_driver_controller, 270)
+        self.co_buttonRight = POVButton(self.co_driver_controller, 90)
+        self.co_buttonLeftAxis = POVButton(self.co_driver_controller, 2)
+        self.co_buttonRightAxis = POVButton(self.co_driver_controller, 3)
+
+        """
+        # bind commands to driver
+        self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=5))
+        self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
+        self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
+
+        # bind commands to co-pilot
+        self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
+        self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="open"))
+        self.co_buttonA.whileHeld(GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], axis=0, invert_axis=False))
+        self.co_buttonB.whileHeld(GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], axis=1, invert_axis=True))
+        self.co_buttonY.whileHeld(GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], axis=1, invert_axis=True))
+        self.co_buttonX.whileHeld(GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], axis=1, invert_axis=True))
+        self.co_buttonUp.and_(self.co_buttonDown).whenPressed(commands2.SelectCommand())
+        """
 
         # testing turret and elevator
         enable_testing = True
