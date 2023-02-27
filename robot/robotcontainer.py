@@ -40,15 +40,30 @@ class RobotContainer:
     subsystems, commands, and button mappings) should be declared here.
     """
 
-    # class CommandSelector(enum.Enum):
-    #     TURRET_CW = enum.auto()
-    #     TURRET_CCW = enum.auto()
-    #     ELEVATOR_UP = enum.auto()
-    #     ELEVATOR_DOWN = enum.auto()
-    #     ARM_OUT = enum.auto()
-    #     ARM_IN = enum.auto()
-    #     WRIST_UP = enum.auto()
-    #     WRIST_DOWN = enum.auto()
+    class CommandSelector(enum.Enum):
+        TURRET_DOWN = enum.auto()
+        TURRET_UP = enum.auto()
+        ELEVATOR_UP = enum.auto()
+        ELEVATOR_DOWN = enum.auto()
+        ARM_UP = enum.auto()
+        ARM_DOWN = enum.auto()
+        WRIST_UP = enum.auto()
+        WRIST_DOWN = enum.auto()
+        NONE = enum.auto()
+
+    def select_preset(self, direction) -> CommandSelector:
+        direction = direction.upper()
+
+        if self.driver_controller.getRawButton(1):
+            return self.CommandSelector[f'TURRET_{direction}']
+        elif self.driver_controller.getRawButton(2):
+            return self.CommandSelector[f'ELEVATOR_{direction}']
+        elif self.driver_controller.getRawButton(3):
+            return self.CommandSelector[f'ARM_{direction}']
+        elif self.driver_controller.getRawButton(4):
+            return self.CommandSelector[f'WRIST_{direction}']
+
+        return self.CommandSelector.NONE
 
     def __init__(self) -> None:
 
@@ -121,6 +136,7 @@ class RobotContainer:
         self.co_buttonRightAxis = POVButton(self.co_driver_controller, 3)
 
         """
+        # All untested still
         # bind commands to driver
         self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=5))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
@@ -134,6 +150,28 @@ class RobotContainer:
         self.co_buttonY.whileHeld(GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], axis=1, invert_axis=True))
         self.co_buttonX.whileHeld(GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], axis=1, invert_axis=True))
         self.co_buttonUp.and_(self.co_buttonDown).whenPressed(commands2.SelectCommand())
+        
+        preset_command_map = [
+            (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),
+            (self.CommandSelector.TURRET_DOWN, TurretMove(self, self.turret, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.ELEVATOR_UP, ElevatorMove(self, self.elevator, direction="up", wait_to_finish=False)),
+            (self.CommandSelector.ELEVATOR_DOWN, ElevatorMove(self, self.elevator, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.ARM_UP, ElevatorMove(self, self.elevator, direction="up", wait_to_finish=False)),
+            (self.CommandSelector.ARM_DOWN, ElevatorMove(self, self.elevator, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.WRIST_UP, WristMove(self, self.wrist, direction="up", wait_to_finish=False)),
+            (self.CommandSelector.WRIST_DOWN, WristMove(self, self.wrist, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.NONE, commands2.WaitCommand(0)),
+        ]
+
+        self.co_buttonUp.whenPressed(commands2.SelectCommand(
+            lambda: self.select_preset("up"),
+            preset_command_map,
+        ))
+        
+        self.co_buttonDown.whenPressed(commands2.SelectCommand(
+            lambda: self.select_preset("down"),
+            preset_command_map,
+        ))
         """
 
         # testing turret and elevator
