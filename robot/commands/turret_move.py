@@ -11,6 +11,7 @@ class TurretMove(commands2.CommandBase):
         self.turret = turret
         self.setpoint = setpoint
         self.direction = direction
+        self.tolerance = 4  # for stepping to the next preset location
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
 
         self.addRequirements(self.turret)  # commandsv2 version of requirements
@@ -22,11 +23,11 @@ class TurretMove(commands2.CommandBase):
         # tell the elevator to go to position
         if self.setpoint is None:
             if self.direction == 'up':
-                allowed_positions = [x for x in sorted(self.turret.positions.values()) if x > position]
+                allowed_positions = [x for x in sorted(self.turret.positions.values()) if x > position + self.tolerance]
                 # print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
             else:
-                allowed_positions = [x for x in sorted(self.turret.positions.values()) if x < position]
+                allowed_positions = [x for x in sorted(self.turret.positions.values()) if x < position - self.tolerance]
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
 
             self.turret.set_turret_angle(angle=temp_setpoint, mode='smartmotion')

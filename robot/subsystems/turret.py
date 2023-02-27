@@ -38,8 +38,6 @@ class Turret(SubsystemBase):
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_turret_encoder_conversion_factor)
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_turret_encoder_conversion_factor)  # needed for smartmotion
         self.pid_controller = self.turret_controller.getPIDController()
-        configure_sparkmax(sparkmax=self.turret_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_turret_motor_port,
-                           pid_dict=constants.k_PID_dict_vel_turret, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # set soft limits - do not let spark max put out power above/below a certain value
         self.turret_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, constants.k_enable_soft_limts)
@@ -47,14 +45,17 @@ class Turret(SubsystemBase):
         self.turret_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_angle)
         self.turret_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_angle)
 
+        configure_sparkmax(sparkmax=self.turret_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_turret_motor_port,
+                           pid_dict=constants.k_PID_dict_vel_turret, pid_only=True, burn_flash=constants.k_burn_flash)
+
         # same here, and need the turret encoder to be set to analog (jumper change)
         self.analog_abs_encoder = wpilib.AnalogEncoder(1)  # plug the analog encoder into channel 1
         self.analog_conversion_factor = 360.0  # 5V is 360 degrees
         self.analog_abs_encoder.setDistancePerRotation(self.analog_conversion_factor)
 
         # set the offset on the absolute analog encoder
-        self.absolute_position_offset = 0.842  # this is what the absolute encoder reports when in stow position
-        self.analog_abs_encoder.setPositionOffset(self.absolute_position_offset)  # now stow alignment is angle=0
+        self.absolute_position_offset = 0 #  0.842  # this is what the absolute encoder reports when in stow position
+        # self.analog_abs_encoder.setPositionOffset(self.absolute_position_offset)  # now stow alignment is angle=0
 
         self.angle = self.get_angle()
         self.setpoint = self.angle  # initial setting should be?

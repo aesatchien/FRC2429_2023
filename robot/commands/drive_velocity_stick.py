@@ -10,13 +10,11 @@ from subsystems.drivetrain import Drivetrain
 # TODO: Add a version of this with a lower scale as a fine-control version
 class DriveByJoystickVelocity(commands2.CommandBase):
 
-    def __init__(self, container, drive: Drivetrain, controller: wpilib.XboxController, slowmode_button: JoystickButton, control_type='velocity', scaling=1.0) -> None:
+    def __init__(self, container, drive: Drivetrain, control_type='velocity', scaling=1.0) -> None:
         super().__init__()
         self.setName('drive_by_joystick_velocity')  # change this to something appropriate for this command
         self.container = container
         self.drive = drive
-        self.controller = controller
-        self.slowmode_button = slowmode_button
         self.control_type = control_type
         self.scaling = scaling
         self.addRequirements(self.drive)  # commandsv2 version of requirements
@@ -47,7 +45,7 @@ class DriveByJoystickVelocity(commands2.CommandBase):
         twist = self.container.driver_controller.getRawAxis(constants.k_controller_twist_axis)
         twist = 0 if abs(twist) < self.deadband else math.copysign(1, twist) * (abs(twist) ** self.scaling)
 
-        slowmode_multiplier = 0.5 if self.controller.getRawButton(self.slowmode_button) else 1.0
+        slowmode_multiplier = 0.5 if self.container.driver_controller.getRawButton(5) else 1.0
 
         # try to limit the change in thrust  BE VERY CAREFUL WITH THIS!  IT CAUSES RUNAWAY ROBOTS!
         d_thrust = self.previous_thrust - thrust

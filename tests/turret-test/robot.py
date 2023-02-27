@@ -23,7 +23,7 @@ class MyRobot(wpilib.TimedRobot):
         self.counter = 0
         self.scale = 0.1
 
-        self.absolute_position_offset = 0.842  # this is what the absolute encoder reports when in stow position
+        self.absolute_position_offset = 0.837  # this is what the absolute encoder reports when in stow position
 
         # create objects for robot hardware
         self.joystick = wpilib.Joystick(0)

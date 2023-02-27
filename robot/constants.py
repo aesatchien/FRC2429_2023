@@ -7,7 +7,7 @@ changes.
 """
 
 k_competition_mode = False  # use for compressor and some joystick settings
-k_burn_flash = True  # if we want to burn the settings to the sparkmaxes
+k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
 k_enable_soft_limts = True
 
 # --------------  OI  ---------------
@@ -67,9 +67,9 @@ k_elevator_timeoflight = 13  # time of flight CAN ID
 # 4.11mm/rev - comes from 25x reduction motor to shaft, one sprocket rot is 4.05in, so 0.162in / rot * 25.4 mm/in
 k_elevator_encoder_conversion_factor = 0.162 * 25.4   # 4.11
 # TODO: verify elevator velocity PID values  - # 25000V and 35000A worked well in practice  20230121
-k_PID_dict_vel_elevator = {'kP': 1e-5, 'kI': 1e-5, 'kD': 0, 'kIz': 2e-4, 'kFF': 3.5e-5, 'kArbFF':0,
-                         'kMaxOutput': 0.9, 'kMinOutput': -0.9, 'SM_MaxVel':4000*k_elevator_encoder_conversion_factor,
-                         'SM_MaxAccel':5600*k_elevator_encoder_conversion_factor}
+k_PID_dict_vel_elevator = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 2e-4, 'kFF': 4.1e-5, 'kArbFF':0,
+                         'kMaxOutput': 0.9, 'kMinOutput': -0.9, 'SM_MaxVel':28000,
+                         'SM_MaxAccel':28000}
 
 # --------------  ARM  ---------------
 k_arm_motor_port = 11  # sparkmax with a NEO550 - full speed is 11k
@@ -82,12 +82,12 @@ k_PID_dict_vel_arm = {'kP': 1e-5, 'kI': 1e-5, 'kD': 0, 'kIz': 1e-5, 'kFF': 4.1e-
 
 # --------------  WRIST  ---------------
 k_wrist_motor_port = 12  # sparkmax with a NEO
-# 81x reduction motor to shaft, so in degrees it's 360./81.  Half a second at 6k rpm
-k_wrist_encoder_conversion_factor = 360. / 81  # 4.44 degrees per revolution
+# 9*9*7 = 567x reduction motor to shaft, so in degrees it's 360./567.  Half a second at 6k rpm
+k_wrist_encoder_conversion_factor = 360. / 567  # 0.635 degrees per revolution
 # TODO: verify wrist velocity PID values
-k_PID_dict_vel_wrist = {'kP': 5e-5, 'kI': 1e-6, 'kD': 0, 'kIz': 1e-5, 'kFF': 0.0075, 'kArbFF':0,
-                         'kMaxOutput': 0.99, 'kMinOutput': -0.99, 'SM_MaxVel':5000*k_wrist_encoder_conversion_factor,
-                        'SM_MaxAccel':5000*k_wrist_encoder_conversion_factor}
+k_PID_dict_vel_wrist = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.56e-4, 'kArbFF':0,
+                         'kMaxOutput': 0.6, 'kMinOutput': -0.6, 'SM_MaxVel':4000,
+                        'SM_MaxAccel':4500}
 
 # TODO: determine which systems need a limit switch
 k_wrist_limit_switch = 1  # DIO for the wrist limit switch

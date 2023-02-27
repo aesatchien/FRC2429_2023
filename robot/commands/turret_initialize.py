@@ -39,8 +39,12 @@ class TurretInitialize(commands2.CommandBase):
     def end(self, interrupted: bool) -> None:
 
         average_encoder_value = sum(self.data) / self.samples
-        self.turret.sparkmax_encoder.setPosition(average_encoder_value)
-        print(f'set turret sparkmax encoder to {average_encoder_value}')
+        print(f"Average encoder value is {average_encoder_value}")
+        calibrated_angle = average_encoder_value + 57  # our absolute encoder's offset from our zero
+        if calibrated_angle > 270:  # keep us within -90 to 270
+            calibrated_angle = calibrated_angle - 360
+        self.turret.sparkmax_encoder.setPosition(calibrated_angle)
+        print(f'set turret sparkmax encoder using {average_encoder_value} to {calibrated_angle}')
 
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'

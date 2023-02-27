@@ -31,8 +31,6 @@ class Wrist(SubsystemBase):
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_wrist_encoder_conversion_factor)  # mm per revolution
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_wrist_encoder_conversion_factor)  # necessary for smartmotion to behave
         self.pid_controller = self.wrist_controller.getPIDController()
-        configure_sparkmax(sparkmax=self.wrist_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_wrist_motor_port,
-                           pid_dict=constants.k_PID_dict_vel_wrist, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
 
@@ -41,6 +39,9 @@ class Wrist(SubsystemBase):
         self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limts)
         self.wrist_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_angle)
         self.wrist_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_angle)
+
+        configure_sparkmax(sparkmax=self.wrist_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_wrist_motor_port,
+                           pid_dict=constants.k_PID_dict_vel_wrist, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # initialize the location of the wrist - say it's fully up at start
         self.sparkmax_encoder.setPosition(self.max_angle)

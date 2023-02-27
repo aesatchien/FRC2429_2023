@@ -176,8 +176,8 @@
               "_title": "Set Velocity",
               "_glyph": 148,
               "_showGlyph": false,
-              "Slider Settings/Min": -1000.0,
-              "Slider Settings/Max": 1000.0,
+              "Slider Settings/Min": -5000.0,
+              "Slider Settings/Max": 5000.0,
               "Slider Settings/Block increment": 1.0,
               "Visuals/Display value": true
             }
@@ -272,9 +272,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 102.0,
-    "y": 8.0,
+    "x": 69.0,
+    "y": 6.0,
     "width": 1793.0,
-    "height": 905.0
+    "height": 914.0
   }
 }

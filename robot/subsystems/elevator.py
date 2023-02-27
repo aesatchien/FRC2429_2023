@@ -24,14 +24,14 @@ from misc.configure_controllers import configure_sparkmax
 
 class Elevator(SubsystemBase):
     # elevator should probably have positions that we need to map out
-    positions = {'top': 980, 'bottom': 20, 'upper_pickup': 600, 'lower_pickup': 300}
+    positions = {'top': 950, 'bottom': 100, 'upper_pickup': 600, 'lower_pickup': 300}
 
     def __init__(self):
         super().__init__()
         self.counter = 0
 
-        self.max_height = 900  # the bottom of the carriage is 39in (991mm)  above the bottom at max height
-        self.min_height = 100  # mm for now
+        self.max_height = 951  # the bottom of the carriage is 39in (991mm)  above the bottom at max height
+        self.min_height = 99  # mm for now
 
         # initialize motors
         self.elevator_controller = rev.CANSparkMax(constants.k_elevator_motor_port, rev.CANSparkMax.MotorType.kBrushless)
@@ -40,8 +40,6 @@ class Elevator(SubsystemBase):
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_elevator_encoder_conversion_factor)  # mm per revolution
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_elevator_encoder_conversion_factor)  # necessary for smartmotion to behave
         self.pid_controller = self.elevator_controller.getPIDController()
-        configure_sparkmax(sparkmax=self.elevator_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_elevator_motor_port,
-                           pid_dict=constants.k_PID_dict_vel_elevator, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # set up distance sensor
         self.elevator_height_sensor = TimeOfFlight(constants.k_elevator_timeoflight)
@@ -52,6 +50,9 @@ class Elevator(SubsystemBase):
         self.elevator_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limts)
         self.elevator_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_height)
         self.elevator_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_height)
+
+        configure_sparkmax(sparkmax=self.elevator_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_elevator_motor_port,
+                           pid_dict=constants.k_PID_dict_vel_elevator, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # initialize the height of the elevator  - sensor is in mm, so stick with that
         initial_height = self.elevator_height_sensor.getRange()

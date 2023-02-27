@@ -69,7 +69,7 @@ class RobotContainer:
             self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
                     lambda: self.driver_controller.getRawAxis(4),))
         else:
-            self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, controller=self.driver_controller, slowmode_button=self.buttonRightAxis, control_type='velocity', scaling=1))
+            self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
 
         # initialize the turret
         commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()

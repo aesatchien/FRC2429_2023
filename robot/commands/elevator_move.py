@@ -11,6 +11,7 @@ class ElevatorMove(commands2.CommandBase):
         self.elevator = elevator
         self.setpoint = setpoint
         self.direction = direction
+        self.tolerance = 10
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
 
         self.addRequirements(self.elevator)  # commandsv2 version of requirements
@@ -21,11 +22,12 @@ class ElevatorMove(commands2.CommandBase):
         # tell the elevator to go to position
         if self.setpoint is None:
             if self.direction == 'up':
-                allowed_positions = [x for x in sorted(self.elevator.positions.values()) if x > position ]
-                # print(allowed_positions)
+                allowed_positions = [x for x in sorted(self.elevator.positions.values()) if x > position + 10 ]
+                print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
             else:
-                allowed_positions = [x for x in sorted(self.elevator.positions.values()) if x < position]
+                allowed_positions = [x for x in sorted(self.elevator.positions.values()) if x < position -10]
+                print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
 
             self.elevator.set_elevator_height(height=temp_setpoint, mode='smartmotion')

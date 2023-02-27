@@ -34,13 +34,11 @@ class Arm(SubsystemBase):
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_arm_encoder_conversion_factor)
         self.pid_controller = self.arm_controller.getPIDController()
 
-
         # set soft limits - do not let spark max put out power above/below a certain value
         self.arm_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, True)
         self.arm_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, True)
         self.arm_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_extension)
         self.arm_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_extension)
-
 
         configure_sparkmax(sparkmax=self.arm_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_arm_motor_port,
                            pid_dict=constants.k_PID_dict_vel_arm, pid_only=True, burn_flash=constants.k_burn_flash)
