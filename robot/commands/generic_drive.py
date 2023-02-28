@@ -4,16 +4,17 @@ from wpilib import SmartDashboard
 
 class GenericDrive(commands2.CommandBase):
 
-    def __init__(self, container, subsystem, max_velocity, axis, invert_axis = False) -> None:
+    def __init__(self, container, subsystem, max_velocity, axis, invert_axis=False, control_type='voltage') -> None:
         super().__init__()
         self.setName('Generic Drive')
         self.container = container
         self.subsystem = subsystem
         self.max_velocity = max_velocity
+        self.control_type = control_type
         self.axis = axis
         self.invert_axis = invert_axis
 
-        self.velocity_multiplier = 0.5
+        self.scale = 0.5
 
         # Elevator, Turret, Wrist, and Arm all have pid_controller
         self.controller = self.subsystem.pid_controller
@@ -22,6 +23,16 @@ class GenericDrive(commands2.CommandBase):
 
     def initialize(self) -> None:
         self.print_start_message()
+        if self.control_type == 'voltage':
+            if self.subsystem == self.container.elevator:
+                self.scale = 0.35
+            elif self.subsystem == self.container.turret:
+                self.scale = 0.2
+            elif self.subsystem == self.container.arm:
+                self.scale = 0.9
+            elif self.subsystem == self.container.wrist:
+                self.scale = 0.65
+
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work
         # get stick value and invert if necessary (if using Y-axis)
@@ -29,8 +40,11 @@ class GenericDrive(commands2.CommandBase):
         if self.invert_axis:
             stick *= -1
 
-        velocity = stick * self.max_velocity * self.velocity_multiplier
-        self.controller.setReference(velocity, rev.CANSparkMax.ControlType.kVelocity, pidSlot=0)
+        velocity = stick * self.max_velocity * self.scale
+        if self.control_type == 'voltage':  # do not confuse this with velocity!!!
+            self.controller.setReference(12*stick*self.scale, rev.CANSparkMax.ControlType.kVoltage)
+        else:
+            self.controller.setReference(velocity, rev.CANSparkMax.ControlType.kVelocity, pidSlot=0)
 
     def isFinished(self) -> bool:
         return False  # this should be managed by the whileHeld()

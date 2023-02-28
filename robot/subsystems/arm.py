@@ -21,10 +21,10 @@ class Arm(SubsystemBase):
         super().__init__()
         self.counter = 0
 
-        self.max_extension = 455  # need to see what is max legal amount
-        self.min_extension = 10  # mm for now
+        self.max_extension = 551  # need to see what is max legal amount
+        self.min_extension = 2  # mm for now
         # arm should probably have positions that we need to map out
-        self.positions = {'full': 450, 'middle': 225, 'stow': 10}
+        self.positions = {'full': 550, 'middle': 275, 'stow': 3}
 
         # initialize motors
         self.arm_controller = rev.CANSparkMax(constants.k_arm_motor_port, rev.CANSparkMax.MotorType.kBrushless)
