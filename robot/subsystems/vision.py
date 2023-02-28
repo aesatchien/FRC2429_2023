@@ -52,9 +52,8 @@ class Vision(SubsystemBase):
 
             for key in self.camera_dict.keys():
                 self.camera_values[key]['targets'] = self.camera_dict[key]['targets_entry'].getDouble(0)
-                self.camera_values[key]['targets'] = self.camera_dict[key]['targets_entry'].getDouble(0)
-                self.camera_values[key]['targets'] = self.camera_dict[key]['targets_entry'].getDouble(0)
-                self.camera_values[key]['targets'] = self.camera_dict[key]['targets_entry'].getDouble(0)
+                self.camera_values[key]['distance_entry'] = self.camera_dict[key]['distance_entry'].getDouble(0)
+                self.camera_values[key]['rotation_entry'] = self.camera_dict[key]['rotation_entry'].getDouble(0)
 
             # update pole values separately
             self.pole_targets = self.camera_dict['green']['targets_entry'].getDouble(0)
