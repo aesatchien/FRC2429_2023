@@ -41,7 +41,7 @@ class WristMove(commands2.CommandBase):
 
     def isFinished(self) -> bool:
         if self.wait_to_finish:  # wait for the wrist to get within x degrees
-            return abs(self.wrist.get_angle() - self.setpoint) < 5
+            return abs(self.wrist.get_angle() - self.setpoint) < self.tolerance
         else:
             return True
 

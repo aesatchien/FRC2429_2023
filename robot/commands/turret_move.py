@@ -4,13 +4,14 @@ from subsystems.turret import Turret
 
 class TurretMove(commands2.CommandBase):
 
-    def __init__(self, container, turret:Turret, setpoint=None, direction=None, wait_to_finish=True) -> None:
+    def __init__(self, container, turret:Turret, setpoint=None, direction=None, relative=False, wait_to_finish=True) -> None:
         super().__init__()
         self.setName('Turret Move')
         self.container = container
         self.turret = turret
         self.setpoint = setpoint
         self.direction = direction
+        self.relative = relative
         self.tolerance = 4  # for stepping to the next preset location
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
 
@@ -21,7 +22,7 @@ class TurretMove(commands2.CommandBase):
         # tell the turret to go to position
         position = self.turret.get_angle()
         # tell the elevator to go to position
-        if self.setpoint is None:
+        if self.setpoint is None:  # step through the presets
             if self.direction == 'up':
                 allowed_positions = [x for x in sorted(self.turret.positions.values()) if x > position + self.tolerance]
                 # print(allowed_positions)
@@ -32,8 +33,12 @@ class TurretMove(commands2.CommandBase):
 
             self.turret.set_turret_angle(angle=temp_setpoint, mode='smartmotion')
             print(f'Setting turret from {position:.0f} to {temp_setpoint}')
-        else:
-            self.turret.set_turret_angle(angle=self.setpoint, mode='smartmotion')
+        else:  # go to the value passed to the function
+            if self.relative:  # make a relative movement from where we are now
+                temp_setpoint = self.setpoint + position
+                self.turret.set_turret_angle(angle=temp_setpoint, mode='smartmotion')
+            else:  # make an absolute movement
+                self.turret.set_turret_angle(angle=self.setpoint, mode='smartmotion')
             print(f'Setting turret from {position:.0f} to {self.setpoint}')
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work
@@ -41,7 +46,7 @@ class TurretMove(commands2.CommandBase):
 
     def isFinished(self) -> bool:
         if self.wait_to_finish:  # wait for the turret to get within x degrees
-            return abs(self.turret.get_angle() - self.setpoint) < 10
+            return abs(self.turret.get_angle() - self.setpoint) < self.tolerance
         else:
             return True
 

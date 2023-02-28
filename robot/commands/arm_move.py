@@ -42,7 +42,7 @@ class ArmMove(commands2.CommandBase):
 
     def isFinished(self) -> bool:
         if self.wait_to_finish:  # wait for the arm to get within x mm
-            return abs(self.arm.get_extension() - self.setpoint) < 25
+            return abs(self.arm.get_extension() - self.setpoint) < self.tolerance
         else:
             return True
 

@@ -41,7 +41,7 @@ class ElevatorMove(commands2.CommandBase):
 
     def isFinished(self) -> bool:
         if self.wait_to_finish:  # wait for the elevator to get within x mm
-            return abs(self.elevator.get_height() - self.setpoint) < 25
+            return abs(self.elevator.get_height() - self.setpoint) < self.tolerance
         else:
             return True
 
