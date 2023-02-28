@@ -32,6 +32,10 @@ class Wrist(SubsystemBase):
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_wrist_encoder_conversion_factor)  # necessary for smartmotion to behave
         self.pid_controller = self.wrist_controller.getPIDController()
 
+        self.forward_limit_switch = self.wrist_controller.getForwardLimitSwitch(switchType=rev.SparkMaxLimitSwitch.Type.kNormallyOpen)
+        self.at_fwd_limit = self.forward_limit_switch.get()
+        SmartDashboard.putBoolean('wrist_limit', self.at_fwd_limit)
+
         # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
 
         # set soft limits - do not let spark max put out power above/below a certain value
@@ -69,8 +73,20 @@ class Wrist(SubsystemBase):
         if wpilib.RobotBase.isSimulation():
             SmartDashboard.putNumber('wrist_angle', self.angle)
 
+    def set_encoder_position(self, angle):
+        self.sparkmax_encoder.setPosition(angle)
+        if wpilib.RobotBase.isSimulation():
+            self.angle = angle
+
     def periodic(self) -> None:
         self.counter += 1
         if self.counter % 25 == 0:
             self.angle = self.get_angle()
             SmartDashboard.putNumber('wrist_angle', self.angle)
+
+            previous_limit_value = self.at_fwd_limit  # get the previous limit value
+            self.at_fwd_limit = self.forward_limit_switch.get()
+            if self.at_fwd_limit and not previous_limit_value:
+                #  we just hit the limit - set the encoder to the max value if we want to
+                pass
+                # self.sparkmax_encoder.setPosition(self.max_angle)

@@ -297,25 +297,20 @@ class Ui(QtWidgets.QMainWindow):
         'qlabel_elevator_up_indicator': {'widget': self.qlabel_elevator_up_indicator,
                                               'nt': '/SmartDashboard/ElevatorMoveUp/running', 'command': '/SmartDashboard/ElevatorMoveUp/running'},
         'qlabel_manipulator_closed_indicator': {'widget': self.qlabel_manipulator_closed_indicator, 'nt': '/SmartDashboard/manipulator_closed', 'command': '/SmartDashboard/ManipulatorToggle/running'},
-        'qlabel_indexer_indicator': {'widget':self.qlabel_indexer_indicator, 'nt':'/SmartDashboard/indexer_state',
-                                     'command': '/SmartDashboard/IndexerHold/running'},
-        'qlabel_intake_piston_indicator': {'widget':self.qlabel_intake_piston_indicator, 'nt':'/SmartDashboard/intake_extended',
-                                           'command': '/SmartDashboard/IntakePistonToggle/running'},
         'qlabel_upper_pickup_indicator': {'widget':self.qlabel_upper_pickup_indicator, 'nt':'/SmartDashboard/UpperStationPickup/running', 'command': '/SmartDashboard/UpperStationPickup/running'},
         'qlabel_matchtime': {'widget': self.qlabel_matchtime, 'nt': '/SmartDashboard/match_time', 'command': None},
         'qlabel_nt_connected': {'widget': self.qlabel_nt_connected, 'nt': None, 'command': None},
         'qlabel_score_from_stow_indicator': {'widget': self.qlabel_score_from_stow_indicator, 'nt': '/SmartDashboard/ScoreFromStow/running', 'command': '/SmartDashboard/ScoreFromStow/running'},
-        'qlabel_shooter_indicator': {'widget':self.qlabel_shooter_indicator, 'nt':'/SmartDashboard/shooter_state',
-                                     'command': '/SmartDashboard/ShooterToggle/running'},
-        'qlabel_shooter_speed_indicator': {'widget':self.qlabel_shooter_speed_indicator, 'nt':'/SmartDashboard/shooter_ready', 'command': None},
-        'qlabel_turret_calibration_indicator': {'widget': self.qlabel_turret_calibration_indicator, 'nt': '/SmartDashboard/TurretInitialization/running',
-                                    'command': '/SmartDashboard/TurretInitialization/running'},
+        'qlabel_turret_calibration_indicator': {'widget': self.qlabel_turret_calibration_indicator, 'nt': '/SmartDashboard/TurretInitialize/running',
+                                    'command': '/SmartDashboard/TurretInitialize/running'},
         'qlabel_turret_down_indicator': {'widget': self.qlabel_turret_down_indicator,
                                             'nt': '/SmartDashboard/TurretMoveDown/running',
                                             'command': '/SmartDashboard/TurretMoveDown/running'},
         'qlabel_turret_up_indicator': {'widget': self.qlabel_turret_up_indicator,
                                           'nt': '/SmartDashboard/TurretMoveUp/running',
                                           'command': '/SmartDashboard/TurretMoveUp/running'},
+        'qlabel_wrist_calibration_indicator': {'widget': self.qlabel_wrist_calibration_indicator, 'nt': '/SmartDashboard/WristCalibration/running',
+                                         'command': '/SmartDashboard/WristCalibration/running'},
         'qlabel_wrist_down_indicator': {'widget': self.qlabel_wrist_down_indicator, 'nt': '/SmartDashboard/WristMoveDown/running',
                                                'command': '/SmartDashboard/WristMoveDown/running'},
         'qlabel_wrist_up_indicator': {'widget': self.qlabel_wrist_up_indicator, 'nt': '/SmartDashboard/WristMoveUp/running',
@@ -564,6 +559,12 @@ class Ui(QtWidgets.QMainWindow):
 # -------------------  MAIN --------------------------
 if __name__ == "__main__":
     import sys
+
+    # attempt to set high dpi scaling if it is detected - possible fix for high-def laptop and destop displays
+    if hasattr(QtCore.Qt, 'AA_EnableHighDpiScaling'):
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling, True)
+    if hasattr(QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
