@@ -30,17 +30,17 @@ class GenericDrive(commands2.CommandBase):
             stick *= -1
 
         velocity = stick * self.max_velocity * self.velocity_multiplier
-        self.pid_controller.setReference(velocity, rev.CANSparkMax.ControlType.kSmartVelocity, pidSlot=0)
+        self.controller.setReference(velocity, rev.CANSparkMax.ControlType.kVelocity, pidSlot=0)
 
     def isFinished(self) -> bool:
         return False  # this should be managed by the whileHeld()
 
     def end(self, interrupted: bool) -> None:
-        self.pid_controller.setReference(0, rev.CANSparkMax.ControlType.kSmartVelocity, pidSlot=0)
+        self.controller.setReference(0, rev.CANSparkMax.ControlType.kVelocity, pidSlot=0)
 
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'
-        print(f"** {message} {self.getName()} at {end_time:.1f} s at {self.elevator.sparkmax_encoder.getPosition():.1f} after {end_time - self.start_time:.1f} s **")
+        print(f"** {message} {self.getName()} at {end_time:.1f} s after {end_time - self.start_time:.1f} s **")
         # SmartDashboard.putString(f"alert", f"** {message} {self.getName()} at {end_time:.1f} s after {end_time - self.start_time:.1f} s **")
 
     def print_start_message(self):

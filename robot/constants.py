@@ -57,7 +57,7 @@ k_turret_motor_port = 9  # sparkmax with a NEO550 - full speed is 11k
 k_turret_abs_encoder_port = 1  # analog absolute encoder on turret
 k_turret_encoder_conversion_factor = 360 / 462.2  # Armabot has 462:1 gear ratio?  Circle has 360 degrees-->  0.779°/rot
 # TODO: verify turret velocity PID values, burn to slot 0  - tested on 2023 0226
-k_PID_dict_vel_turret = {'kP': 1e-5, 'kI': 1e-6, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.4e-4, 'kArbFF':0,
+k_PID_dict_vel_turret = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.4e-4, 'kArbFF':0,
                          'kMaxOutput': 0.75, 'kMinOutput': -0.75, 'SM_MaxVel':5000,
                          'SM_MaxAccel':3500}
 

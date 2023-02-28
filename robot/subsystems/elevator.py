@@ -24,14 +24,14 @@ from misc.configure_controllers import configure_sparkmax
 
 class Elevator(SubsystemBase):
     # elevator should probably have positions that we need to map out
-    positions = {'top': 950, 'bottom': 100, 'upper_pickup': 600, 'lower_pickup': 300}
+    positions = {'top': 950, 'bottom': 50, 'upper_pickup': 600, 'lower_pickup': 300}
 
     def __init__(self):
         super().__init__()
         self.counter = 0
 
         self.max_height = 951  # the bottom of the carriage is 39in (991mm)  above the bottom at max height
-        self.min_height = 99  # mm for now
+        self.min_height = 49  # mm for now
 
         # initialize motors
         self.elevator_controller = rev.CANSparkMax(constants.k_elevator_motor_port, rev.CANSparkMax.MotorType.kBrushless)

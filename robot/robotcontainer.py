@@ -12,6 +12,7 @@ from subsystems.wrist import Wrist
 from subsystems.elevator import Elevator
 from subsystems.turret import Turret
 from subsystems.pneumatics import Pneumatics
+from subsystems.vision import Vision
 
 from misc.axis_button import AxisButton
 from commands.drive_by_joystick import DriveByJoystick
@@ -54,13 +55,13 @@ class RobotContainer:
     def select_preset(self, direction) -> CommandSelector:
         direction = direction.upper()
 
-        if self.driver_controller.getRawButton(1):
+        if self.co_driver_controller.getRawButton(1):
             return self.CommandSelector[f'TURRET_{direction}']
-        elif self.driver_controller.getRawButton(2):
+        elif self.co_driver_controller.getRawButton(2):
             return self.CommandSelector[f'ELEVATOR_{direction}']
-        elif self.driver_controller.getRawButton(3):
+        elif self.co_driver_controller.getRawButton(4):
             return self.CommandSelector[f'ARM_{direction}']
-        elif self.driver_controller.getRawButton(4):
+        elif self.co_driver_controller.getRawButton(3):
             return self.CommandSelector[f'WRIST_{direction}']
 
         return self.CommandSelector.NONE
@@ -76,6 +77,7 @@ class RobotContainer:
         self.wrist = Wrist()
         self.elevator = Elevator()
         self.pneumatics = Pneumatics()
+        self.vision = Vision()
 
         self.configureButtonBindings()
 
@@ -135,7 +137,7 @@ class RobotContainer:
         self.co_buttonLeftAxis = POVButton(self.co_driver_controller, 2)
         self.co_buttonRightAxis = POVButton(self.co_driver_controller, 3)
 
-        """
+
         # All untested still
         # bind commands to driver
         self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=5))
@@ -149,30 +151,29 @@ class RobotContainer:
         self.co_buttonB.whileHeld(GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], axis=1, invert_axis=True))
         self.co_buttonY.whileHeld(GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], axis=1, invert_axis=True))
         self.co_buttonX.whileHeld(GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], axis=1, invert_axis=True))
-        self.co_buttonUp.and_(self.co_buttonDown).whenPressed(commands2.SelectCommand())
-        
+
         preset_command_map = [
             (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),
             (self.CommandSelector.TURRET_DOWN, TurretMove(self, self.turret, direction="down", wait_to_finish=False)),
             (self.CommandSelector.ELEVATOR_UP, ElevatorMove(self, self.elevator, direction="up", wait_to_finish=False)),
             (self.CommandSelector.ELEVATOR_DOWN, ElevatorMove(self, self.elevator, direction="down", wait_to_finish=False)),
-            (self.CommandSelector.ARM_UP, ElevatorMove(self, self.elevator, direction="up", wait_to_finish=False)),
-            (self.CommandSelector.ARM_DOWN, ElevatorMove(self, self.elevator, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.ARM_UP, ArmMove(self, self.arm, direction="up", wait_to_finish=False)),
+            (self.CommandSelector.ARM_DOWN, ArmMove(self, self.arm, direction="down", wait_to_finish=False)),
             (self.CommandSelector.WRIST_UP, WristMove(self, self.wrist, direction="up", wait_to_finish=False)),
             (self.CommandSelector.WRIST_DOWN, WristMove(self, self.wrist, direction="down", wait_to_finish=False)),
             (self.CommandSelector.NONE, commands2.WaitCommand(0)),
         ]
 
-        self.co_buttonUp.whenPressed(commands2.SelectCommand(
-            lambda: self.select_preset("up"),
-            preset_command_map,
-        ))
-        
-        self.co_buttonDown.whenPressed(commands2.SelectCommand(
-            lambda: self.select_preset("down"),
-            preset_command_map,
-        ))
-        """
+        # self.co_buttonUp.whenPressed(commands2.SelectCommand(
+        #     lambda: self.select_preset("up"),
+        #     preset_command_map,
+        # ))
+        #
+        # self.co_buttonDown.whenPressed(commands2.SelectCommand(
+        #     lambda: self.select_preset("down"),
+        #     preset_command_map,
+        # ))
+
 
         # testing turret and elevator
         enable_testing = True
