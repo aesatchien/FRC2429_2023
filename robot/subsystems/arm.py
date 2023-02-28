@@ -73,6 +73,11 @@ class Arm(SubsystemBase):
             self.extension = distance
             SmartDashboard.putNumber('arm_extension', self.extension)
 
+    def set_encoder_position(self, distance):
+        self.sparkmax_encoder.setPosition(distance)
+        if wpilib.RobotBase.isSimulation():
+            self.extension = distance
+
     def periodic(self) -> None:
         self.counter += 1
         if self.counter % 25 == 0:

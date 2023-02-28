@@ -6,7 +6,7 @@ class TurretInitialize(commands2.CommandBase):
 
     def __init__(self, container, turret, samples=50) -> None:
         super().__init__()
-        self.setName('Turret Initialize')
+        self.setName('TurretInitialize')
         self.container = container
         self.turret = turret
         self.samples = samples
