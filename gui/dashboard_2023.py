@@ -300,6 +300,7 @@ class Ui(QtWidgets.QMainWindow):
         'qlabel_upper_pickup_indicator': {'widget':self.qlabel_upper_pickup_indicator, 'nt':'/SmartDashboard/UpperStationPickup/running', 'command': '/SmartDashboard/UpperStationPickup/running'},
         'qlabel_matchtime': {'widget': self.qlabel_matchtime, 'nt': '/SmartDashboard/match_time', 'command': None},
         'qlabel_nt_connected': {'widget': self.qlabel_nt_connected, 'nt': None, 'command': None},
+        'qlabel_safe_carry_indicator': {'widget': self.qlabel_safe_carry_indicator, 'nt': '/SmartDashboard/SafeCarry/running', 'command': '/SmartDashboard/SafeCarry/running'},
         'qlabel_score_from_stow_indicator': {'widget': self.qlabel_score_from_stow_indicator, 'nt': '/SmartDashboard/ScoreFromStow/running', 'command': '/SmartDashboard/ScoreFromStow/running'},
         'qlabel_turret_calibration_indicator': {'widget': self.qlabel_turret_calibration_indicator, 'nt': '/SmartDashboard/TurretInitialize/running',
                                     'command': '/SmartDashboard/TurretInitialize/running'},

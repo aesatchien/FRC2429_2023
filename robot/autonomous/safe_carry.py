@@ -7,6 +7,7 @@ from subsystems.wrist import Wrist
 from commands.elevator_move import ElevatorMove
 from commands.wrist_move import WristMove
 from commands.arm_move import ArmMove
+from commands.turret_move import TurretMove
 
 
 class SafeCarry(commands2.SequentialCommandGroup):  # change the name for your command
@@ -31,7 +32,11 @@ class SafeCarry(commands2.SequentialCommandGroup):  # change the name for your c
         # Step 2.b
         # extend the arm fully / to the cone/cube
         self.addCommands(ArmMove(container=self.container, arm=self.container.arm,
-                                 setpoint=self.container.arm.max_extension, wait_to_finish=False))
+                                 setpoint=self.container.arm.min_extension, wait_to_finish=False))
+
+        # Step
+        # move turret to 0 - our default driving position
+        #self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=0, wait_to_finish=False))
 
 
 

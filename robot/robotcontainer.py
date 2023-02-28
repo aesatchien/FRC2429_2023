@@ -32,7 +32,7 @@ from commands.wrist_calibration import WristCalibration
 from autonomous.score_from_stow import ScoreFromStow
 from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.charge_station_balance import ChargeStationBalance
-
+from autonomous.safe_carry import SafeCarry
 
 class RobotContainer:
     """
@@ -193,6 +193,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(TurretInitialize(container=self, turret=self.turret))
         wpilib.SmartDashboard.putData(ScoreFromStow(container=self))
         wpilib.SmartDashboard.putData(UpperSubstationPickup(container=self))
+        wpilib.SmartDashboard.putData(key='SafeCarry', data=SafeCarry(container=self).withTimeout(5))
         wpilib.SmartDashboard.putData(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
         wpilib.SmartDashboard.putData(CompressorToggle(container=self, pneumatics=self.pneumatics))
         wpilib.SmartDashboard.putData(key='ElevatorMoveUp', data=ElevatorMove(container=self, elevator=self.elevator, direction='up', wait_to_finish=False))
