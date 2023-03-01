@@ -37,8 +37,9 @@ class CameraWorker(QObject):
         self.running = True
         while self.running:
             if self.qtgui.qradiobutton_autoswitch.isChecked():  # auto determine which camera to show
-                shooter_on = self.qtgui.widget_dict['qlabel_shooter_indicator']['entry'].getBoolean(False)
-                url = self.qtgui.camera_dict['ShooterCam'] if shooter_on else self.qtgui.camera_dict['BallCam']
+                # shooter_on = self.qtgui.widget_dict['qlabel_shooter_indicator']['entry'].getBoolean(False)
+                elevator_low = self.qtgui.widget_dict['qlcd_elevator_height']['entry'].getDouble(100) < 100
+                url = self.qtgui.camera_dict['ShooterCam'] if elevator_low else self.qtgui.camera_dict['BallCam']
             else:
                 url = self.qtgui.camera_dict[self.qtgui.qcombobox_cameras.currentText()]  # figure out which url we want
             # stream = urllib.request.urlopen('http://10.24.29.12:1187/stream.mjpg')
