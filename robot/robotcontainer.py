@@ -63,8 +63,8 @@ class RobotContainer:
             return self.CommandSelector[f'ELEVATOR_{direction}']
         elif self.co_driver_controller.getRawButton(4):
             return self.CommandSelector[f'ARM_{direction}']
-        elif self.co_driver_controller.getRawButton(3):
-            return self.CommandSelector[f'WRIST_{direction}']
+        # elif self.co_driver_controller.getRawButton(3):
+        #     return self.CommandSelector[f'WRIST_{direction}']
 
         return self.CommandSelector.NONE
 
@@ -149,10 +149,14 @@ class RobotContainer:
         # bind commands to co-pilot
         self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
         self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="open"))
-        self.co_buttonA.whileHeld(GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], axis=0, invert_axis=False))
-        self.co_buttonB.whileHeld(GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], axis=1, invert_axis=True))
-        self.co_buttonY.whileHeld(GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], axis=1, invert_axis=True))
+
+        # self.co_buttonA.whileHeld(GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], axis=0, invert_axis=False))
+        # self.co_buttonB.whileHeld(GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], axis=1, invert_axis=True))
+        # self.co_buttonY.whileHeld(GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], axis=1, invert_axis=True))
         self.co_buttonX.whileHeld(GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], axis=1, invert_axis=True))
+
+        self.co_buttonBack.whenPressed(SafeCarry(self))
+        self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision))
 
         preset_command_map = [
             (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),
@@ -166,19 +170,18 @@ class RobotContainer:
             (self.CommandSelector.NONE, commands2.WaitCommand(0)),
         ]
 
-        # self.co_buttonUp.whenPressed(commands2.SelectCommand(
-        #     lambda: self.select_preset("up"),
-        #     preset_command_map,
-        # ))
-        #
-        # self.co_buttonDown.whenPressed(commands2.SelectCommand(
-        #     lambda: self.select_preset("down"),
-        #     preset_command_map,
-        # ))
+        self.co_buttonUp.whenPressed(commands2.SelectCommand(
+            lambda: self.select_preset("up"),
+            preset_command_map,
+        ))
 
+        self.co_buttonDown.whenPressed(commands2.SelectCommand(
+            lambda: self.select_preset("down"),
+            preset_command_map,
+        ))
 
         # testing turret and elevator
-        enable_testing = True
+        enable_testing = False
         if enable_testing:
             self.buttonRight.whenPressed(TurretMove(self, self.turret, direction='up', wait_to_finish=True).withTimeout(2))
             self.buttonLeft.whenPressed(TurretMove(self, self.turret, direction='down', wait_to_finish=True).withTimeout(2))

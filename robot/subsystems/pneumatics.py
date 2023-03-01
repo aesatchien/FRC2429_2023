@@ -80,8 +80,9 @@ class Pneumatics(SubsystemBase):
         
         self.counter += 1
         if self.counter % 25 == 1:
+            pass
             # the compressor turns itself off and on, so we have to ask it its state
-            SmartDashboard.putBoolean('compressor_state', self.compressor.enabled())
+            # SmartDashboard.putBoolean('compressor_state', self.compressor.enabled())
             # SmartDashboard.putNumber('pressure', self.get_analog_pressure())
             # todo: intergrate pressure sensor into compressor class
 

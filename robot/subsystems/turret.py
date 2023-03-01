@@ -29,7 +29,8 @@ class Turret(SubsystemBase):
         self.counter = 0
         self.angle = 0  # just to initialize
         # turret should probably have positions that we need to map out
-        self.positions = {'full2': 250, 'full': 225, 'score': 180, 'middle': 90, 'stow': 0}
+        # self.positions = {'full2': 250, 'full': 225, 'score': 180, 'middle': 90, 'stow': 0}
+        self.positions = {'stow': 0, 'score': 180}
 
         # initialize motors
         self.turret_controller = rev.CANSparkMax(constants.k_turret_motor_port, rev.CANSparkMax.MotorType.kBrushless)

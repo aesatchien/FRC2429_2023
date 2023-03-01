@@ -20,7 +20,7 @@ class WristCalibration(commands2.CommandBase):
         self.wrist.wrist_controller.clearFaults()
         self.wrist.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, False)
         self.wrist.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, False)
-        self.wrist.pid_controller.setReference(4, rev.CANSparkMax.ControlType.kVoltage)  # should do velocity?
+        self.wrist.pid_controller.setReference(1000, rev.CANSparkMax.ControlType.kVelocity)  # should do velocity?
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work
         # self.wrist.pid_controller.setReference(-1000, rev.CANSparkMax.ControlType.kVelocity)
@@ -29,7 +29,7 @@ class WristCalibration(commands2.CommandBase):
 
     def isFinished(self) -> bool:
         # Stop when we hit the limit switch or too much current
-        return self.wrist.forward_limit_switch.get()  or self.wrist.wrist_controller.getOutputCurrent() > 10
+        return self.wrist.forward_limit_switch.get()  or self.wrist.wrist_controller.getOutputCurrent() > 30
 
     def end(self, interrupted: bool) -> None:
         self.wrist.set_encoder_position(angle=self.wrist.max_angle)  # now we have a new maximum

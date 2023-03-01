@@ -32,7 +32,7 @@ class ChargeStationBalance(commands2.CommandBase):
 
         if abs(pitch) > self.tolerance:
             # if robot is pitched downwards, drive backwards, or if robot is pitched upwards, drive forwards
-            sign = math.copysign(pitch)
+            sign = math.copysign(1, pitch)
             for controller, multiplier in zip(self.drive.pid_controllers, self.multipliers):
                 controller.setReference(sign * self.velocity * multiplier, rev.CANSparkMax.ControlType.kSmartVelocity, 1)
         else:
