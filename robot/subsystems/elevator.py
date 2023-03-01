@@ -50,6 +50,7 @@ class Elevator(SubsystemBase):
         self.elevator_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limts)
         self.elevator_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_height)
         self.elevator_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_height)
+        self.pid_controller.setSmartMotionAllowedClosedLoopError(1)
 
         configure_sparkmax(sparkmax=self.elevator_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_elevator_motor_port,
                            pid_dict=constants.k_PID_dict_vel_elevator, pid_only=True, burn_flash=constants.k_burn_flash)

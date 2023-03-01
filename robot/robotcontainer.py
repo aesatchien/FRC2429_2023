@@ -34,6 +34,7 @@ from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
+from autonomous.drive_wait import DriveWait
 
 class RobotContainer:
     """
@@ -82,6 +83,8 @@ class RobotContainer:
         self.vision = Vision()
 
         self.configureButtonBindings()
+
+        self.initialize_dashboard()
 
         # Set up default drive command
         if wpilib.RobotBase.isSimulation():
@@ -193,6 +196,12 @@ class RobotContainer:
 
             #self.co_buttonRB.whileHeld(ElevatorDrive(container=self, elevator=self.elevator, button=self.co_buttonRB))
 
+        # commands2.button.JoystickButton(self.driverController, 3).whenHeld(
+        #     HalveDriveSpeed(self.drive)
+        # )
+
+    def initialize_dashboard(self):
+
         # lots of putdatas for testing on the dash
         wpilib.SmartDashboard.putData(TurretInitialize(container=self, turret=self.turret))
         wpilib.SmartDashboard.putData(ScoreFromStow(container=self))
@@ -211,6 +220,12 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='ArmCalibration', data=ArmCalibration(container=self, arm=self.arm).withTimeout(5))
         wpilib.SmartDashboard.putData(key='WristCalibration', data=WristCalibration(container=self, wrist=self.wrist).withTimeout(5))
         wpilib.SmartDashboard.putData(key='TurretMoveByVision', data=TurretMoveByVision(container=self, turret=self.turret, vision=self.vision, color='green').withTimeout(5))
-        # commands2.button.JoystickButton(self.driverController, 3).whenHeld(
-        #     HalveDriveSpeed(self.drive)
-        # )
+
+        # populate autonomous routines
+        self.autonomous_chooser = wpilib.SendableChooser()
+        wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
+        self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreFromStow(self))
+        self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
+
+    def get_autonomous_command(self):
+        return self.autonomous_chooser.getSelected()

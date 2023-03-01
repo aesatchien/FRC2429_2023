@@ -45,6 +45,7 @@ class Turret(SubsystemBase):
         self.turret_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limts)
         self.turret_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_angle)
         self.turret_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_angle)
+        self.pid_controller.setSmartMotionAllowedClosedLoopError(1)
 
         configure_sparkmax(sparkmax=self.turret_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_turret_motor_port,
                            pid_dict=constants.k_PID_dict_vel_turret, pid_only=True, burn_flash=constants.k_burn_flash)

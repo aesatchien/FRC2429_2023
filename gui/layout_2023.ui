@@ -29,7 +29,7 @@
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>441</width>
+      <width>481</width>
       <height>541</height>
      </rect>
     </property>
@@ -58,9 +58,9 @@
    <widget class="QPlainTextEdit" name="qt_text_status">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>500</x>
       <y>490</y>
-      <width>761</width>
+      <width>721</width>
       <height>51</height>
      </rect>
     </property>
@@ -87,9 +87,9 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>460</x>
+      <x>500</x>
       <y>30</y>
-      <width>771</width>
+      <width>731</width>
       <height>451</height>
      </rect>
     </property>
@@ -1225,7 +1225,7 @@ background-color:rgb(10, 10, 227);</string>
    <widget class="QLabel" name="qlabel_nt_connected">
     <property name="geometry">
      <rect>
-      <x>470</x>
+      <x>510</x>
       <y>0</y>
       <width>131</width>
       <height>20</height>
@@ -1257,7 +1257,7 @@ background-color:rgb(80, 235, 0);</string>
    <widget class="QLabel2" name="qlabel_matchtime">
     <property name="geometry">
      <rect>
-      <x>780</x>
+      <x>820</x>
       <y>0</y>
       <width>111</width>
       <height>41</height>
@@ -1293,8 +1293,8 @@ background-color:rgb(0, 20, 250);</string>
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>441</width>
-      <height>371</height>
+      <width>481</width>
+      <height>511</height>
      </rect>
     </property>
     <property name="title">
@@ -1304,9 +1304,9 @@ background-color:rgb(0, 20, 250);</string>
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>0</y>
-       <width>440</width>
-       <height>330</height>
+       <y>-10</y>
+       <width>481</width>
+       <height>441</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -1332,7 +1332,7 @@ background-color:rgb(0, 20, 250);</string>
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>344</y>
+       <y>460</y>
        <width>101</width>
        <height>17</height>
       </rect>
@@ -1348,7 +1348,7 @@ background-color:rgb(0, 20, 250);</string>
      <property name="geometry">
       <rect>
        <x>114</x>
-       <y>341</y>
+       <y>460</y>
        <width>171</width>
        <height>22</height>
       </rect>
@@ -1361,7 +1361,7 @@ background-color:rgb(0, 20, 250);</string>
      <property name="geometry">
       <rect>
        <x>310</x>
-       <y>336</y>
+       <y>456</y>
        <width>121</width>
        <height>30</height>
       </rect>
@@ -1371,6 +1371,7 @@ background-color:rgb(0, 20, 250);</string>
      </property>
     </widget>
    </widget>
+   <zorder>qt_tree_widget_nt</zorder>
    <zorder>tabWidget</zorder>
    <zorder>qt_text_status</zorder>
    <zorder>qt_button_test</zorder>
@@ -1378,7 +1379,6 @@ background-color:rgb(0, 20, 250);</string>
    <zorder>qlabel_nt_connected</zorder>
    <zorder>qlabel_matchtime</zorder>
    <zorder>groupBox_6</zorder>
-   <zorder>qt_tree_widget_nt</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

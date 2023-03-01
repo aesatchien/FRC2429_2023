@@ -39,8 +39,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
         self.container.set_start_time()  # putting this after the scheduler is bad
 
-        # self.autonomousCommand = self.container.getAutonomousCommand()
-        self.autonomousCommand = None
+        self.autonomousCommand = self.container.get_autonomous_command()
 
         if self.autonomousCommand:
             self.autonomousCommand.schedule()
