@@ -638,90 +638,14 @@ background-color:rgb(0, 20, 250);</string>
       <property name="title">
        <string>TBD</string>
       </property>
-     </widget>
-     <widget class="QGroupBox" name="groupBox_3">
-      <property name="geometry">
-       <rect>
-        <x>540</x>
-        <y>0</y>
-        <width>181</width>
-        <height>301</height>
-       </rect>
-      </property>
-      <property name="title">
-       <string>Autonomous Commands</string>
-      </property>
-      <widget class="QLabel2" name="qlabel_score_from_stow_indicator">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>20</y>
-         <width>161</width>
-         <height>51</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border: 7px;
-border-radius: 7px;
-background-color:rgb(80, 235, 0);</string>
-       </property>
-       <property name="text">
-        <string>SCORE 
-FROM STOW</string>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::AutoText</enum>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel2" name="qlabel_upper_pickup_indicator">
-       <property name="geometry">
-        <rect>
-         <x>10</x>
-         <y>77</y>
-         <width>161</width>
-         <height>31</height>
-        </rect>
-       </property>
-       <property name="font">
-        <font>
-         <pointsize>12</pointsize>
-         <weight>75</weight>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">border: 7px;
-border-radius: 7px;
-background-color:rgb(80, 235, 0);</string>
-       </property>
-       <property name="text">
-        <string>Upper Pickup</string>
-       </property>
-       <property name="textFormat">
-        <enum>Qt::AutoText</enum>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignCenter</set>
-       </property>
-      </widget>
-      <widget class="QLabel2" name="qlabel_arm_calibration_indicator">
+      <widget class="QLabel2" name="qlabel_wrist_calibration_indicator">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>190</y>
+         <y>260</y>
          <width>161</width>
          <height>31</height>
         </rect>
@@ -740,7 +664,7 @@ border-radius: 7px;
 background-color:rgb(80, 235, 0);</string>
        </property>
        <property name="text">
-        <string>Calibrate Arm</string>
+        <string>Calibrate Wrist</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -785,14 +709,14 @@ background-color:rgb(80, 235, 0);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
-      <widget class="QLabel2" name="qlabel_wrist_calibration_indicator">
+      <widget class="QLabel2" name="qlabel_arm_calibration_indicator">
        <property name="enabled">
         <bool>true</bool>
        </property>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>260</y>
+         <y>190</y>
          <width>161</width>
          <height>31</height>
         </rect>
@@ -811,7 +735,83 @@ border-radius: 7px;
 background-color:rgb(80, 235, 0);</string>
        </property>
        <property name="text">
-        <string>Calibrate Wrist</string>
+        <string>Calibrate Arm</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_3">
+      <property name="geometry">
+       <rect>
+        <x>540</x>
+        <y>0</y>
+        <width>181</width>
+        <height>301</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Autonomous Commands</string>
+      </property>
+      <widget class="QLabel2" name="qlabel_high_score_from_stow_indicator">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>161</width>
+         <height>51</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+background-color:rgb(80, 235, 0);</string>
+       </property>
+       <property name="text">
+        <string>HIGH CONE 
+FROM STOW</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_upper_pickup_indicator">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>131</y>
+         <width>161</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+background-color:rgb(80, 235, 0);</string>
+       </property>
+       <property name="text">
+        <string>Upper Pickup</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
@@ -824,7 +824,7 @@ background-color:rgb(80, 235, 0);</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>110</y>
+         <y>165</y>
          <width>161</width>
          <height>31</height>
         </rect>
@@ -843,6 +843,69 @@ background-color:rgb(80, 235, 0);</string>
        </property>
        <property name="text">
         <string>Safe Carry</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_turret_to_post_indicator">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>200</y>
+         <width>161</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+background-color:rgb(80, 235, 0);</string>
+       </property>
+       <property name="text">
+        <string>Turret to Post</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_low_score_from_stow_indicator">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>80</y>
+         <width>161</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <pointsize>12</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+background-color:rgb(80, 235, 0);</string>
+       </property>
+       <property name="text">
+        <string>Low Cone
+ From Stow</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>

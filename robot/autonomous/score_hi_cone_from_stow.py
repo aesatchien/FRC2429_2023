@@ -9,11 +9,11 @@ from commands.arm_move import ArmMove
 from commands.wrist_move import WristMove
 from subsystems.wrist import Wrist
 
-class ScoreFromStow(commands2.SequentialCommandGroup):  # change the name for your command
+class ScoreHiConeFromStow(commands2.SequentialCommandGroup):  # change the name for your command
 
     def __init__(self, container) -> None:
         super().__init__()
-        self.setName('ScoreFromStow')  # change this to something appropriate for this command
+        self.setName('ScoreHiConeFromStow')  # change this to something appropriate for this command
         self.container = container
 
         # Step 1.a
@@ -44,7 +44,7 @@ class ScoreFromStow(commands2.SequentialCommandGroup):  # change the name for yo
         self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='open'))
 
         # wait a bit
-        self.addCommands(DriveWait(container=self.container, duration=1.0))
+        self.addCommands(DriveWait(container=self.container, duration=0.5))
 
         # Step 6 bring the wrist back up
         # Drop the wrist to level

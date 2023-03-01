@@ -74,7 +74,8 @@ class Ui(QtWidgets.QMainWindow):
         # set up network tables
         self.ntinst = NetworkTableInstance.getDefault()
         self.servers = ["10.24.29.2", "127.0.0.1"] #  "roboRIO-2429-FRC.local"]  # need to add the USB one here
-        self.ntinst.startClient3(identity=f'PyQt Dashboard {datetime.today().strftime("%H%M%S")}')
+        #self.ntinst.startClient3(identity=f'PyQt Dashboard NT3 {datetime.today().strftime("%H%M%S")}')
+        self.ntinst.startClient4(identity=f'PyQt Dashboard NT4 {datetime.today().strftime("%H%M%S")}')
         self.server_index = 0  # manually do a round-robin later
         # self.ntinst.setServer("127.0.0.1",0)
         #self.ntinst.setServer(servers=self.servers)  # does not seem to work in round-robin in 2023 code
@@ -125,7 +126,7 @@ class Ui(QtWidgets.QMainWindow):
         # at the end of init, you need to show yourself
         self.show()
 
-        # set up the refresh
+        # set up thef refresh
         self.counter = 1
         self.previous_time = time.time()
 

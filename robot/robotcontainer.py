@@ -29,7 +29,8 @@ from commands.arm_calibration import ArmCalibration
 from commands.generic_drive import GenericDrive
 from commands.wrist_calibration import WristCalibration
 
-from autonomous.score_from_stow import ScoreFromStow
+from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
+from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
 from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
@@ -204,7 +205,7 @@ class RobotContainer:
 
         # lots of putdatas for testing on the dash
         wpilib.SmartDashboard.putData(TurretInitialize(container=self, turret=self.turret))
-        wpilib.SmartDashboard.putData(ScoreFromStow(container=self))
+        wpilib.SmartDashboard.putData(ScoreHiConeFromStow(container=self))
         wpilib.SmartDashboard.putData(UpperSubstationPickup(container=self))
         wpilib.SmartDashboard.putData(key='SafeCarry', data=SafeCarry(container=self).withTimeout(5))
         wpilib.SmartDashboard.putData(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
@@ -224,7 +225,8 @@ class RobotContainer:
         # populate autonomous routines
         self.autonomous_chooser = wpilib.SendableChooser()
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
-        self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreFromStow(self))
+        self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
+        self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
 
     def get_autonomous_command(self):
