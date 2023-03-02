@@ -231,6 +231,7 @@ class RobotContainer:
         # lots of putdatas for testing on the dash
         wpilib.SmartDashboard.putData(TurretInitialize(container=self, turret=self.turret))
         wpilib.SmartDashboard.putData(ScoreHiConeFromStow(container=self))
+        wpilib.SmartDashboard.putData(ScoreLowConeFromStow(container=self))
         wpilib.SmartDashboard.putData(UpperSubstationPickup(container=self))
         wpilib.SmartDashboard.putData(key='SafeCarry', data=SafeCarry(container=self).withTimeout(5))
         wpilib.SmartDashboard.putData(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
