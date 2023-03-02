@@ -4,7 +4,7 @@ from wpilib import SmartDashboard
 
 class GenericDrive(commands2.CommandBase):
 
-    def __init__(self, container, subsystem, max_velocity, axis, invert_axis=False, control_type='voltage') -> None:
+    def __init__(self, container, subsystem, max_velocity, axis=None, invert_axis=False, control_type='voltage', input_type='stick', direction=1) -> None:
         super().__init__()
         self.setName('Generic Drive')
         self.container = container
@@ -13,6 +13,8 @@ class GenericDrive(commands2.CommandBase):
         self.control_type = control_type
         self.axis = axis
         self.invert_axis = invert_axis
+        self.input_type = input_type
+        self.direction = direction
 
         self.scale = 0.5
 
@@ -32,18 +34,25 @@ class GenericDrive(commands2.CommandBase):
                 self.scale = 0.9
             elif self.subsystem == self.container.wrist:
                 self.scale = 0.65
+        elif self.control_type == 'velocity':
+            if self.subsystem == self.container.wrist:
+                self.scale = 1
 
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work
         # get stick value and invert if necessary (if using Y-axis)
-        stick = self.container.co_driver_controller.getRawAxis(self.axis)
-        if self.invert_axis:
-            stick *= -1
+        if self.input_type == 'stick':
+            stick = self.container.co_driver_controller.getRawAxis(self.axis)
+            if self.invert_axis:
+                stick *= -1
+        elif self.input_type == 'dpad':
+            stick = 0.5 * self.direction
 
         velocity = stick * self.max_velocity * self.scale
+
         if self.control_type == 'voltage':  # do not confuse this with velocity!!!
             self.controller.setReference(12*stick*self.scale, rev.CANSparkMax.ControlType.kVoltage)
-        else:
+        elif self.control_type == 'velocity':
             self.controller.setReference(velocity, rev.CANSparkMax.ControlType.kVelocity, pidSlot=0)
 
     def isFinished(self) -> bool:

@@ -17,25 +17,26 @@ from subsystems.vision import Vision
 from misc.axis_button import AxisButton
 from commands.drive_by_joystick import DriveByJoystick
 from commands.drive_velocity_stick import DriveByJoystickVelocity
-from commands.turret_initialize import TurretInitialize
 from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
 from commands.elevator_move import ElevatorMove
 from commands.wrist_move import WristMove
 from commands.manipulator_toggle import ManipulatorToggle
 from commands.compressor_toggle import CompressorToggle
-from commands.elevator_drive import ElevatorDrive
-from commands.arm_calibration import ArmCalibration
 from commands.generic_drive import GenericDrive
-from commands.wrist_calibration import WristCalibration
 
+from autonomous.arm_calibration import ArmCalibration
+from autonomous.wrist_calibration import WristCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
 from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
-from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
 from autonomous.drive_wait import DriveWait
+from autonomous.turret_initialize import TurretInitialize
+from autonomous.upper_substation_pickup import UpperSubstationPickup
+from autonomous.release_and_stow import ReleaseAndStow
+
 
 class RobotContainer:
     """
@@ -54,19 +55,25 @@ class RobotContainer:
         ARM_DOWN = enum.auto()
         WRIST_UP = enum.auto()
         WRIST_DOWN = enum.auto()
+        TURRET_DOWN_DRIVE = enum.auto()
+        TURRET_UP_DRIVE = enum.auto()
+        ELEVATOR_UP_DRIVE = enum.auto()
+        ELEVATOR_DOWN_DRIVE = enum.auto()
+        ARM_UP_DRIVE = enum.auto()
+        ARM_DOWN_DRIVE = enum.auto()
+        WRIST_UP_DRIVE = enum.auto()
+        WRIST_DOWN_DRIVE = enum.auto()
         NONE = enum.auto()
 
     def select_preset(self, direction) -> CommandSelector:
-        direction = direction.upper()
-
         if self.co_driver_controller.getRawButton(1):
             return self.CommandSelector[f'TURRET_{direction}']
         elif self.co_driver_controller.getRawButton(2):
             return self.CommandSelector[f'ELEVATOR_{direction}']
         elif self.co_driver_controller.getRawButton(4):
             return self.CommandSelector[f'ARM_{direction}']
-        # elif self.co_driver_controller.getRawButton(3):
-        #     return self.CommandSelector[f'WRIST_{direction}']
+        elif self.co_driver_controller.getRawButton(3):
+            return self.CommandSelector[f'WRIST_{direction}']
 
         return self.CommandSelector.NONE
 
@@ -157,7 +164,7 @@ class RobotContainer:
         # self.co_buttonA.whileHeld(GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], axis=0, invert_axis=False))
         # self.co_buttonB.whileHeld(GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], axis=1, invert_axis=True))
         # self.co_buttonY.whileHeld(GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], axis=1, invert_axis=True))
-        self.co_buttonX.whileHeld(GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], axis=1, invert_axis=True))
+        # self.co_buttonX.whileHeld(GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], axis=1, invert_axis=True))
 
         self.co_buttonBack.whenPressed(SafeCarry(self))
         self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision))
@@ -165,22 +172,40 @@ class RobotContainer:
         preset_command_map = [
             (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),
             (self.CommandSelector.TURRET_DOWN, TurretMove(self, self.turret, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.TURRET_UP_DRIVE, GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=1)),
+            (self.CommandSelector.TURRET_DOWN_DRIVE, GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=-1)),
             (self.CommandSelector.ELEVATOR_UP, ElevatorMove(self, self.elevator, direction="up", wait_to_finish=False)),
             (self.CommandSelector.ELEVATOR_DOWN, ElevatorMove(self, self.elevator, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.ELEVATOR_UP_DRIVE, GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=1)),
+            (self.CommandSelector.ELEVATOR_DOWN_DRIVE, GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=-1)),
             (self.CommandSelector.ARM_UP, ArmMove(self, self.arm, direction="up", wait_to_finish=False)),
             (self.CommandSelector.ARM_DOWN, ArmMove(self, self.arm, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.ARM_UP_DRIVE, GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=1)),
+            (self.CommandSelector.ARM_DOWN_DRIVE, GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=-1)),
             (self.CommandSelector.WRIST_UP, WristMove(self, self.wrist, direction="up", wait_to_finish=False)),
             (self.CommandSelector.WRIST_DOWN, WristMove(self, self.wrist, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.WRIST_UP_DRIVE, GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=1)),
+            (self.CommandSelector.WRIST_DOWN_DRIVE, GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=-1)),
             (self.CommandSelector.NONE, commands2.WaitCommand(0)),
         ]
 
-        self.co_buttonUp.whenPressed(commands2.SelectCommand(
-            lambda: self.select_preset("up"),
+        self.co_buttonUp.whileHeld(commands2.SelectCommand(
+            lambda: self.select_preset("UP_DRIVE"),
             preset_command_map,
         ))
 
-        self.co_buttonDown.whenPressed(commands2.SelectCommand(
-            lambda: self.select_preset("down"),
+        self.co_buttonDown.whileHeld(commands2.SelectCommand(
+            lambda: self.select_preset("DOWN_DRIVE"),
+            preset_command_map,
+        ))
+
+        self.co_buttonLeft.whenPressed(commands2.SelectCommand(
+            lambda: self.select_preset("DOWN"),
+            preset_command_map,
+        ))
+
+        self.co_buttonRight.whenPressed(commands2.SelectCommand(
+            lambda: self.select_preset("UP"),
             preset_command_map,
         ))
 
@@ -221,6 +246,8 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='ArmCalibration', data=ArmCalibration(container=self, arm=self.arm).withTimeout(5))
         wpilib.SmartDashboard.putData(key='WristCalibration', data=WristCalibration(container=self, wrist=self.wrist).withTimeout(5))
         wpilib.SmartDashboard.putData(key='TurretMoveByVision', data=TurretMoveByVision(container=self, turret=self.turret, vision=self.vision, color='green').withTimeout(5))
+        wpilib.SmartDashboard.putData(key='UpperSubstationPickup', data=UpperSubstationPickup(container=self).withTimeout(8))
+        wpilib.SmartDashboard.putData(key='ReleaseAndStow', data=ReleaseAndStow(container=self).withTimeout(8))
 
         # populate autonomous routines
         self.autonomous_chooser = wpilib.SendableChooser()

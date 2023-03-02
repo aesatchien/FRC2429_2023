@@ -18,7 +18,7 @@ k_controller_thrust_axis = 1
 k_controller_twist_axis = 4
 k_arcade_thrust_scale = 0.7 #halfed  # used in drive by joystick
 k_arcade_twist_scale = 0.45
-k_max_thrust_velocity = 120  # meters per MINUTE  for smartmotion
+k_max_thrust_velocity = 150  # meters per MINUTE  for smartmotion
 k_max_twist_velocity = 90 # meters per MINUTE - for smartmotion
 
 #  co-driver
@@ -58,8 +58,8 @@ k_turret_abs_encoder_port = 1  # analog absolute encoder on turret
 k_turret_encoder_conversion_factor = 360 / 462.2  # Armabot has 462:1 gear ratio?  Circle has 360 degrees-->  0.779°/rot
 # TODO: verify turret velocity PID values, burn to slot 0  - tested on 2023 0226
 k_PID_dict_vel_turret = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.4e-4, 'kArbFF':0,
-                         'kMaxOutput': 0.75, 'kMinOutput': -0.75, 'SM_MaxVel':5000,
-                         'SM_MaxAccel':3500}
+                         'kMaxOutput': 0.8, 'kMinOutput': -0.8, 'SM_MaxVel':5500,
+                         'SM_MaxAccel':3800}
 
 # --------------  ELEVATOR  ---------------
 k_elevator_motor_port = 10  # sparkmax with a NEO
@@ -68,8 +68,8 @@ k_elevator_timeoflight = 13  # time of flight CAN ID
 k_elevator_encoder_conversion_factor = 0.162 * 25.4   # 4.11
 # TODO: verify elevator velocity PID values  - # 25000V and 35000A worked well in practice  20230121
 k_PID_dict_vel_elevator = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 2e-4, 'kFF': 4.1e-5, 'kArbFF':0,
-                         'kMaxOutput': 0.9, 'kMinOutput': -0.9, 'SM_MaxVel':28000,
-                         'SM_MaxAccel':28000}
+                         'kMaxOutput': 0.9, 'kMinOutput': -0.9, 'SM_MaxVel':30000,
+                         'SM_MaxAccel':30000}
 
 # --------------  ARM  ---------------
 k_arm_motor_port = 11  # sparkmax with a NEO550 - full speed is 11k
@@ -77,8 +77,8 @@ k_arm_motor_port = 11  # sparkmax with a NEO550 - full speed is 11k
 k_arm_encoder_conversion_factor = (1.9 * 3.14 / 60) * 25.4  # 2.52 mm per revolution
 # TODO: verify arm velocity PID values
 k_PID_dict_vel_arm = {'kP': 1e-5, 'kI': 1e-5, 'kD': 0, 'kIz': 1e-5, 'kFF': 4.1e-5, 'kArbFF':0,
-                         'kMaxOutput': 0.85, 'kMinOutput': -0.85, 'SM_MaxVel':25000,
-                      'SM_MaxAccel':22000}
+                         'kMaxOutput': 0.95, 'kMinOutput': -0.95, 'SM_MaxVel':28000,
+                      'SM_MaxAccel':25000}
 
 # --------------  WRIST  ---------------
 k_wrist_motor_port = 12  # sparkmax with a NEO
@@ -86,8 +86,8 @@ k_wrist_motor_port = 12  # sparkmax with a NEO
 k_wrist_encoder_conversion_factor = 360. / 567  # 0.635 degrees per revolution
 # TODO: verify wrist velocity PID values
 k_PID_dict_vel_wrist = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.56e-4, 'kArbFF':0,
-                         'kMaxOutput': 0.6, 'kMinOutput': -0.6, 'SM_MaxVel':4000,
-                        'SM_MaxAccel':4500}
+                         'kMaxOutput': 0.6, 'kMinOutput': -0.6, 'SM_MaxVel':4400,
+                        'SM_MaxAccel':4800}
 
 # TODO: determine which systems need a limit switch
 k_wrist_limit_switch = 1  # DIO for the wrist limit switch

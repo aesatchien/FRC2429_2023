@@ -8,7 +8,7 @@ class DriveWait(WaitCommand):  # change the name for your command
         self.setName('DriveWait')  # change this to something appropriate for this command
         self.container = container
         self.drive = self.container.drive
-        self.addRequirements(self.drive)  # commandsv2 version of requirements
+        # self.addRequirements(self.drive)  # commandsv2 version of requirements
 
     def execute(self) -> None:
         self.drive.feed()

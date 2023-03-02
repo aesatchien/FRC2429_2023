@@ -24,11 +24,20 @@ class TurretMoveByVision(commands2.CommandBase):
         position = self.turret.get_angle()
 
         # smarter to just grab this from networktables directly... less lag
+        self.setpoint = None
         if self.vision.camera_values[self.color]['targets'] > 0:
             self.setpoint = position + self.vision.camera_values[self.color]['rotation_entry']
-        else:
+        else:  # try to find another target for loading zone
+            colors = ['green', 'yellow', 'purple']
+            for color in colors:
+                if self.vision.camera_values[color]['targets'] > 0:
+                    self.setpoint = position + self.vision.camera_values[self.color]['rotation_entry']
+                    self.color = color
+                    break
+        if self.setpoint is None:
             self.setpoint = position
-        print('\n', f'Vision angle is {self.setpoint}')
+
+        print('\n', f'Vision angle is {self.setpoint} on {self.color}')
         self.turret.set_turret_angle(angle=self.setpoint, mode='smartmotion')
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work

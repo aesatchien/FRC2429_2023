@@ -21,7 +21,7 @@ class DriveByJoystickVelocity(commands2.CommandBase):
 
         self.max_thrust_velocity = constants.k_max_thrust_velocity  # 2.75 m/s
         self.max_twist_velocity = constants.k_max_twist_velocity  # 1.25 m/s
-        self.deadband = 0.05
+        self.deadband = 0.03
         self.multipliers = [1.0, 1.0]
 
         self.max_arcade_thrust = constants.k_arcade_thrust_scale
@@ -29,7 +29,7 @@ class DriveByJoystickVelocity(commands2.CommandBase):
         self.previous_thrust = 0
 
         # Last year we limited the thrust differential to 0.04 - 0.05 was too tippy
-        self.max_thrust_differential = 0.05  # how high can we go on this?
+        self.max_thrust_differential = 0.07  # how high can we go on this?
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -45,7 +45,7 @@ class DriveByJoystickVelocity(commands2.CommandBase):
         twist = self.container.driver_controller.getRawAxis(constants.k_controller_twist_axis)
         twist = 0 if abs(twist) < self.deadband else math.copysign(1, twist) * (abs(twist) ** self.scaling)
 
-        slowmode_multiplier = 0.5 if self.container.driver_controller.getRawButton(5) else 1.0
+        slowmode_multiplier = 0.4 if self.container.driver_controller.getRawButton(5) else 1.0
 
         # try to limit the change in thrust  BE VERY CAREFUL WITH THIS!  IT CAUSES RUNAWAY ROBOTS!
         d_thrust = self.previous_thrust - thrust
