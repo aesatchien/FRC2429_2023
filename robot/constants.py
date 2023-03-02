@@ -6,7 +6,7 @@ changes.
 2023 robot for team 2429 - the blockheads
 """
 
-k_competition_mode = False  # use for compressor and some joystick settings
+k_competition_mode = True  # use for compressor and some joystick settings
 k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
 k_enable_soft_limts = True
 
@@ -16,8 +16,8 @@ k_driver_controller_port = 0
 k_co_driver_controller_port = 1
 k_controller_thrust_axis = 1
 k_controller_twist_axis = 4
-k_arcade_thrust_scale = 0.7 #halfed  # used in drive by joystick
-k_arcade_twist_scale = 0.45
+k_arcade_thrust_scale = 0.7  # used in drive by joystick arcade mode
+k_arcade_twist_scale = 0.45  # used in drive by joystick arcade mode
 k_max_thrust_velocity = 150  # meters per MINUTE  for smartmotion
 k_max_twist_velocity = 90 # meters per MINUTE - for smartmotion
 
@@ -47,8 +47,10 @@ k_sparkmax_conversion_factor_meters = k_wheel_diameter_m * 3.14159 / k_gear_rati
 
 k_PID_dict_pos = {'kP': 0.002, 'kI': 0, 'kD': 0.002, 'kIz': 0, 'kFF': 0.008, 'kArbFF':0, 'kMaxOutput': 0.99, 'kMinOutput': -0.99,
                 'SM_MaxVel': 5000 / k_sparkmax_conversion_factor_meters, 'SM_MaxAccel': 5000 / k_sparkmax_conversion_factor_meters}
-k_PID_dict_vel = {'kP': 0.0 , 'kI': 0.000, 'kD': 0.00, 'kIz': 0.001, 'kFF': 0.0040, 'kArbFF':0, 'kMaxOutput': 0.95,
+k_PID_dict_vel = {'kP': 0.0, 'kI': 0.000, 'kD': 0.00, 'kIz': 0.001, 'kFF': 0.0040, 'kArbFF':0, 'kMaxOutput': 0.95,
                 'kMinOutput': -0.95, 'SM_MaxVel':180, 'SM_MaxAccel':120}  # 180 is 3 m/s and 3m/s/s
+k_PID_dict_vel_slow = {'kP': 1e-5, 'kI': 1e-6, 'kD': 0.00, 'kIz': 0.001, 'kFF': 0.0040, 'kArbFF':1, 'kMaxOutput': 0.95,
+                'kMinOutput': -0.95, 'SM_MaxVel':120, 'SM_MaxAccel':120}  # 120 is 2 m/s and 2m/s/s
 
 # --------------  SCORING  SUBSYSTEMS ---------------
 

@@ -68,6 +68,13 @@ class Drivetrain(SubsystemBase):
             self.dummy_motor_right = PWMSparkMax(3)
 
     # ----------------- DRIVE METHODS -----------------------
+
+    def smart_motion(self, distance, feed_forward, slot=1):
+        # use smartmotion to send you there quickly  TODO - check if the right needs to be negated
+        control_type = rev.CANSparkMax.ControlType.kSmartMotion
+        self.spark_PID_controller_left_front.setReference(value=distance, ctrl=control_type, arbFeedforward=feed_forward, pidSlot=slot)
+        self.spark_PID_controller_right_front.setReference(value=distance, ctrl=control_type, arbFeedforward=feed_forward, pidSlot=slot)
+
     def arcade_drive(self, fwd, rot):
         self.drive.arcadeDrive(fwd, rot, squareInputs=True)
         if wpilib.RobotBase.isSimulation():
@@ -102,7 +109,14 @@ class Drivetrain(SubsystemBase):
                                burn_flash=constants.k_burn_flash, pid_dict=constants.k_PID_dict_pos, pid_only=False)
             configure_sparkmax(sparkmax=controller, pid_controller=pid_controller, can_id=id, slot=1,
                                burn_flash=constants.k_burn_flash, pid_dict=constants.k_PID_dict_vel, pid_only=False)
+            configure_sparkmax(sparkmax=controller, pid_controller=pid_controller, can_id=id, slot=2,
+                               burn_flash=constants.k_burn_flash, pid_dict=constants.k_PID_dict_vel_slow, pid_only=False)
 
+
+    def get_positions(self):
+        left_position = self.spark_neo_left_encoder.getPosition()
+        right_position = self.spark_neo_right_encoder.getPosition()
+        return (left_position, right_position)
 
     def set_brake_mode(self, mode):
         """ Sets the brake mode for the drivetrain to coast or brake"""

@@ -26,7 +26,7 @@ class Turret(SubsystemBase):
 
         self.max_angle = 251
         self.min_angle = -45
-        self.counter = 0
+        self.counter = 15  # offset the periodics
         self.angle = 0  # just to initialize
         # turret should probably have positions that we need to map out
         # self.positions = {'full2': 250, 'full': 225, 'score': 180, 'middle': 90, 'stow': 0}

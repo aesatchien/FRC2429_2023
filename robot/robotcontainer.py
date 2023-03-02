@@ -37,6 +37,8 @@ from autonomous.drive_wait import DriveWait
 from autonomous.turret_initialize import TurretInitialize
 from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.release_and_stow import ReleaseAndStow
+from autonomous.drive_move import DriveMove
+from autonomous.drive_and_balance import DriveAndBalance
 
 
 class RobotContainer:
@@ -154,7 +156,7 @@ class RobotContainer:
 
         # All untested still
         # bind commands to driver
-        self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=5))
+        self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=20, tolerance=5))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
@@ -251,8 +253,10 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='ArmCalibration', data=ArmCalibration(container=self, arm=self.arm).withTimeout(5))
         wpilib.SmartDashboard.putData(key='WristCalibration', data=WristCalibration(container=self, wrist=self.wrist).withTimeout(5))
         wpilib.SmartDashboard.putData(key='TurretMoveByVision', data=TurretMoveByVision(container=self, turret=self.turret, vision=self.vision, color='green').withTimeout(5))
-        wpilib.SmartDashboard.putData(key='UpperSubstationPickup', data=UpperSubstationPickup(container=self).withTimeout(8))
-        wpilib.SmartDashboard.putData(key='ReleaseAndStow', data=ReleaseAndStow(container=self).withTimeout(8))
+        wpilib.SmartDashboard.putData(key='UpperSubstationPickup', data=UpperSubstationPickup(container=self).withTimeout(6))
+        wpilib.SmartDashboard.putData(key='ReleaseAndStow', data=ReleaseAndStow(container=self).withTimeout(5))
+        wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
+        wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
 
         # populate autonomous routines
         self.autonomous_chooser = wpilib.SendableChooser()
@@ -260,6 +264,9 @@ class RobotContainer:
         self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
         self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
+        self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
+        self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(10))
+
 
     def get_autonomous_command(self):
         return self.autonomous_chooser.getSelected()

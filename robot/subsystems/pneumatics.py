@@ -13,7 +13,7 @@ class Pneumatics(SubsystemBase):
     def __init__(self):
         super().__init__()
         self.setName('Pneumatics')
-        self.counter = 0
+        self.counter = 10  # offset the periodics
 
         # rev version
         self.hub = wpilib.PneumaticHub(14)  # need to figure out the REV ecosystem  it was not allowing us to actuate 20130225
@@ -27,7 +27,7 @@ class Pneumatics(SubsystemBase):
         self.pressure_sensor = AnalogInput(0)  # may skip this unless we really want one
         self.close_loop_enable = True
 
-        competition = False  # need to put this in robot container, not here
+        competition = constants.k_competition_mode  # set this in constants
         if competition:
             self.start_compressor()
         else:
@@ -80,11 +80,10 @@ class Pneumatics(SubsystemBase):
         
         self.counter += 1
         if self.counter % 25 == 1:
-            pass
             # the compressor turns itself off and on, so we have to ask it its state
-            # SmartDashboard.putBoolean('compressor_state', self.compressor.enabled())
+            SmartDashboard.putBoolean('compressor_state', self.compressor.enabled())
             # SmartDashboard.putNumber('pressure', self.get_analog_pressure())
-            # todo: intergrate pressure sensor into compressor class
+            # todo: integrate pressure sensor into compressor class
 
 
 

@@ -17,7 +17,7 @@ class Wrist(SubsystemBase):
 
     def __init__(self):
         super().__init__()
-        self. counter = 0
+        self. counter = 20  # offset the periodics
         # defining angles so 0 is horizontal
         self.max_angle = 105  # call all the way up 125 degrees  todo: remeasure
         self.min_angle = -20

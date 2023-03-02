@@ -28,7 +28,7 @@ class Elevator(SubsystemBase):
 
     def __init__(self):
         super().__init__()
-        self.counter = 0
+        self.counter = 5  # offset the periodics
 
         self.max_height = 951  # the bottom of the carriage is 39in (991mm)  above the bottom at max height
         self.min_height = 49  # mm for now
