@@ -77,7 +77,7 @@ k_arm_motor_port = 11  # sparkmax with a NEO550 - full speed is 11k
 k_arm_encoder_conversion_factor = (1.9 * 3.14 / 60) * 25.4  # 2.52 mm per revolution
 # TODO: verify arm velocity PID values
 k_PID_dict_vel_arm = {'kP': 1e-5, 'kI': 1e-5, 'kD': 0, 'kIz': 1e-5, 'kFF': 4.1e-5, 'kArbFF':0,
-                         'kMaxOutput': 0.95, 'kMinOutput': -0.95, 'SM_MaxVel':28000,
+                         'kMaxOutput': 0.95, 'kMinOutput': -0.95, 'SM_MaxVel':25000,
                       'SM_MaxAccel':25000}
 
 # --------------  WRIST  ---------------

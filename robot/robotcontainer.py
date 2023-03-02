@@ -19,6 +19,7 @@ from commands.drive_by_joystick import DriveByJoystick
 from commands.drive_velocity_stick import DriveByJoystickVelocity
 from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
+from commands.turret_toggle import TurretToggle
 from commands.elevator_move import ElevatorMove
 from commands.wrist_move import WristMove
 from commands.manipulator_toggle import ManipulatorToggle
@@ -156,6 +157,7 @@ class RobotContainer:
         self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=5))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
+        self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
 
         # bind commands to co-pilot
         self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
@@ -168,6 +170,8 @@ class RobotContainer:
 
         self.co_buttonBack.whenPressed(SafeCarry(self))
         self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision))
+        self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
+        self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
         preset_command_map = [
             (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),
