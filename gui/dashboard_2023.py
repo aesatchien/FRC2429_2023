@@ -116,6 +116,7 @@ class Ui(QtWidgets.QMainWindow):
         # button connections
         self.qt_button_set_key.clicked.connect(self.update_key)
         self.qt_button_test.clicked.connect(self.test)
+        self.qt_button_reconnect.clicked.connect(self.reconnect)
         # self.qt_button_camera_enable.clicked.connect(lambda _: setattr(self, 'camera_enabled', not self.camera_enabled))
         self.qt_button_camera_enable.clicked.connect(self.toggle_camera_thread)
 
@@ -142,6 +143,19 @@ class Ui(QtWidgets.QMainWindow):
         #    print(child)
 
     # ------------------- FUNCTIONS, MISC FOR NOW  --------------------------
+
+    def reconnect(self):  # reconnect to NT4 server
+        sleep_time = 0.1
+
+        self.ntinst.stopClient()
+        time.sleep(sleep_time)
+        self.ntinst.disconnect()
+        time.sleep(sleep_time)
+        self.ntinst = NetworkTableInstance.getDefault()
+        self.ntinst.startClient4(identity=f'PyQt Dashboard {datetime.today().strftime("%H%M%S")}')
+        self.ntinst.setServerTeam(2429)
+        time.sleep(sleep_time)
+        self.connected = self.ntinst.isConnected()
 
     def check_url(self, url):
         try:

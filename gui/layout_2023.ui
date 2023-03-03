@@ -71,7 +71,7 @@
      <bool>true</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="qt_button_test">
+   <widget class="QPushButton" name="qt_button_reconnect">
     <property name="geometry">
      <rect>
       <x>1280</x>
@@ -81,7 +81,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>test button</string>
+     <string>Reconnect NT</string>
     </property>
    </widget>
    <widget class="QTabWidget" name="tabWidget">
@@ -1465,14 +1465,28 @@ background-color:rgb(0, 20, 250);</string>
      </property>
     </widget>
    </widget>
+   <widget class="QPushButton" name="qt_button_test">
+    <property name="geometry">
+     <rect>
+      <x>1400</x>
+      <y>500</y>
+      <width>111</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Swap Sim / Robot</string>
+    </property>
+   </widget>
    <zorder>qt_tree_widget_nt</zorder>
    <zorder>tabWidget</zorder>
    <zorder>qt_text_status</zorder>
-   <zorder>qt_button_test</zorder>
+   <zorder>qt_button_reconnect</zorder>
    <zorder>tabWidget_2</zorder>
    <zorder>qlabel_nt_connected</zorder>
    <zorder>qlabel_matchtime</zorder>
    <zorder>groupBox_6</zorder>
+   <zorder>qt_button_test</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
