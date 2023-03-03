@@ -15,7 +15,7 @@ import wpilib
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
-        can_id = 12  # change as needed
+        can_id = 9  # change as needed
         drivetrain = False
 
         # if you are going to change position factor, you should also change velocity.
@@ -38,8 +38,8 @@ class Robot(wpilib.TimedRobot):
 
         self.pid_controller = self.motor.getPIDController()
         self.encoder = self.motor.getEncoder()
-        self.encoder.setPositionConversionFactor(position_conversion_factor)
-        self.encoder.setVelocityConversionFactor(position_conversion_factor)
+        #self.encoder.setPositionConversionFactor(position_conversion_factor)
+        #self.encoder.setVelocityConversionFactor(position_conversion_factor)
         self.encoder.setPosition(120)
 
         self.counter = 0
@@ -52,6 +52,7 @@ class Robot(wpilib.TimedRobot):
         self.kMaxOutput = 0.35
         self.kMinOutput = -0.35
         self.max_rpm = 5700
+        self.maxAccum = 0.1
 
         # Smart Motion coefficients
         self.max_vel = 2000  # rpm
@@ -65,6 +66,7 @@ class Robot(wpilib.TimedRobot):
         self.pid_controller.setIZone(self.kIz)
         self.pid_controller.setFF(self.kFF)
         self.pid_controller.setOutputRange(self.kMinOutput, self.kMaxOutput)
+        self.pid_controller.setIMaxAccum(self.maxAccum)
 
         smart_motion_slot = 0
         self.pid_controller.setSmartMotionMaxVelocity(self.max_vel, smart_motion_slot)
@@ -79,6 +81,8 @@ class Robot(wpilib.TimedRobot):
         wpilib.SmartDashboard.putNumber("Feed Forward", self.kFF)
         wpilib.SmartDashboard.putNumber("Max Output", self.kMaxOutput)
         wpilib.SmartDashboard.putNumber("Min Output", self.kMinOutput)
+        wpilib.SmartDashboard.putNumber("IAccumMax", self.maxAccum)
+
 
         wpilib.SmartDashboard.putNumber("Max Velocity", self.max_vel)
         wpilib.SmartDashboard.putNumber("Min Velocity", self.min_vel)
@@ -117,7 +121,12 @@ class Robot(wpilib.TimedRobot):
             minV = wpilib.SmartDashboard.getNumber("Min Velocity", 0)
             maxA = wpilib.SmartDashboard.getNumber("Max Acceleration", 0)
             allE = wpilib.SmartDashboard.getNumber("Allowed Closed Loop Error", 0)
+            iaccum = wpilib.SmartDashboard.getNumber("IAccumMax", 0)
 
+            if iaccum != self.maxAccum:
+                self.pid_controller.setIMaxAccum(iaccum)
+                self.pid_controller.setIAccum()
+                self.maxAccum = iaccum
             if p != self.kP:
                 self.pid_controller.setP(p)
                 self.kP = p
@@ -153,6 +162,8 @@ class Robot(wpilib.TimedRobot):
             wpilib.SmartDashboard.putNumber("SetPoint", setpoint)
             wpilib.SmartDashboard.putNumber("POSITION", self.encoder.getPosition())
             wpilib.SmartDashboard.putNumber("VELOCITY", self.encoder.getVelocity())
+            wpilib.SmartDashboard.putNumber("IAccum", self.pid_controller.getIAccum())
+
 
         # do these guys every time
         else:

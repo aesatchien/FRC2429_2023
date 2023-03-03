@@ -7,7 +7,7 @@ changes.
 """
 
 k_competition_mode = True  # use for compressor and some joystick settings
-k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
+k_burn_flash = True  # if we want to burn the settings to the sparkmaxes
 k_enable_soft_limts = True
 
 # --------------  OI  ---------------
@@ -47,7 +47,7 @@ k_robot_length = 33 * 0.0254
 k_track_width_meters = 27 * 0.0254
 k_robot_wheelbase = 18 * 0.5 * 0.0254
 k_gear_ratio = 10.72  # REV 6in slow (10T) is 11.79:  medium (11T) is 10.72.  Both use the 30/68, so 2.26 * 52/PinionT
-k_sparkmax_conversion_factor_meters = k_wheel_diameter_m * 3.14159 / k_gear_ratio  # used in drivetrain
+k_sparkmax_conversion_factor_meters = k_wheel_diameter_m * 3.14159 / k_gear_ratio  # used in drivetrain - 0.044 m/rev
 
 # testing ON BLOCKS shows that flat out at 90% power we top out at 4m/s - still pretty fast
 # kff = 0.24 using k and k/60  but this screws smart motion - it ain't that smart so 0.0040 is the kFF and m/min is vel
@@ -56,7 +56,7 @@ k_PID_dict_pos = {'kP': 0.002, 'kI': 0, 'kD': 0.002, 'kIz': 0, 'kFF': 0.008, 'kA
                 'SM_MaxVel': 5000 / k_sparkmax_conversion_factor_meters, 'SM_MaxAccel': 5000 / k_sparkmax_conversion_factor_meters}
 k_PID_dict_vel = {'kP': 0.0, 'kI': 0.000, 'kD': 0.00, 'kIz': 0.001, 'kFF': 0.0040, 'kArbFF':0, 'kMaxOutput': 0.95,
                 'kMinOutput': -0.95, 'SM_MaxVel':180, 'SM_MaxAccel':120}  # 180 is 3 m/s and 3m/s/s
-k_PID_dict_vel_slow = {'kP': 1e-5, 'kI': 1e-6, 'kD': 0.00, 'kIz': 0.001, 'kFF': 0.0040, 'kArbFF':1, 'kMaxOutput': 0.95,
+k_PID_dict_vel_slow = {'kP': 1e-5, 'kI': 1e-6, 'kD': 0.00, 'kIz': 0, 'kFF': 0.0040, 'kArbFF':0, 'kMaxOutput': 0.95,
                 'kMinOutput': -0.95, 'SM_MaxVel':120, 'SM_MaxAccel':120}  # 120 is 2 m/s and 2m/s/s
 
 # --------------  SCORING  SUBSYSTEMS ---------------
