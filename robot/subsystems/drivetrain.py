@@ -113,6 +113,9 @@ class Drivetrain(SubsystemBase):
             configure_sparkmax(sparkmax=controller, pid_controller=pid_controller, can_id=id, slot=2,
                                burn_flash=constants.k_burn_flash, pid_dict=constants.k_PID_dict_vel_slow, pid_only=False)
 
+        for slot in [0,1,2]:  # limit the accumulator for the incline drive
+            [pid_controller.setIMaxAccum(constants.k_drive_accumulator_max, slot=slot) for pid_controller in self.controllers]
+
 
     def get_positions(self):
         left_position = self.spark_neo_left_encoder.getPosition()
