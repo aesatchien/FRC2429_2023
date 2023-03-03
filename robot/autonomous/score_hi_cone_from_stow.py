@@ -61,4 +61,4 @@ class ScoreHiConeFromStow(commands2.SequentialCommandGroup):  # change the name 
         # Step 1.a
         # raise the elevator , don't wait to end - can go concurrently with other moves
         self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator,
-                                      setpoint=self.container.elevator.min_height, wait_to_finish=False))
+                                      setpoint=150, wait_to_finish=False))

@@ -11,11 +11,11 @@ class AxisButton(Button):
 
     def __init__(self, joystick:XboxController, axis):
         # In 2022 it seems we have to override the isPressed in init
-        super().__init__(isPressed=lambda: joystick.getRawAxis(axis) > 0.05)
+        super().__init__(isPressed=lambda: joystick.getRawAxis(axis) > 0.2)
         #super().__init__()
         self.joystick = joystick
         self.axis = axis
-        self.threshold = 0.05
+        self.threshold = 0.2
         print(f'Initialized AxisButton with axis {self.axis}')
 
     # this does nothing!  can't override the get() function anymore, it is now the isPressed

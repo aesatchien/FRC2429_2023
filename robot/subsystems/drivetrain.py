@@ -28,6 +28,8 @@ class Drivetrain(SubsystemBase):
         self.spark_neo_right_front = rev.CANSparkMax(constants.k_right_motor1_port, motor_type)
         self.spark_neo_right_back = rev.CANSparkMax(constants.k_right_motor2_port, motor_type)
 
+        self.spark_neo_right_front.setInverted(False)  # now driving with battery in front
+        self.spark_neo_left_front.setInverted(True)
         # save some typing and CAN bus activity this year by setting followers
         self.spark_neo_right_back.follow(self.spark_neo_right_front, invert=False)
         self.spark_neo_left_back.follow(self.spark_neo_left_front, invert=False)
@@ -41,7 +43,6 @@ class Drivetrain(SubsystemBase):
         self.spark_PID_controller_left_front = self.spark_neo_left_front.getPIDController()
         self.pid_controllers = [self.spark_PID_controller_left_front, self.spark_PID_controller_right_front]
         self.left_encoder, self.right_encoder = self.spark_neo_left_encoder, self.spark_neo_right_encoder  # alias
-
         # set up the wpilib drive object
         self.left_motors = MotorControllerGroup(self.spark_neo_left_front)
         self.right_motors = MotorControllerGroup(self.spark_neo_right_front)

@@ -17,6 +17,8 @@ class ChargeStationBalance(commands2.CommandBase):
 
         self.multipliers = [1, 1]
 
+        SmartDashboard.putNumber("ChargeStationBalance_arbFF", 1)
+
         self.addRequirements(drive)
 
     def initialize(self) -> None:
@@ -30,7 +32,7 @@ class ChargeStationBalance(commands2.CommandBase):
             # if robot is pitched downwards, drive backwards, or if robot is pitched upwards, drive forwards
             sign = math.copysign(1, pitch)
             for controller, multiplier in zip(self.drive.pid_controllers, self.multipliers):
-                controller.setReference(sign * self.velocity * multiplier, rev.CANSparkMax.ControlType.kSmartVelocity, 2, arbFeedforward=1)
+                controller.setReference(sign * self.velocity * multiplier, rev.CANSparkMax.ControlType.kSmartVelocity, pidSlot=2, arbFeedforward=SmartDashboard.getNumber("ChargeStationBalance_arbFF", 1))
         else:
             [controller.setReference(0, rev.CANSparkMax.ControlType.kSmartVelocity, pidSlot=2, arbFeedforward=0) for controller in self.drive.pid_controllers]
 

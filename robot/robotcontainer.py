@@ -70,7 +70,9 @@ class RobotContainer:
 
     def select_preset(self, direction) -> CommandSelector:
         if self.co_driver_controller.getRawButton(1):
-            return self.CommandSelector[f'TURRET_{direction}']
+            # don't toggle the turret (do nothing when direction = UP/DOWN)
+            if direction == 'UP_DRIVE' or direction == 'DOWN_DRIVE':
+                return self.CommandSelector[f'TURRET_{direction}']
         elif self.co_driver_controller.getRawButton(2):
             return self.CommandSelector[f'ELEVATOR_{direction}']
         elif self.co_driver_controller.getRawButton(4):
@@ -98,7 +100,9 @@ class RobotContainer:
         self.initialize_dashboard()
 
         # Set up default drive command
-        if wpilib.RobotBase.isSimulation():
+      #  if wpilib.RobotBase.isSimulation():
+        if False:
+
             self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
                     lambda: self.driver_controller.getRawAxis(4),))
         else:
@@ -150,8 +154,8 @@ class RobotContainer:
         self.co_buttonDown = POVButton(self.co_driver_controller, 180)
         self.co_buttonLeft = POVButton(self.co_driver_controller, 270)
         self.co_buttonRight = POVButton(self.co_driver_controller, 90)
-        self.co_buttonLeftAxis = POVButton(self.co_driver_controller, 2)
-        self.co_buttonRightAxis = POVButton(self.co_driver_controller, 3)
+        self.co_buttonLeftAxis = AxisButton(self.co_driver_controller, 2)
+        self.co_buttonRightAxis = AxisButton(self.co_driver_controller, 3)
 
 
         # All untested still
@@ -162,8 +166,9 @@ class RobotContainer:
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
 
         # bind commands to co-pilot
-        self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
-        self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="open"))
+        # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
+        # self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="open"))
+        self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics))
 
         # self.co_buttonA.whileHeld(GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], axis=0, invert_axis=False))
         # self.co_buttonB.whileHeld(GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], axis=1, invert_axis=True))
@@ -188,10 +193,10 @@ class RobotContainer:
             (self.CommandSelector.ARM_DOWN, ArmMove(self, self.arm, direction="down", wait_to_finish=False)),
             (self.CommandSelector.ARM_UP_DRIVE, GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=1)),
             (self.CommandSelector.ARM_DOWN_DRIVE, GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=-1)),
-            (self.CommandSelector.WRIST_UP, WristMove(self, self.wrist, direction="up", wait_to_finish=False)),
-            (self.CommandSelector.WRIST_DOWN, WristMove(self, self.wrist, direction="down", wait_to_finish=False)),
-            (self.CommandSelector.WRIST_UP_DRIVE, GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=1)),
-            (self.CommandSelector.WRIST_DOWN_DRIVE, GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=-1)),
+            (self.CommandSelector.WRIST_UP, WristMove(self, self.wrist, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.WRIST_DOWN, WristMove(self, self.wrist, direction="up", wait_to_finish=False)),
+            (self.CommandSelector.WRIST_UP_DRIVE, GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=1, invert_axis=True)),
+            (self.CommandSelector.WRIST_DOWN_DRIVE, GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=-1, invert_axis=True)),
             (self.CommandSelector.NONE, commands2.WaitCommand(0)),
         ]
 

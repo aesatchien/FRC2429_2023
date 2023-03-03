@@ -43,10 +43,12 @@ class GenericDrive(commands2.CommandBase):
         # get stick value and invert if necessary (if using Y-axis)
         if self.input_type == 'stick':
             stick = self.container.co_driver_controller.getRawAxis(self.axis)
-            if self.invert_axis:
-                stick *= -1
+
         elif self.input_type == 'dpad':
             stick = 0.5 * self.direction
+
+        if self.invert_axis:
+            stick *= -1
 
         velocity = stick * self.max_velocity * self.scale
 

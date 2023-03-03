@@ -30,7 +30,7 @@ class Elevator(SubsystemBase):
         super().__init__()
         self.counter = 5  # offset the periodics
 
-        self.max_height = 951  # the bottom of the carriage is 39in (991mm)  above the bottom at max height
+        self.max_height = 981  # the bottom of the carriage is 39in (991mm)  above the bottom at max height
         self.min_height = 49  # mm for now
 
         # initialize motors

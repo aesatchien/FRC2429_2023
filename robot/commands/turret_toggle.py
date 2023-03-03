@@ -27,8 +27,8 @@ class TurretToggle(commands2.CommandBase):
         else:  # swing to 180
             self.setpoint = 180
 
-            self.turret.set_turret_angle(angle=self.setpoint, mode='smartmotion')
-            print(f'Setting turret from {position:.0f} to {self.setpoint}')
+        self.turret.set_turret_angle(angle=self.setpoint, mode='smartmotion')
+        print(f'Setting turret from {position:.0f} to {self.setpoint}')
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work
         pass

@@ -28,10 +28,17 @@ k_controller_turret_axis = 4
 
 # --------------  DRIVETRAIN  ---------------
 # The CAN IDs for the drivetrain SparkMAX motor controllers
-k_left_motor1_port = 1
-k_left_motor2_port = 2
-k_right_motor1_port = 3
-k_right_motor2_port = 4
+# For when turret is front
+# k_left_motor1_port = 1
+# k_left_motor2_port = 2
+# k_right_motor1_port = 3
+# k_right_motor2_port = 4
+
+# For when battery is front
+k_left_motor1_port = 3
+k_left_motor2_port = 4
+k_right_motor1_port = 1
+k_right_motor2_port = 2
 
 # drivetrain constants
 k_wheel_diameter_in = 6  # wheel diameter in inches
