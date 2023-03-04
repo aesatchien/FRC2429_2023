@@ -52,6 +52,7 @@ class Arm(SubsystemBase):
         self.sparkmax_encoder.setPosition(0)
         SmartDashboard.putNumber('arm_extension', self.extension)
         SmartDashboard.putNumber('arm_setpoint', self.setpoint)
+        self.is_moving = False
 
     def get_extension(self):  # getter for the relevant elevator parameter
         if wpilib.RobotBase.isReal():
@@ -84,3 +85,4 @@ class Arm(SubsystemBase):
         if self.counter % 25 == 0:
             self.extension = self.get_extension()
             SmartDashboard.putNumber('arm_extension', self.extension)
+            self.is_moving = abs(self.sparkmax_encoder.getVelocity()) > 100  #

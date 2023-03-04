@@ -36,8 +36,6 @@ class Wrist(SubsystemBase):
         self.at_fwd_limit = self.forward_limit_switch.get()
         SmartDashboard.putBoolean('wrist_limit', self.at_fwd_limit)
 
-        # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
-
         # set soft limits - do not let spark max put out power above/below a certain value
         self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, constants.k_enable_soft_limts)
         self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limts)
@@ -54,6 +52,7 @@ class Wrist(SubsystemBase):
         self.setpoint = self.angle
         SmartDashboard.putNumber('wrist_angle', self.angle)
         SmartDashboard.putNumber('wrist_setpoint', self.setpoint)
+        self.is_moving = False  # use for determining if we are jumping setpoints
 
     def get_angle(self):  # getter for the relevant elevator parameter
         if wpilib.RobotBase.isReal():
@@ -68,10 +67,11 @@ class Wrist(SubsystemBase):
         elif mode == 'position':
             # just use the position PID
             self.pid_controller.setReference(angle, rev.CANSparkMax.ControlType.kPosition)
-        self.angle = angle
+
         self.setpoint = angle
         SmartDashboard.putNumber('wrist_setpoint', angle)
         if wpilib.RobotBase.isSimulation():
+            self.angle = angle
             SmartDashboard.putNumber('wrist_angle', self.angle)
 
     def set_encoder_position(self, angle):
@@ -81,9 +81,12 @@ class Wrist(SubsystemBase):
 
     def periodic(self) -> None:
         self.counter += 1
+
         if self.counter % 25 == 0:
             self.angle = self.get_angle()
             SmartDashboard.putNumber('wrist_angle', self.angle)
+
+            self.is_moving = abs(self.sparkmax_encoder.getVelocity()) > 100  #
 
             previous_limit_value = self.at_fwd_limit  # get the previous limit value
             self.at_fwd_limit = self.forward_limit_switch.get()

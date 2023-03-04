@@ -25,16 +25,22 @@ class WristMove(commands2.CommandBase):
                 allowed_positions = [x for x in sorted(self.wrist.positions.values()) if x > position + self.tolerance]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
+                if self.wrist.is_moving and len(allowed_positions) > 1:
+                    temp_setpoint = sorted(allowed_positions)[1]
             else:
                 allowed_positions = [x for x in sorted(self.wrist.positions.values()) if x < position - self.tolerance]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
+                if self.wrist.is_moving and len(allowed_positions) > 1:
+                    temp_setpoint = sorted(allowed_positions)[-2]
 
             self.wrist.set_wrist_angle(angle=temp_setpoint, mode='smartmotion')
-            print(f'Setting wrist from {position:.0f} to {temp_setpoint}')
+            print(f'Setting wrist from {position:.0f} to {temp_setpoint} - is_moving={self.wrist.is_moving}')
         else:
             self.wrist.set_wrist_angle(angle=self.setpoint, mode='smartmotion')
             print(f'Setting wrist from {position:.0f} to {self.setpoint}')
+
+        self.wrist.is_moving = True  # try to raise a flag that lets us know we're in motion
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work
         pass

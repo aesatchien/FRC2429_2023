@@ -26,16 +26,21 @@ class ArmMove(commands2.CommandBase):
                 allowed_positions = [x for x in sorted(self.arm.positions.values()) if x > position + self.tolerance]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
+                if self.arm.is_moving and len(allowed_positions) > 1:
+                    temp_setpoint = sorted(allowed_positions)[1]
             else:
                 allowed_positions = [x for x in sorted(self.arm.positions.values()) if x < position - self.tolerance]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
+                if self.arm.is_moving and len(allowed_positions) > 1:
+                    temp_setpoint = sorted(allowed_positions)[-2]
 
             self.arm.set_arm_extension(distance=temp_setpoint, mode='smartmotion')
-            print(f'Setting arm from {position:.0f} to {temp_setpoint}')
+            print(f'Setting arm from {position:.0f} to {temp_setpoint} - is_moving = {self.arm.is_moving}')
         else:
             self.arm.set_arm_extension(distance=self.setpoint, mode='smartmotion')
             print(f'Setting arm from {position:.0f} to {self.setpoint}')
+        self.arm.is_moving = True
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work
         pass
