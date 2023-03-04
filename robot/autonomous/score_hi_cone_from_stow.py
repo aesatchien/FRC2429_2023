@@ -51,14 +51,14 @@ class ScoreHiConeFromStow(commands2.SequentialCommandGroup):  # change the name 
         self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['score'], wait_to_finish=False).withTimeout(2))
 
         # step 7 - arm goes back in
-        self.addCommands(ArmMove(container=self.container, arm=self.container.arm,
-                                 setpoint=self.container.arm.min_extension, wait_to_finish=True).withTimeout(2))
+        # self.addCommands(ArmMove(container=self.container, arm=self.container.arm,
+        #                          setpoint=self.container.arm.min_extension, wait_to_finish=True).withTimeout(2))
 
         # Step 1.b
         # Get turret into position - this will take 1.25s to get there but we move to next step anyway
-        self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=0, wait_to_finish=False).withTimeout(1))
+        # self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=0, wait_to_finish=False).withTimeout(1))
 
         # Step 1.a
         # raise the elevator , don't wait to end - can go concurrently with other moves
-        self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator,
-                                      setpoint=150, wait_to_finish=False))
+        # self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator,
+        #                               setpoint=150, wait_to_finish=False))

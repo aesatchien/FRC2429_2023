@@ -7,7 +7,7 @@ changes.
 """
 
 k_competition_mode = True  # use for compressor and some joystick settings
-k_burn_flash = True  # if we want to burn the settings to the sparkmaxes
+k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
 k_enable_soft_limts = True
 
 # --------------  OI  ---------------
@@ -21,7 +21,8 @@ k_arcade_twist_scale = 0.45  # used in drive by joystick arcade mode
 k_max_thrust_velocity = 150  # meters per MINUTE  for smartmotion
 k_max_twist_velocity = 90 # meters per MINUTE - for smartmotion
 
-#  co-driver
+#  co-driver++++
+
 k_controller_elevator_axis = 1
 k_controller_turret_axis = 4
 
@@ -56,9 +57,9 @@ k_PID_dict_pos = {'kP': 0.002, 'kI': 0, 'kD': 0.002, 'kIz': 0, 'kFF': 0.008, 'kA
                 'SM_MaxVel': 5000 / k_sparkmax_conversion_factor_meters, 'SM_MaxAccel': 5000 / k_sparkmax_conversion_factor_meters}
 k_PID_dict_vel = {'kP': 0.0, 'kI': 0.000, 'kD': 0.00, 'kIz': 0.001, 'kFF': 0.0040, 'kArbFF':0, 'kMaxOutput': 0.95,
                 'kMinOutput': -0.95, 'SM_MaxVel':180, 'SM_MaxAccel':120}  # 180 is 3 m/s and 3m/s/s
-k_PID_dict_vel_slow = {'kP': 1e-5, 'kI': 2e-6, 'kD': 0.00, 'kIz': 0, 'kFF': 0.0040, 'kArbFF':0, 'kMaxOutput': 0.95,
+k_PID_dict_vel_slow = {'kP': 1e-5, 'kI': 1e-6, 'kD': 0.00, 'kIz': 0, 'kFF': 0.0040, 'kArbFF':0, 'kMaxOutput': 0.95,
                 'kMinOutput': -0.95, 'SM_MaxVel':120, 'SM_MaxAccel':120}  # 120 is 2 m/s and 2m/s/s
-k_drive_accumulator_max = 0.2  # limit on forward I - negative has no limit :(  Units in volts?
+k_drive_accumulator_max = 0.5  # limit on forward I - negative has no limit :(  Units in volts?
 
 # --------------  SCORING  SUBSYSTEMS ---------------
 
@@ -96,8 +97,8 @@ k_wrist_motor_port = 12  # sparkmax with a NEO
 k_wrist_encoder_conversion_factor = 360. / 567  # 0.635 degrees per revolution
 # TODO: verify wrist velocity PID values
 k_PID_dict_vel_wrist = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.56e-4, 'kArbFF':0,
-                         'kMaxOutput': 0.6, 'kMinOutput': -0.6, 'SM_MaxVel':4400,
-                        'SM_MaxAccel':4800}
+                         'kMaxOutput': 0.75, 'kMinOutput': -0.75, 'SM_MaxVel':6000,
+                        'SM_MaxAccel':6000}
 
 # TODO: determine which systems need a limit switch
 k_wrist_limit_switch = 1  # DIO for the wrist limit switch

@@ -29,7 +29,7 @@ class DriveByJoystickVelocity(commands2.CommandBase):
         self.previous_thrust = 0
 
         # Last year we limited the thrust differential to 0.04 - 0.05 was too tippy
-        self.max_thrust_differential = 0.07  # how high can we go on this?
+        self.max_thrust_differential = 0.1  # how high can we go on this?
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""

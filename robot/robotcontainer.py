@@ -161,7 +161,7 @@ class RobotContainer:
 
         # All untested still
         # bind commands to driver
-        self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=20, tolerance=5))
+        self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=10))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
@@ -272,6 +272,7 @@ class RobotContainer:
         self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
         self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
+        self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
         self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(10))
 
 

@@ -7,7 +7,7 @@ from subsystems.drivetrain import Drivetrain
 
 class ChargeStationBalance(commands2.CommandBase):
 
-    def __init__(self, container, drive: Drivetrain, velocity=60, tolerance=4, max_feed_forward=2.5) -> None:
+    def __init__(self, container, drive: Drivetrain, velocity=60, tolerance=4, max_feed_forward=0.5) -> None:
         super().__init__()
         self.setName('ChargeStationBalance')
         self.container = container

@@ -15,4 +15,5 @@ class ScoreHiAndMove(commands2.SequentialCommandGroup):  # change the name for y
 
         # Step 2.a
         # drive forward
-        self.addCommands(DriveMove(container=self.container, drive=self.container.drive, setpoint=1, wait_to_finish=False))
+        # note: hi score doesn't reset rotation anymore (due to break during auto)
+        self.addCommands(DriveMove(container=self.container, drive=self.container.drive, setpoint=3, wait_to_finish=True))
