@@ -18,8 +18,9 @@ k_controller_thrust_axis = 1
 k_controller_twist_axis = 4
 k_arcade_thrust_scale = 0.7  # used in drive by joystick arcade mode
 k_arcade_twist_scale = 0.45  # used in drive by joystick arcade mode
-k_max_thrust_velocity = 150  # meters per MINUTE  for smartmotion
+k_max_thrust_velocity = 180  # meters per MINUTE  for smartmotion was 150 at start of Hueneme
 k_max_twist_velocity = 90 # meters per MINUTE - for smartmotion
+k_slowmode_multiplier  = 0.3
 
 #  co-driver++++
 

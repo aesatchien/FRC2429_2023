@@ -42,7 +42,7 @@ class ScoreLowConeFromStow(commands2.SequentialCommandGroup):  # change the name
 
         # Step 6 bring the wrist back up
         # Drop the wrist to level
-        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['score'], wait_to_finish=False).withTimeout(2))
+        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['stow'], wait_to_finish=True).withTimeout(2))
 
         # step 7 - arm goes back in
         self.addCommands(ArmMove(container=self.container, arm=self.container.arm,
