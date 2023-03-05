@@ -40,6 +40,7 @@ from autonomous.release_and_stow import ReleaseAndStow
 from autonomous.drive_move import DriveMove
 from autonomous.drive_and_balance import DriveAndBalance
 from autonomous.score_hi_and_move import ScoreHiAndMove
+from autonomous.drive_climber import DriveClimber
 
 
 class RobotContainer:
@@ -268,13 +269,14 @@ class RobotContainer:
         # populate autonomous routines
         self.autonomous_chooser = wpilib.SendableChooser()
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
+        self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
         self.autonomous_chooser.setDefaultOption('score hi and move', ScoreHiAndMove(self))
-        self.autonomous_chooser.addOption('high cone from stow', ScoreHiConeFromStow(self))
         self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
-        self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
+        #self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
         self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
         self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(10))
+        self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=2).withTimeout(5))
 
 
     def get_autonomous_command(self):

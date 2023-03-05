@@ -103,6 +103,10 @@ class Drivetrain(SubsystemBase):
         for encoder in self.encoders:
             encoder.setPositionConversionFactor(constants.k_sparkmax_conversion_factor_meters)  # want in m
             encoder.setPositionConversionFactor(constants.k_sparkmax_conversion_factor_meters)  # want in m/s but screws up smartmotion, so m/min
+
+        for slot in [0,1,2]:  # limit the accumulator for the incline drive
+            [pid_controller.setIMaxAccum(constants.k_drive_accumulator_max, slotID=slot) for pid_controller in self.pid_controllers]
+
         # send controller info, burn if necessary
         ids = [constants.k_left_motor1_port, constants.k_right_motor1_port]
         for controller, pid_controller, id in zip(self.controllers, self.pid_controllers, ids):
@@ -113,8 +117,6 @@ class Drivetrain(SubsystemBase):
             configure_sparkmax(sparkmax=controller, pid_controller=pid_controller, can_id=id, slot=2,
                                burn_flash=constants.k_burn_flash, pid_dict=constants.k_PID_dict_vel_slow, pid_only=False)
 
-        for slot in [0,1,2]:  # limit the accumulator for the incline drive
-            [pid_controller.setIMaxAccum(constants.k_drive_accumulator_max, slotID=slot) for pid_controller in self.pid_controllers]
 
     def get_positions(self):
         left_position = self.spark_neo_left_encoder.getPosition()
