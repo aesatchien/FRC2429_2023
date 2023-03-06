@@ -5,14 +5,17 @@ import constants
 from autonomous.drive_move import DriveMove
 from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.drive_climber import DriveClimber
+from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
 
 
-class DriveAndBalance(commands2.SequentialCommandGroup):  # change the name for your command
+class ScoreDriveAndBalance(commands2.SequentialCommandGroup):  # change the name for your command
 
     def __init__(self, container) -> None:
         super().__init__()
         self.setName('DriveAndBalance')  # change this to something appropriate for this command
         self.container = container
+
+        self.addCommands(ScoreHiConeFromStow(self.container))
 
         # drive onto the charge station
         # self.addCommands(DriveMove(container=self.container, drive=self.container.drive,

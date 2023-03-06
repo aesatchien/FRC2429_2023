@@ -6,7 +6,7 @@ import rev
 
 class DriveClimber(commands2.CommandBase):
 
-    def __init__(self, container, drive:Drivetrain, setpoint_velocity=30, setpoint_distance=2, wait_to_finish=True) -> None:
+    def __init__(self, container, drive:Drivetrain, setpoint_velocity=45, setpoint_distance=2, wait_to_finish=True) -> None:
         super().__init__()
         self.setName('DriveCimber')
         self.container = container
@@ -46,6 +46,15 @@ class DriveClimber(commands2.CommandBase):
         self.l_controller.setReference(self.setpoint_velocity, self.control_type, pidSlot=2, arbFeedforward=lfeed)
         self.r_controller.setReference(self.setpoint_velocity, self.control_type, pidSlot=2, arbFeedforward=rfeed)
         self.drive.feed()
+
+        wpilib.SmartDashboard.putNumber("left IAccum", self.l_controller.getIAccum())
+        wpilib.SmartDashboard.putNumber("right IAccum", self.r_controller.getIAccum())
+
+        wpilib.SmartDashboard.putNumber("left Output", self.drive.spark_neo_right_front.getAppliedOutput())
+        wpilib.SmartDashboard.putNumber("left Current", self.drive.spark_neo_right_front.getOutputCurrent())
+
+        wpilib.SmartDashboard.putNumber("right Output", self.drive.spark_neo_left_front.getAppliedOutput())
+        wpilib.SmartDashboard.putNumber("right Current", self.drive.spark_neo_left_front.getOutputCurrent())
 
     def isFinished(self) -> bool:
         if wpilib.RobotBase.isSimulation():

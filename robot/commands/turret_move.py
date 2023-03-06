@@ -12,7 +12,7 @@ class TurretMove(commands2.CommandBase):
         self.setpoint = setpoint
         self.direction = direction
         self.relative = relative
-        self.tolerance = 4  # for stepping to the next preset location
+        self.tolerance = 3  # for stepping to the next preset location
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
 
         self.addRequirements(self.turret)  # commandsv2 version of requirements
