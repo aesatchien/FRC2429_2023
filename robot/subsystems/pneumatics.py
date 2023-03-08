@@ -6,6 +6,7 @@ manipulator needs to reliably open and close on a double solenoid
 import wpilib
 from commands2 import SubsystemBase
 from wpilib import SmartDashboard, Solenoid, Compressor, AnalogInput, DoubleSolenoid
+from playingwithfusion import TimeOfFlight
 import constants
 
 
@@ -36,6 +37,10 @@ class Pneumatics(SubsystemBase):
         # Decide on init piston position - always closed because we will hold a game piece
         self.manipulator_closed = True
         self.manipulator_piston.set(DoubleSolenoid.Value.kReverse)  # must initialize, or no toggling
+
+        # time of flight sensor
+        self.target_distance_sensor = TimeOfFlight(constants.k_manipulator_timeofflight)
+        self.target_distance_sensor.setRangingMode(TimeOfFlight.RangingMode.kShort, sampleTime=50)
 
         SmartDashboard.putBoolean('manipulator_closed', self.manipulator_closed)
         SmartDashboard.putBoolean('compressor_close_loop', self.close_loop_enable)
@@ -76,12 +81,16 @@ class Pneumatics(SubsystemBase):
         else:
             self.start_compressor()
 
+    def get_target_distance(self):
+        return self.target_distance_sensor.getRange()
+
     def periodic(self) -> None:
         
         self.counter += 1
         if self.counter % 25 == 1:
             # the compressor turns itself off and on, so we have to ask it its state
             SmartDashboard.putBoolean('compressor_state', self.compressor.enabled())
+            SmartDashboard.putNumber('target distance', self.target_distance_sensor.getRange())
             # SmartDashboard.putNumber('pressure', self.get_analog_pressure())
             # todo: integrate pressure sensor into compressor class
 

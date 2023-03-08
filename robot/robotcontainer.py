@@ -25,6 +25,7 @@ from commands.wrist_move import WristMove
 from commands.manipulator_toggle import ManipulatorToggle
 from commands.compressor_toggle import CompressorToggle
 from commands.generic_drive import GenericDrive
+from commands.manipulator_auto_grab import ManipulatorAutoGrab
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.wrist_calibration import WristCalibration
@@ -183,6 +184,8 @@ class RobotContainer:
         self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision))
         self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
+
+        self.co_buttonA.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
 
         preset_command_map = [
             (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),
