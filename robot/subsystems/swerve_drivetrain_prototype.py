@@ -5,7 +5,7 @@ from wpilib import MotorControllerGroup, PWMSparkMax, SmartDashboard
 import constants
 import math
 
-class SwerveDriveTrain(SubsystemBase):
+class SwerveDrivetrain(SubsystemBase):
     def __init__(self, container, L, W) -> None:
         '''Initializes a swerve drivetrain analogous to drivetrain.py
         L: The distance between the front and back wheels.
