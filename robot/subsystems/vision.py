@@ -29,6 +29,12 @@ class Vision(SubsystemBase):
         self.camera_dict = {'yellow': {}, 'purple': {}, 'green': {}}
         self.camera_values = {}
 
+        self.relay = wpilib.Relay(0, direction=wpilib.Relay.Direction.kForwardOnly)
+        self.relay.set(wpilib.Relay.Value.kForward)
+        self.relay_state = True
+
+        SmartDashboard.putBoolean('relay_state', self.relay_state)
+
         for key in self.camera_dict.keys():
             self.camera_dict[key].update({'targets_entry': self.ballcam_table.getEntry(f"/{key}/targets")})
             self.camera_dict[key].update({'distance_entry': self.ballcam_table.getEntry(f"/{key}/distance")})
@@ -38,6 +44,14 @@ class Vision(SubsystemBase):
             self.camera_values[key].update({'targets': 0})
             self.camera_values[key].update({'distance': 0})
             self.camera_values[key].update({'rotation': 0})
+
+    def set_relay(self, state):
+        if state:
+            self.relay.set(wpilib.Relay.Value.kForward)
+            self.relay_state = True
+        else:
+            self.relay.set(wpilib.Relay.Value.kOff)
+            self.relay_state = False
 
     def periodic(self) -> None:
         self.counter += 1
@@ -59,3 +73,5 @@ class Vision(SubsystemBase):
             self.pole_targets = self.camera_dict['green']['targets_entry'].getDouble(0)
             self.pole_distance = self.camera_dict['green']['distance_entry'].getDouble(0)
             self.pole_rotation = self.camera_dict['green']['rotation_entry'].getDouble(0)
+
+            self.set_relay(SmartDashboard.getBoolean('relay_state', False))
