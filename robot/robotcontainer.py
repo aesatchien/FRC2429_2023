@@ -6,7 +6,8 @@ import time
 import enum
 import constants
 
-from subsystems.drivetrain import Drivetrain
+# from subsystems.drivetrain import Drivetrain
+from subsystems.swerve import Swerve
 from subsystems.arm import Arm
 from subsystems.wrist import Wrist
 from subsystems.elevator import Elevator
@@ -15,8 +16,6 @@ from subsystems.pneumatics import Pneumatics
 from subsystems.vision import Vision
 
 from misc.axis_button import AxisButton
-from commands.drive_by_joystick import DriveByJoystick
-from commands.drive_velocity_stick import DriveByJoystickVelocity
 from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
 from commands.turret_toggle import TurretToggle
@@ -90,7 +89,7 @@ class RobotContainer:
         self.start_time = time.time()
 
         # The robot's subsystems
-        self.drive = Drivetrain()
+        self.drive = Swerve()
         self.turret = Turret()
         self.arm = Arm()
         self.wrist = Wrist()
@@ -104,12 +103,11 @@ class RobotContainer:
 
         # Set up default drive command
       #  if wpilib.RobotBase.isSimulation():
-        if False:
 
-            self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
-                    lambda: self.driver_controller.getRawAxis(4),))
-        else:
-            self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
+        self.drive.setDefaultCommand(commands2.RunCommand(self.drive.drive(self.driver_controller.getRawAxis(4),
+                                                                           self.driver_controller.getRawAxis(1),
+                                                                           self.driver_controller.getRawAxis(0),
+                                                                           True, True)))
 
         # initialize the turret
         commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
