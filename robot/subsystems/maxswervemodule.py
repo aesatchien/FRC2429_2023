@@ -14,7 +14,8 @@ class MAXSwerveModule:
         MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
         Encoder.
         """
-
+        # TODO: If absolute encoder doesn't come with turning motor's sparkmax, add new parameter for
+        # absolute encoder and set the turning motor's sparkmax's feedback device to the absolute encoder
         self.chassisAngularOffset = 0
         self.desiredState = SwerveModuleState(0.0, Rotation2d())
 

@@ -12,7 +12,7 @@ class ModuleConstants:
 
     # Invert the turning encoder, since the output shaft rotates in the opposite direction of
     # the steering motor in the MAXSwerve Module.
-    kTurningEncoderInverted = True
+    kTurningEncoderInverted = True # Change? Might not be true for 2429
 
     # Calculations required for driving motor conversion factors and feed forward
     kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60
