@@ -39,7 +39,7 @@ class CameraWorker(QObject):
             if self.qtgui.qradiobutton_autoswitch.isChecked():  # auto determine which camera to show
                 # shooter_on = self.qtgui.widget_dict['qlabel_shooter_indicator']['entry'].getBoolean(False)
                 elevator_low = self.qtgui.widget_dict['qlcd_elevator_height']['entry'].getDouble(100) < 100
-                url = self.qtgui.camera_dict['ShooterCam'] if elevator_low else self.qtgui.camera_dict['BallCam']
+                url = self.qtgui.camera_dict['GroundCam'] if elevator_low else self.qtgui.camera_dict['ArmCam']
             else:
                 url = self.qtgui.camera_dict[self.qtgui.qcombobox_cameras.currentText()]  # figure out which url we want
             # stream = urllib.request.urlopen('http://10.24.29.12:1187/stream.mjpg')
@@ -88,10 +88,10 @@ class Ui(QtWidgets.QMainWindow):
         self.command_dict = {}
         self.camera_enabled = False
         self.thread = None
-        self.camera_dict = {'BallCam': 'http://10.24.29.12:1186/stream.mjpg',
-                            'ShooterCam': 'http://10.24.29.12:1187/stream.mjpg',
-                            'Raw Balls': 'http://10.24.29.12:1181/stream.mjpg',
-                            'Raw Shooter': 'http://10.24.29.12:1182/stream.mjpg'}
+        self.camera_dict = {'ArmCam': 'http://10.24.29.12:1186/stream.mjpg',
+                            'GroundCam': 'http://10.24.29.12:1187/stream.mjpg',
+                            'Raw Arm': 'http://10.24.29.12:1181/stream.mjpg',
+                            'Raw Ground': 'http://10.24.29.12:1182/stream.mjpg'}
 
         self.initialize_widgets()
         #QTimer.singleShot(2000, self.initialize_widgets())  # wait 2s for NT to initialize
@@ -185,7 +185,7 @@ class Ui(QtWidgets.QMainWindow):
         # ToDo: check to see if the thread is running, then start again
 
         # check if server is running
-        if self.check_url(self.camera_dict['BallCam']) or self.check_url('ShooterCam'):
+        if self.check_url(self.camera_dict['ArmCam']) or self.check_url('GroundCam'):
             if self.thread is None:  # first time through we need to make the thread
                 self.thread = QThread()  # create a QThread object
                 self.worker = CameraWorker(qtgui=self)  # create a CameraWorker object, pass it the main gui
@@ -339,9 +339,9 @@ class Ui(QtWidgets.QMainWindow):
         'qlcd_elevator_height': {'widget': self.qlcd_elevator_height, 'nt': '/SmartDashboard/elevator_height', 'command': None},
         'qlcd_arm_extension': {'widget':self.qlcd_arm_extension, 'nt':'/SmartDashboard/arm_extension', 'command': None},
         'qlcd_wrist_angle': {'widget': self.qlcd_wrist_angle, 'nt': '/SmartDashboard/wrist_angle', 'command': None},
-        'hub_targets': {'widget': None, 'nt': '/BallCam//green/targets', 'command': None},
-        'hub_rotation': {'widget': None, 'nt': '/BallCam//green/rotation', 'command': None},
-        'hub_distance': {'widget': None, 'nt': '/BallCam//green/distance', 'command': None},
+        'hub_targets': {'widget': None, 'nt': '/ArmCam//green/targets', 'command': None},
+        'hub_rotation': {'widget': None, 'nt': '/ArmCam//green/rotation', 'command': None},
+        'hub_distance': {'widget': None, 'nt': '/ArmCam//green/distance', 'command': None},
         'drive_pose': {'widget': None, 'nt': '/SmartDashboard/drive_pose', 'command': None},
         }
 

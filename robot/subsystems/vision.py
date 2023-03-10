@@ -25,7 +25,7 @@ class Vision(SubsystemBase):
         self.cube_distance = 0
         self.cube_rotation = 0
 
-        self.ballcam_table = self.ntinst.getTable('BallCam')
+        self.armcam_table = self.ntinst.getTable('ArmCam')
         self.camera_dict = {'yellow': {}, 'purple': {}, 'green': {}}
         self.camera_values = {}
 
@@ -36,9 +36,9 @@ class Vision(SubsystemBase):
         SmartDashboard.putBoolean('relay_state', self.relay_state)
 
         for key in self.camera_dict.keys():
-            self.camera_dict[key].update({'targets_entry': self.ballcam_table.getEntry(f"/{key}/targets")})
-            self.camera_dict[key].update({'distance_entry': self.ballcam_table.getEntry(f"/{key}/distance")})
-            self.camera_dict[key].update({'rotation_entry': self.ballcam_table.getEntry(f"/{key}/rotation")})
+            self.camera_dict[key].update({'targets_entry': self.armcam_table.getEntry(f"/{key}/targets")})
+            self.camera_dict[key].update({'distance_entry': self.armcam_table.getEntry(f"/{key}/distance")})
+            self.camera_dict[key].update({'rotation_entry': self.armcam_table.getEntry(f"/{key}/rotation")})
 
             self.camera_values[key] = {}
             self.camera_values[key].update({'targets': 0})
@@ -70,8 +70,8 @@ class Vision(SubsystemBase):
                 self.camera_values[key]['rotation_entry'] = self.camera_dict[key]['rotation_entry'].getDouble(0)
 
             # update pole values separately
-            self.pole_targets = self.camera_dict['green']['targets_entry'].getDouble(0)
-            self.pole_distance = self.camera_dict['green']['distance_entry'].getDouble(0)
-            self.pole_rotation = self.camera_dict['green']['rotation_entry'].getDouble(0)
+            #self.pole_targets = self.camera_dict['green']['targets_entry'].getDouble(0)
+            #self.pole_distance = self.camera_dict['green']['distance_entry'].getDouble(0)
+            #self.pole_rotation = self.camera_dict['green']['rotation_entry'].getDouble(0)
 
             self.set_relay(SmartDashboard.getBoolean('relay_state', False))
