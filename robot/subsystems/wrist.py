@@ -46,9 +46,14 @@ class Wrist(SubsystemBase):
         configure_sparkmax(sparkmax=self.wrist_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_wrist_motor_port,
                            pid_dict=constants.k_PID_dict_vel_wrist, pid_only=True, burn_flash=constants.k_burn_flash)
 
+        self.abs_encoder = self.wrist_controller.getAbsoluteEncoder(encoderType=rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
+        self.abs_encoder.setInverted(True)
+        self.abs_encoder.setPositionConversionFactor(360)
+        self.abs_encoder.setZeroOffset(360 * 0.36)
+
         # initialize the location of the wrist - say it's fully up at start
-        self.sparkmax_encoder.setPosition(self.max_angle)
-        self.angle = self.max_angle
+        self.sparkmax_encoder.setPosition(self.abs_encoder.getPosition())
+        self.angle = self.abs_encoder.getPosition()
         self.setpoint = self.angle
         SmartDashboard.putNumber('wrist_angle', self.angle)
         SmartDashboard.putNumber('wrist_setpoint', self.setpoint)
@@ -85,6 +90,7 @@ class Wrist(SubsystemBase):
         if self.counter % 25 == 0:
             self.angle = self.get_angle()
             SmartDashboard.putNumber('wrist_angle', self.angle)
+            SmartDashboard.putNumbeR('wrist_abs_encoder', self.abs_encoder.getPosition())
 
             self.is_moving = abs(self.sparkmax_encoder.getVelocity()) > 100  #
 
