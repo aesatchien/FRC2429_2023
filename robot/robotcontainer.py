@@ -5,6 +5,9 @@ from commands2.button import JoystickButton, POVButton
 import time
 import enum
 import constants
+import typing
+from wpimath.kinematics import SwerveModuleState
+from wpimath.geometry import Rotation2d
 
 # from subsystems.drivetrain import Drivetrain
 from subsystems.swerve import Swerve
@@ -109,9 +112,15 @@ class RobotContainer:
                                                                            self.driver_controller.getRawAxis(0),
                                                                            True, True)))
 
+        # initialize the swerve drive
+
+        commands2.ScheduleCommand(self.drive.setModuleStates(
+                            (SwerveModuleState(0, Rotation2d()),
+                            SwerveModuleState(0, Rotation2d()),
+                            SwerveModuleState(0, Rotation2d()),
+                            SwerveModuleState(0, Rotation2d()))))
         # initialize the turret
         commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
-        # TODO: initialize swerve drive
 
     def set_start_time(self):  # call in teleopInit and autonomousInit in the robot
         self.start_time = time.time()

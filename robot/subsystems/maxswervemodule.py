@@ -1,13 +1,15 @@
-from rev import CANSparkMax, SparkMaxAbsoluteEncoder
+from rev import CANSparkMax
 from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
+from wpilib import AnalogEncoder
+import math
 
-from .moduleconstants import ModuleConstants
+from moduleconstants import ModuleConstants
 
 
 class MAXSwerveModule:
     def __init__(
-        self, drivingCANId: int, turningCANId: int, chassisAngularOffset: float
+        self, drivingCANId: int, turningCANId: int, absEncoderPort: int, chassisAngularOffset: float
     ) -> None:
         """Constructs a MAXSwerveModule and configures the driving and turning motor,
         encoder, and PID controller. This configuration is specific to the REV
@@ -26,6 +28,7 @@ class MAXSwerveModule:
             turningCANId, CANSparkMax.MotorType.kBrushless
         )
 
+        self.absoluteEncoder = AnalogEncoder(absEncoderPort)
         # Factory reset, so we get the SPARKS MAX to a known state before configuring
         # them. This is useful in case a SPARK MAX is swapped out.
         self.drivingSparkMax.restoreFactoryDefaults()
@@ -33,9 +36,7 @@ class MAXSwerveModule:
 
         # Setup encoders and PID controllers for the driving and turning SPARKS MAX.
         self.drivingEncoder = self.drivingSparkMax.getEncoder()
-        self.turningEncoder = self.turningSparkMax.getAbsoluteEncoder(
-            SparkMaxAbsoluteEncoder.Type.kDutyCycle
-        )
+        self.turningEncoder = self.turningSparkMax.getEncoder()
         self.drivingPIDController = self.drivingSparkMax.getPIDController()
         self.turningPIDController = self.turningSparkMax.getPIDController()
         self.drivingPIDController.setFeedbackDevice(self.drivingEncoder)
@@ -113,7 +114,9 @@ class MAXSwerveModule:
 
         self.chassisAngularOffset = chassisAngularOffset
         self.desiredState.angle = Rotation2d(self.turningEncoder.getPosition())
+
         self.drivingEncoder.setPosition(0)
+        self.turningEncoder.setPosition(math.tau*self.absoluteEncoder.getAbsolutePosition())
 
     def getState(self) -> SwerveModuleState:
         """Returns the current state of the module.

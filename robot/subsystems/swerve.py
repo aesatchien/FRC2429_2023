@@ -14,8 +14,8 @@ from wpimath.kinematics import (
 )
 
 import swerveutils
-from .driveconstants import DriveConstants
-from .maxswervemodule import MAXSwerveModule
+from maxswervemodule import MAXSwerveModule
+from driveconstants import DriveConstants
 
 
 class Swerve (SubsystemBase):
@@ -26,24 +26,28 @@ class Swerve (SubsystemBase):
         self.frontLeft = MAXSwerveModule(
             DriveConstants.kFrontLeftDrivingCanId,
             DriveConstants.kFrontLeftTurningCanId,
+            DriveConstants.kFrontLeftAbsEncoderPort,
             DriveConstants.kFrontLeftChassisAngularOffset,
         )
 
         self.frontRight = MAXSwerveModule(
             DriveConstants.kFrontRightDrivingCanId,
             DriveConstants.kFrontRightTurningCanId,
+            DriveConstants.kFrontRightAbsEncoderPort,
             DriveConstants.kFrontRightChassisAngularOffset,
         )
 
         self.rearLeft = MAXSwerveModule(
             DriveConstants.kRearLeftDrivingCanId,
             DriveConstants.kRearLeftTurningCanId,
+            DriveConstants.kBackLeftAbsEncoderPort,
             DriveConstants.kBackLeftChassisAngularOffset,
         )
 
         self.rearRight = MAXSwerveModule(
             DriveConstants.kRearRightDrivingCanId,
             DriveConstants.kRearRightTurningCanId,
+            DriveConstants.kBackRightAbsEncoderPort,
             DriveConstants.kBackRightChassisAngularOffset,
         )
 
