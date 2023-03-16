@@ -15,17 +15,17 @@ import wpilib
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
-        can_id = 9  # change as needed
+        can_id = 12  # change as needed
         drivetrain = False
 
         # if you are going to change position factor, you should also change velocity.
         # smart motion does weird things on the decel if you don't.
         # also note that if you do change these, the PIDs will have to change as well
         # the default values below are good for conversion factors of 1.
-        position_conversion_factor = 0.635  # test to see if this changes PIDFs on velocity
+        position_conversion_factor = 1.47  # test to see if this changes PIDFs on velocity
 
         self.motor = rev.CANSparkMax(can_id, rev.CANSparkMax.MotorType.kBrushless)
-        self.motor.restoreFactoryDefaults()
+        # self.motor.restoreFactoryDefaults()
         self.motor.setInverted(True)
 
         if drivetrain:
@@ -38,17 +38,17 @@ class Robot(wpilib.TimedRobot):
 
         self.pid_controller = self.motor.getPIDController()
         self.encoder = self.motor.getEncoder()
-        #self.encoder.setPositionConversionFactor(position_conversion_factor)
+        self.encoder.setPositionConversionFactor(position_conversion_factor)
         #self.encoder.setVelocityConversionFactor(position_conversion_factor)
-        self.encoder.setPosition(120)
+        self.encoder.setPosition(0)
 
         self.counter = 0
 
-        self.kP = 5e-5
-        self.kI = 1e-6
+        self.kP = 0
+        self.kI = 0
         self.kD = 0
         self.kIz = 0.00001
-        self.kFF = 0.000156
+        self.kFF = 0.0001
         self.kMaxOutput = 0.35
         self.kMinOutput = -0.35
         self.max_rpm = 5700

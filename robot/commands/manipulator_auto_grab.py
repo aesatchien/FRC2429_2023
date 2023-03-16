@@ -24,9 +24,9 @@ class ManipulatorAutoGrab(commands2.CommandBase):
 
     def execute(self) -> None:
         target_distance = self.pneumatics.get_target_distance()
-        grab_distance = 250 # mm
+        grab_distance = 500 # mm
 
-        if target_distance <= grab_distance:
+        if target_distance <= grab_distance and target_distance >= 50:
             self.pneumatics.set_manipulator_piston(position='close')
             self.has_game_piece = True
 

@@ -188,6 +188,6 @@ class Drivetrain(SubsystemBase):
             SmartDashboard.putNumber('drive_rpos', self.right_encoder.getPosition())
             SmartDashboard.putNumber('drive_lvel', self.left_encoder.getVelocity())
             SmartDashboard.putNumber('drive_rvel', self.right_encoder.getVelocity())
-            SmartDashboard.putNumber('navX', self.navx.getAngle())
+            # SmartDashboard.putNumber('navX', self.navx.getAngle())
 
 

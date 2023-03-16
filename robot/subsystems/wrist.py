@@ -13,14 +13,14 @@ from misc.configure_controllers import configure_sparkmax
 
 class Wrist(SubsystemBase):
     # wrist should probably have four positions that we need to map out
-    positions = {'stow': 87, 'score': 45, 'flat': 0, 'floor': -29}
+    positions = {'stow': 84, 'score': 45, 'flat': 0, 'floor': -25}
 
     def __init__(self):
         super().__init__()
         self. counter = 20  # offset the periodics
         # defining angles so 0 is horizontal
-        self.max_angle = 88  # call all the way up 125 degrees  todo: remeasure
-        self.min_angle = -30
+        self.max_angle = 85  # call all the way up 125 degrees  todo: remeasure
+        self.min_angle = -26
 
         # initialize motors
         self.wrist_controller = rev.CANSparkMax(constants.k_wrist_motor_port, rev.CANSparkMax.MotorType.kBrushless)
@@ -49,11 +49,13 @@ class Wrist(SubsystemBase):
         self.abs_encoder = self.wrist_controller.getAbsoluteEncoder(encoderType=rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
         self.abs_encoder.setInverted(True)
         self.abs_encoder.setPositionConversionFactor(360)
-        self.abs_encoder.setZeroOffset(360 * 0.36)
+        self.abs_encoder.setZeroOffset(360 * 0.38)
 
-        # initialize the location of the wrist - say it's fully up at start
-        self.sparkmax_encoder.setPosition(self.abs_encoder.getPosition())
+        # initialize the location of the wrist - from absolute encoder
         self.angle = self.abs_encoder.getPosition()
+        if self.angle > 180:  # correct for if we start out negative.  e.g. -10 would come out as 350
+            self.angle = self.angle - 360
+        self.sparkmax_encoder.setPosition(self.angle)
         self.setpoint = self.angle
         SmartDashboard.putNumber('wrist_angle', self.angle)
         SmartDashboard.putNumber('wrist_setpoint', self.setpoint)
@@ -90,7 +92,7 @@ class Wrist(SubsystemBase):
         if self.counter % 25 == 0:
             self.angle = self.get_angle()
             SmartDashboard.putNumber('wrist_angle', self.angle)
-            SmartDashboard.putNumbeR('wrist_abs_encoder', self.abs_encoder.getPosition())
+            SmartDashboard.putNumber('wrist_abs_encoder', self.abs_encoder.getPosition())
 
             self.is_moving = abs(self.sparkmax_encoder.getVelocity()) > 100  #
 

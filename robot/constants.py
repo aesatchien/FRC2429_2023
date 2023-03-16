@@ -18,8 +18,8 @@ k_controller_thrust_axis = 1
 k_controller_twist_axis = 4
 k_arcade_thrust_scale = 0.7  # used in drive by joystick arcade mode
 k_arcade_twist_scale = 0.45  # used in drive by joystick arcade mode
-k_max_thrust_velocity = 180  # meters per MINUTE  for smartmotion was 150 at start of Hueneme
-k_max_twist_velocity = 90 # meters per MINUTE - for smartmotion
+k_max_thrust_velocity = 210  # meters per MINUTE  for smartmotion was 150 at start of Hueneme
+k_max_twist_velocity = 150 # meters per MINUTE - for smartmotion
 k_slowmode_multiplier  = 0.3
 
 #  co-driver++++
@@ -95,11 +95,12 @@ k_PID_dict_vel_arm = {'kP': 1e-5, 'kI': 1e-5, 'kD': 0, 'kIz': 1e-5, 'kFF': 4.1e-
 # --------------  WRIST  ---------------
 k_wrist_motor_port = 12  # sparkmax with a NEO
 # 9*9*7 = 567x reduction motor to shaft, so in degrees it's 360./567.  Half a second at 6k rpm
-k_wrist_encoder_conversion_factor = 360. / 567  # 0.635 degrees per revolution
+# 7 * 7 * 5 = 245x reduction  1.47 degrees per rotation
+k_wrist_encoder_conversion_factor = 360. / 245  # 0.635 degrees per revolution
 # TODO: verify wrist velocity PID values
-k_PID_dict_vel_wrist = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.56e-4, 'kArbFF':0,
-                         'kMaxOutput': 0.75, 'kMinOutput': -0.75, 'SM_MaxVel':6000,
-                        'SM_MaxAccel':6000}
+k_PID_dict_vel_wrist = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.01e-4, 'kArbFF':0,
+                         'kMaxOutput': 0.55, 'kMinOutput': -0.55, 'SM_MaxVel':6000,
+                        'SM_MaxAccel':4500}
 
 # TODO: determine which systems need a limit switch
 k_wrist_limit_switch = 1  # DIO for the wrist limit switch

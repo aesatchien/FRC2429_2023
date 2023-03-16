@@ -29,7 +29,7 @@ class DriveByJoystickVelocity(commands2.CommandBase):
         self.previous_thrust = 0
 
         # Last year we limited the thrust differential to 0.04 - 0.05 was too tippy
-        self.max_thrust_differential = 0.1  # how high can we go on this?  0.1 means 10 cycles to go from 0 to full
+        self.max_thrust_differential = 0.2  # how high can we go on this?  0.1 means 10 cycles to go from 0 to full
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -49,14 +49,19 @@ class DriveByJoystickVelocity(commands2.CommandBase):
 
         # try to limit the change in thrust  BE VERY CAREFUL WITH THIS!  IT CAUSES RUNAWAY ROBOTS!
         d_thrust = self.previous_thrust - thrust
-        limit_decel = 'simple'
+        #limit_decel = 'simple'
+        limit_decel = 'none'
         #limit_decel = SmartDashboard.getString('drive_limit', 'thrust')
         if limit_decel == 'simple':  # global limit in both directions, limits fwd acceleration
             max_thrust_differential = self.max_thrust_differential
             if abs(d_thrust) > max_thrust_differential:
                 thrust = self.previous_thrust - max_thrust_differential * math.copysign(1, d_thrust)
                 thrust_sign = '+' if math.copysign(1, thrust) > 0 else '-'
+        else:  # no acceleration limit
+            pass
+
         self.previous_thrust = thrust
+
 
         if self.control_type == 'velocity':
             self.drive.feed()
