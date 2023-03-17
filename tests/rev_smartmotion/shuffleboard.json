@@ -273,6 +273,46 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "4,4": {
+            "size": [
+              3,
+              3
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/RioEncoder",
+              "_title": "SmartDashboard/RioEncoder",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Graph/Visible time": 10.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul",
+              "Visible data/SmartDashboard/RioEncoder": true
+            }
+          },
+          "8,4": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Graph",
+              "_source0": "network_table:///SmartDashboard/AbsEncoder",
+              "_title": "SmartDashboard/AbsEncoder",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Graph/Visible time": 5.0,
+              "Graph/X-axis auto scrolling": true,
+              "Y-axis/Automatic bounds": true,
+              "Y-axis/Upper bound": 1.0,
+              "Y-axis/Lower bound": -1.0,
+              "Y-axis/Unit": "ul",
+              "Visible data/SmartDashboard/AbsEncoder": true
+            }
           }
         }
       }
@@ -292,9 +332,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 133.0,
-    "y": 11.0,
+    "x": 413.0,
+    "y": 15.0,
     "width": 1793.0,
-    "height": 917.0
+    "height": 1100.0
   }
 }

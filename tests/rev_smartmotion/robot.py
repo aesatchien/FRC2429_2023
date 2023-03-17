@@ -15,8 +15,10 @@ import wpilib
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
-        can_id = 12  # change as needed
+        can_id = 9  # change as needed
         drivetrain = False
+        self.use_absolute_encoder = True
+        self.use_alternate_encoder = False
 
         # if you are going to change position factor, you should also change velocity.
         # smart motion does weird things on the decel if you don't.
@@ -37,10 +39,20 @@ class Robot(wpilib.TimedRobot):
             self.motor4.follow(self.motor, invert=True)
 
         self.pid_controller = self.motor.getPIDController()
-        self.encoder = self.motor.getEncoder()
-        self.encoder.setPositionConversionFactor(position_conversion_factor)
-        #self.encoder.setVelocityConversionFactor(position_conversion_factor)
-        self.encoder.setPosition(0)
+
+        if self.use_alternate_encoder:
+            self.encoder = self.motor.getAlternateEncoder(countsPerRev=4096)
+        else:
+            self.encoder = self.motor.getEncoder()
+            self.encoder.setPositionConversionFactor(position_conversion_factor)
+            #self.encoder.setVelocityConversionFactor(position_conversion_factor)
+            self.encoder.setPosition(0)
+
+        if self.use_absolute_encoder:
+            #self.absolute_encoder = self.motor.getAbsoluteEncoder(encoderType=rev.SparkMaxAbsoluteEncoder.Type.kDutyCycle)
+            self.absolute_encoder = self.motor.getAnalog()
+            self.rio_encoder = wpilib.AnalogEncoder(1)
+
 
         self.counter = 0
 
@@ -170,7 +182,9 @@ class Robot(wpilib.TimedRobot):
             wpilib.SmartDashboard.putNumber("Process Variable", pv)
             wpilib.SmartDashboard.putNumber("Output", self.motor.getAppliedOutput())
             wpilib.SmartDashboard.putNumber("Current", self.motor.getOutputCurrent())
-
+            if self.use_absolute_encoder:
+                wpilib.SmartDashboard.putNumber("AbsEncoder", self.absolute_encoder.getPosition())
+                wpilib.SmartDashboard.putNumber("RioEncoder", self.rio_encoder.getAbsolutePosition())
 
 if __name__ == "__main__":
     wpilib.run(Robot)

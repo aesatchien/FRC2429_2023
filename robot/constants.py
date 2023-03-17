@@ -63,7 +63,7 @@ k_PID_dict_vel_slow = {'kP': 1e-5, 'kI': 4e-6, 'kD': 0.00, 'kIz': 0, 'kFF': 0.00
 k_drive_accumulator_max = 0.5  # limit on forward I - negative has no limit :(  Units in volts?
 
 # --------------  SCORING  SUBSYSTEMS ---------------
-k_deriv_tolerance = 5 #5 degrees per second. (Experimental value; not determined yet.  Will need to actually test).  
+k_deriv_tolerance = 5  # 5 degrees per second. (Experimental value; not determined yet.  Will need to actually test).
 
 # --------------  TURRET  ---------------
 k_turret_motor_port = 9  # sparkmax with a NEO550 - full speed is 11k
