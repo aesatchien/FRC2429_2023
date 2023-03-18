@@ -190,7 +190,7 @@ class RobotContainer:
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
         self.co_buttonLB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
-        self.co_buttonA.whenPressed(ToggleGroundPickup(container=self, self.pneumatics, self.wrist, button=1))
+        self.co_buttonA.whenPressed(ToggleGroundPickup(container=self, pneumatics=self.pneumatics, wrist=self.wrist, button=1))
 
         preset_command_map = [
             (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),

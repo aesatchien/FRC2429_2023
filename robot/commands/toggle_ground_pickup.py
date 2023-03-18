@@ -1,15 +1,9 @@
 import commands2
 from wpilib import SmartDashboard
+from wpimath.filter import MedianFilter
 
 from subsystems.pneumatics import Pneumatics
 from subsystems.wrist import Wrist
-from subsystems.elevator import Elevator
-from subsystems.arm import Arm
-from playingwithfusion import TimeOfFlight
-from subsystems.vision import Vision
-
-from commands.elevator_move import ElevatorMove
-from commands.manipulator_auto_grab import ManipulatorAutoGrab
 
 class ToggleGroundPickup(commands2.CommandBase):
     def __init__(self, container, pneumatics: Pneumatics, wrist: Wrist, button: int, target_distance=254, timeout=2) -> None:
@@ -42,7 +36,7 @@ class ToggleGroundPickup(commands2.CommandBase):
         self.pneumatics.set_manipulator_piston(position='open')
         
         # deploy wrist
-        self.wrist_setpoint = game_piece_presets[container.game_piece_mode]
+        self.wrist_setpoint = self.game_piece_presets[self.container.game_piece_mode]
         self.wrist.set_wrist_angle(angle=self.wrist_setpoint)
 
         self.canceled = False
@@ -50,10 +44,10 @@ class ToggleGroundPickup(commands2.CommandBase):
 
 
     def execute(self) -> None: #50 times a second
-        distance = self.median_filter.calculate(distance_sensor.getRange()) 
+        distance = self.median_filter.calculate(self.distance_sensor.getRange())
 
         if  distance <= self.target_distance:
-            self.counter++
+            self.counter += 1
             self.pneumatics.set_manipulator_piston(position='close')
             #not sure what the stop condition for this is...(I would rather avoid a timer)
 
