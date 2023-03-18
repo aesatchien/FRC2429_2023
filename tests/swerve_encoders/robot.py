@@ -16,18 +16,10 @@ import wpilib
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
         self.turning_motors = {
-            'lf': {
-                'id': 20,
-            },
-            'rf': {
-                'id': 22,
-            },
-            'lb': {
-                'id': 24,
-            },
-            'rb': {
-                'id': 26,
-            },
+            'lf': {'id': 20},
+            'rf': {'id': 22},
+            'lb': {'id': 24},
+            'rb': {'id': 26},
         }
 
         for (key, motor_info) in self.turning_motors.items():
@@ -40,11 +32,11 @@ class Robot(wpilib.TimedRobot):
             }
             self.turning_motors[key].update(temp_dict)
 
+        print(self.turning_motors)
     def teleopPeriodic(self):
-        for (key, motor_info) in self.turning_motors:
-            print(f"AbsEncoder_{motor_info['id']}")
-            # wpilib.SmartDashboard.putNumber(f"AbsEncoder_{motor_info['id']}", motor_info['analog_encoder'].getPosition())
-            # wpilib.SmartDashboard.putNumber(f"RegEncoder_{motor_info['id']}", motor_info['encoder'].getPosition())
+        for (key, motor_info) in self.turning_motors.items():
+            wpilib.SmartDashboard.putNumber(f"AbsEncoder_{motor_info['id']}", motor_info['analog_encoder'].getPosition())
+            wpilib.SmartDashboard.putNumber(f"RegEncoder_{motor_info['id']}", motor_info['encoder'].getPosition())
 
 if __name__ == "__main__":
     wpilib.run(Robot)
