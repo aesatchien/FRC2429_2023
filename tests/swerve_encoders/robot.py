@@ -1,26 +1,18 @@
 #!/usr/bin/env python3
 
-# This is REV's SmartMotion tuning tool.
-# NOTE SmartMotion only uses ONE PIDF slot - the one for velocity.  You aren't actually changing position control PIDs.
-# Also not the trickery about conversion factors in the SparkMax and how they affect decel and PIDFs
-# (they all scale with the factor, and if you change position, also change velocity)
-# Good starting values for NEO motor with no load  below.
-# probably need to bump kFF first once we have a load.  With no load I'm not seeing much kp influence.
-# Conversion factor = 1 :  kp 5e-5, ki 1e-6, kd 0, kiz 1e-5, kFF 1.6e-4
-# Conversion factor = 0.1 :  kp 5e-5, ki 1e-6, kd 0, kiz 1e-5, kFF 1.9e-3
-
 import rev
 import wpilib
+from wpimath.filter import MedianFilter, LinearFilter
+import random
 
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
-        self.turning_motors = {
-            'lf': {'id': 20},
-            'rf': {'id': 22},
-            'lb': {'id': 24},
-            'rb': {'id': 26},
-        }
+        self.joystick = wpilib.Joystick(0)
+        self.printing = False
+        self.print_button = False
+
+        self.turning_motors = {'lf': {'id': 20}, 'rf': {'id': 22}, 'lb': {'id': 24},'rb': { 'id': 26}, }
 
         for (key, motor_info) in self.turning_motors.items():
             motor = rev.CANSparkMax(motor_info['id'], rev.CANSparkMax.MotorType.kBrushless)
@@ -28,15 +20,36 @@ class Robot(wpilib.TimedRobot):
                 'id': motor_info['id'],
                 'motor': motor,
                 'encoder': motor.getEncoder(),
-                'analog_encoder': motor.getAnalog()
+                'analog_encoder': motor.getAnalog(),
+                'filter': MedianFilter(50)
             }
             self.turning_motors[key].update(temp_dict)
 
-        print(self.turning_motors)
+        # print(self.turning_motors)
+
     def teleopPeriodic(self):
-        for (key, motor_info) in self.turning_motors.items():
-            wpilib.SmartDashboard.putNumber(f"AbsEncoder_{motor_info['id']}", motor_info['analog_encoder'].getPosition())
-            wpilib.SmartDashboard.putNumber(f"RegEncoder_{motor_info['id']}", motor_info['encoder'].getPosition())
+
+        b1 = self.joystick.getRawButton(1)
+        if b1 and not self.print_button:  # don't print twice in a row
+            self.printing = True
+            print('')  # print a blank line
+        else:
+            self.printing = False
+
+        for idx, (key, motor_info) in enumerate(self.turning_motors.items()):
+            if wpilib.RobotBase.isReal():
+                analog_position = motor_info['analog_encoder'].getPosition()
+            else:  # simulate some noise
+                analog_position = random.gauss(float(motor_info['id']), .25)
+            filtered_analog_position = motor_info['filter'].calculate(analog_position)  # smooth out the noise
+            wpilib.SmartDashboard.putNumber(f"{key}_abs_encoder_{motor_info['id']}", analog_position)
+            wpilib.SmartDashboard.putNumber(f"{key}_filtered_abs_{motor_info['id']}", filtered_analog_position)
+            wpilib.SmartDashboard.putNumber(f"{key}_reg_encoder_{motor_info['id']}", motor_info['encoder'].getPosition())
+
+            if self.printing:
+                print(f"{key}_filtered_abs_{motor_info['id']} : {filtered_analog_position: .3f}")
+
+        self.print_button = b1  # remember what it was
 
 if __name__ == "__main__":
     wpilib.run(Robot)
