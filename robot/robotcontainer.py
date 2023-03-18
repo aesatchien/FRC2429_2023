@@ -26,6 +26,7 @@ from commands.manipulator_toggle import ManipulatorToggle
 from commands.compressor_toggle import CompressorToggle
 from commands.generic_drive import GenericDrive
 from commands.manipulator_auto_grab import ManipulatorAutoGrab
+from commands.toggle_ground_pickup import ToggleGroundPickup
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.wrist_calibration import WristCalibration
@@ -99,6 +100,8 @@ class RobotContainer:
         self.pneumatics = Pneumatics()
         self.vision = Vision()
 
+        self.game_piece_mode = 'cube'
+
         self.configureButtonBindings()
 
         self.initialize_dashboard()
@@ -169,6 +172,7 @@ class RobotContainer:
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
 
+
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
         # self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="open"))
@@ -186,6 +190,7 @@ class RobotContainer:
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
         self.co_buttonLB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
+        self.co_buttonA.whenPressed(ToggleGroundPickup(container=self, self.pneumatics, self.wrist, button=1))
 
         preset_command_map = [
             (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),
