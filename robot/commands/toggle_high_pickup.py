@@ -1,5 +1,12 @@
 import commands2
-from wpilib import SmartDashboard
+
+import constants
+
+from arm_move import ArmMove
+from elevator_move import ElevatorMove
+from manipulator_auto_grab import ManipulatorAutoGrab
+from wrist_move import WristMove
+from turret_move import TurretMove
 
 from subsystems.pneumatics import Pneumatics
 from subsystems.wrist import Wrist
@@ -8,72 +15,40 @@ from subsystems.arm import Arm
 from playingwithfusion import TimeOfFlight
 from subsystems.vision import Vision
 
-from commands.manipulator_auto_grab import ManipulatorAutoGrab
+class ToggleHighPickup(commands2.SequentialCommandGroup):  # change the name for your command
 
-class ToggleHighPickup(commands2.CommandBase):
-    def __init__(self, container, pneumatics: Pneumatics, wrist: Wrist, camera: Vision, elevator: Elevator, button: int, target_distance=254, timeout=2) -> None:
+    def __init__(self, container) -> None:
         super().__init__()
-        self.setName('ToggleHighPickup')
-
+        self.setName('ToggleHighPickup')  # change this to something appropriate for this command
         self.container = container
-        self.penumatics = pneumatics
-        self.wrist = wrist
-        
-        self.game_piece_presets = {
-            'cone': 0,
-            'cube': wrist.positions['flat'],
-        }
 
-        self.distance_sensor = pneumatics.target_distance_sensor
-        self.median_filter = MedianFilter(5)
-        self.target_distance = target_distance
+        #move elevator
+        self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, setpoint=Elevator.positions['upper_pickup']).withTimeout(1.5))
 
-        self.button = button
-        self.timeout = timeout
+        #open wrist
+        wrist_setpoint=Wrist.positions['flat']  #ToDo: logical statement that checks if we're picking up a cone or a cube
+        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=wrist_setpoint).withTimeout(1.0)) #not sure what timeout is best
 
-        #ASSUMPTIONS:
-        # Turret is already zeroed
-        # Elevator is already down
-        # Driver is driving up to the cone.
+        #detect gamepiece
+        angle=0 #the detected angle of the game piece
 
-    def initialize(self) -> None:
-        # open manipulator
-        self.pneumatics.set_manipulator_piston(position='open')
-        
-        # deploy wrist
-        self.wrist_setpoint = game_piece_presets[container.game_piece_mode]
-        self.wrist.set_wrist_angle(angle=self.wrist_setpoint)
+        #rotate turret
+        self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=angle).withTimeout(1.0)) #not sure what timeout is best
 
-        self.canceled = False
-        self.counter = 0
+        #extend arm
+        distance = self.container.pneumatics.pneumatics.target_distance_sensor.getRange() 
+        self.addCommands(ArmMove(container=self.container, arm=self.container.turret, setpoint=distance).withTimeout(1.0)) #not sure what timeout is best. Also not sure what unit the "setpoint" is in.
+
+        #clamp
+            #do we need to check whether or not the gamepiece is in the manipulator before closing?
+        self.addCommands(ManipulatorAutoGrab(container=self.container, pneumatics=self.container.pneumatics).withTimeout(0.5)) #not sure what timeout is best. Also not sure what unit the "setpoint" is in.
+
+        #stow
+            # What should happen?
+            # Elevator goes all the way down
+            # Wrist stowed
+            # Arm stowed
+            # Turret zeroed
 
 
-    def execute(self) -> None: #50 times a second
-        distance = self.median_filter.calculate(distance_sensor.getRange()) 
 
-        if  distance <= self.target_distance:
-            self.counter++
-            self.pneumatics.set_manipulator_piston(position='close')
-            #not sure what the stop condition for this is...(I would rather avoid a timer)
-
-        self.canceled = self.container.co_driver_controller.getRawButtonPressed(self.button)
-        if self.canceled:
-            self.pneumatics.set_manipulator_piston(position='close')
-
-    def isFinished(self) -> bool:
-        stop = self.counter >= self.timeout * 50 or self.canceled
-        return stop
-        # or emergency button pressed
-
-
-    def end(self, interrupted: bool) -> None:
-        self.wrist.set_wrist_angle(angle=self.wrist.positions['stow'])
-        
-        end_time = self.container.get_enabled_time()
-        message = 'Interrupted' if interrupted else 'Ended'
-        print(f'** {message} {self.getName()} at {end_time:.1f} s after {end_time - self.start_time:.1f} s **')
-
-    def print_start_message(self) -> None:
-        self.start_time = round(self.container.get_enabled_time(), 2)
-        print("\n" + f"** Started {self.getName()} at {self.start_time} s **", flush=True)
-        SmartDashboard.putString("alert", f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")

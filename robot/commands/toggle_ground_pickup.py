@@ -29,6 +29,7 @@ class ToggleGroundPickup(commands2.CommandBase):
         #ASSUMPTIONS:
         # Turret is already zeroed
         # Elevator is already down
+        # Wrist already stowed
         # Driver is driving up to the cone.
 
     def initialize(self) -> None:
