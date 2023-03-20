@@ -8,7 +8,7 @@ class DriveClimber(commands2.CommandBase):
 
     def __init__(self, container, drive:Drivetrain, setpoint_velocity=45, setpoint_distance=2, wait_to_finish=True) -> None:
         super().__init__()
-        self.setName('DriveCimber')
+        self.setName('DriveClimber')
         self.container = container
         self.drive = drive
         self.setpoint_velocity = setpoint_velocity  # m per minute, so 30 is 0.5 m/s

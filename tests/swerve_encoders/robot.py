@@ -12,7 +12,7 @@ class Robot(wpilib.TimedRobot):
         self.printing = False
         self.print_button = False
 
-        self.turning_motors = {'lf': {'id': 20}, 'rf': {'id': 22}, 'lb': {'id': 24},'rb': { 'id': 26}, }
+        self.turning_motors = {'lf': {'id': 20}, 'rf': {'id': 24}, 'lb': {'id': 22},'rb': { 'id': 26}, }
 
         for (key, motor_info) in self.turning_motors.items():
             motor = rev.CANSparkMax(motor_info['id'], rev.CANSparkMax.MotorType.kBrushless)
@@ -32,7 +32,7 @@ class Robot(wpilib.TimedRobot):
         b1 = self.joystick.getRawButton(1)
         if b1 and not self.print_button:  # don't print twice in a row
             self.printing = True
-            print('')  # print a blank line
+            print(f'\nFiltered abs encoders taken at {wpilib.Timer.getFPGATimestamp():.1f}s')  # print a blank line
         else:
             self.printing = False
 

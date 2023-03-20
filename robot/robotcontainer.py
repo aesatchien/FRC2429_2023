@@ -13,6 +13,7 @@ from subsystems.elevator import Elevator
 from subsystems.turret import Turret
 from subsystems.pneumatics import Pneumatics
 from subsystems.vision import Vision
+from subsystems.swerve import Swerve
 
 from misc.axis_button import AxisButton
 from commands.drive_by_joystick import DriveByJoystick
@@ -27,6 +28,7 @@ from commands.compressor_toggle import CompressorToggle
 from commands.generic_drive import GenericDrive
 from commands.manipulator_auto_grab import ManipulatorAutoGrab
 from commands.toggle_ground_pickup import ToggleGroundPickup
+from commands.drive_by_joystick_swerve import DriveByJoystickSwerve
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.wrist_calibration import WristCalibration
@@ -92,7 +94,11 @@ class RobotContainer:
         self.start_time = time.time()
 
         # The robot's subsystems
-        self.drive = Drivetrain()
+        use_swerve = True
+        if use_swerve:
+            self.drive = Swerve()
+        else:
+            self.drive = Drivetrain()
         self.turret = Turret()
         self.arm = Arm()
         self.wrist = Wrist()
@@ -112,8 +118,16 @@ class RobotContainer:
 
             self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
                     lambda: self.driver_controller.getRawAxis(4),))
-        else:
+        if False:
             self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
+
+        # swerve driving
+        if use_swerve:
+            self.drive.setDefaultCommand(DriveByJoystickSwerve(container=self, swerve=self.drive))
+        else:
+            self.drive.setDefaultCommand(
+                DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
+
 
         # initialize the turret
         commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
@@ -272,8 +286,8 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='TurretMoveByVision', data=TurretMoveByVision(container=self, turret=self.turret, vision=self.vision, color='green').withTimeout(5))
         wpilib.SmartDashboard.putData(key='UpperSubstationPickup', data=UpperSubstationPickup(container=self).withTimeout(6))
         wpilib.SmartDashboard.putData(key='ReleaseAndStow', data=ReleaseAndStow(container=self).withTimeout(5))
-        wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
-        wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
+        #wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
+        #wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
 
         # populate autonomous routines
         self.autonomous_chooser = wpilib.SendableChooser()
@@ -283,10 +297,10 @@ class RobotContainer:
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
         #self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
-        self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
-        self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
-        self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
-        self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))
+        #self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
+        #self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
+        #self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
+        #self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))
 
 
     def get_autonomous_command(self):
