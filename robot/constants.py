@@ -116,7 +116,7 @@ k_manipulator_timeofflight = 14
 # --------------  SIMULATION  ---------------
 k_start_x = 7.647
 k_start_y = 1.935
-k_start_heading = -90  # looking at the drawing originally tried -109
+k_start_heading = -90  # looking at the drawing originally tried -109. TODO: Swerve uses 0, maybe change for compatibility
 k_drivetrain_motor_count = 4
 k_wheel_diameter_m = 6 * 0.0254  # wheel diameter in meters
 k_gear_ratio = 5.39  # 4.17 # high gear 2022

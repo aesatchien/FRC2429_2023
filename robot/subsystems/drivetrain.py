@@ -98,7 +98,7 @@ class Drivetrain(SubsystemBase):
         # Resets the timer for this subsystem's MotorSafety
         self.drive.feed()
 
-    def drive_forwards_vel_with_slot(self, targetvel, pidSlot, l_feed_forward, r_feed_forward):
+    def drive_forwards_vel(self, targetvel, pidSlot=0, l_feed_forward=0, r_feed_forward=0):
         self.spark_PID_controller_left_front.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
                                                           pidSlot=pidSlot, feed_forward=l_feed_forward)
         self.spark_PID_controller_right_front.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
@@ -175,9 +175,6 @@ class Drivetrain(SubsystemBase):
 
     def get_average_encoder_rate(self):  # used in ramsete
         return (self.left_encoder.getVelocity() - self.right_encoder.getVelocity())/2
-
-    def get_rotation2d(self):  # used in ramsete
-        return geo.Rotation2d.fromDegrees(-self.navx.getAngle())
 
     # ----------------- PERIODIC UPDATES -----------------------
     def periodic(self):

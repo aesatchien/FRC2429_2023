@@ -15,7 +15,7 @@ import rev
 import navx
 from .maxswervemodule import MAXSwerveModule
 from .swerve_constants import DriveConstants
-import subsystems.swerveutils
+from subsystems import swerveutils
 
 class Swerve (SubsystemBase):
     def __init__(self) -> None:
@@ -52,7 +52,7 @@ class Swerve (SubsystemBase):
 
         # The gyro sensor
         #self.gyro = wpilib.ADIS16470_IMU()
-        self.gyro = navx.AHRS.create_spi()
+        self.navx = navx.AHRS.create_spi()
 
         # Slew rate filter variables for controlling lateral acceleration
         self.currentRotation = 0.0
@@ -66,7 +66,7 @@ class Swerve (SubsystemBase):
         # Odometry class for tracking robot pose
         self.odometry = SwerveDrive4Odometry(
             DriveConstants.kDriveKinematics,
-            Rotation2d.fromDegrees(self.gyro.getAngle()),
+            Rotation2d.fromDegrees(self.navx.getAngle()),
             [
                 self.frontLeft.getPosition(),
                 self.frontRight.getPosition(),
@@ -78,7 +78,7 @@ class Swerve (SubsystemBase):
     def periodic(self) -> None:
         # Update the odometry in the periodic block
         self.odometry.update(
-            Rotation2d.fromDegrees(self.gyro.getAngle()),
+            Rotation2d.fromDegrees(self.navx.getAngle()),
             self.frontLeft.getPosition(),
             self.frontRight.getPosition(),
             self.rearLeft.getPosition(),
@@ -99,7 +99,7 @@ class Swerve (SubsystemBase):
 
         """
         self.odometry.resetPosition(
-            Rotation2d.fromDegrees(self.gyro.getAngle()),
+            Rotation2d.fromDegrees(self.navx.getAngle()),
             pose,
             self.frontLeft.getPosition(),
             self.frontRight.getPosition(),
@@ -214,8 +214,8 @@ class Swerve (SubsystemBase):
         self.rearLeft.setDesiredState(swerveModuleStates[2])
         self.rearRight.setDesiredState(swerveModuleStates[3])
 
-    def drive_forwards_vel_with_slot(self, targetvel, pidSlot, l_feed_forward, r_feed_forward):
-        self.setModuleStates([SwerveModuleState(0, Rotation2d.radians(0))]*4)
+    def drive_forwards_vel(self, targetvel, pidSlot=0, l_feed_forward=0, r_feed_forward=0):
+        self.setModuleStates([SwerveModuleState(0, Rotation2d.radians(0))]*4) # Turn the swerve into a tank drive
         self.frontLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
                                                          pidSlot=pidSlot, arbFeedforward=l_feed_forward)
         self.rearLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,

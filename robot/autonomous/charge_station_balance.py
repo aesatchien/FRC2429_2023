@@ -8,7 +8,7 @@ import constants
 
 class ChargeStationBalance(commands2.CommandBase):
 
-    def __init__(self, container, drive: Drivetrain, velocity=60, tolerance=4, max_feed_forward=0.5, auto=False) -> None:
+    def __init__(self, container, drive, velocity=60, tolerance=4, max_feed_forward=0.5, auto=False) -> None:
         super().__init__()
         self.setName('ChargeStationBalance')
         self.container = container
@@ -62,12 +62,12 @@ class ChargeStationBalance(commands2.CommandBase):
             feed_forward = sign * abs(self.pitch) * (self.max_feed_forward/10)  # assume max V for 10 degrees <--why are we assuming this...?
             feed_forward = min(self.max_feed_forward, feed_forward) if sign > 0 else max(-self.max_feed_forward, feed_forward)
             feed_forward *= speed_boost
+                
+            self.drive.drive_forwards_vel(sign * self.velocity * speed_boost, pidSlot=2, 
+                                          l_feed_forward=feed_forward, r_feed_forward=feed_forward)
 
-            for controller, multiplier in zip(self.drive.pid_controllers, self.multipliers):
-                controller.setReference(sign * self.velocity * multiplier * speed_boost, rev.CANSparkMax.ControlType.kSmartVelocity, pidSlot=2,
-                                        arbFeedforward=feed_forward)
         elif math.copysign(1, roc_angle_filtered) != self.initialDerivSign or roc_angle_filtered <= constants.k_deriv_tolerance:
-            [controller.setReference(0, rev.CANSparkMax.ControlType.kSmartVelocity, pidSlot=2, arbFeedforward=0) for controller in self.drive.pid_controllers]
+            self.drive.drive_forwards_vel(0, pidSlot=2)
             # stop condition: if the ROC of the pitch changes signs AND the ROC of the pitch is below some value, then STOP.
             #                AND, the the pitch of the robot is <= some value
             #              
@@ -82,7 +82,7 @@ class ChargeStationBalance(commands2.CommandBase):
         return False
 
     def end(self, interrupted: bool) -> None:
-        [controller.setReference(0, rev.CANSparkMax.ControlType.kSmartVelocity, pidSlot=1) for controller in self.drive.pid_controllers]
+        self.drive.drive_forwards_vel(0, pidslot=1)
         self.drive.set_brake_mode(mode='brake')
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'
