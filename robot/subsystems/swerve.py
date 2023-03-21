@@ -78,7 +78,7 @@ class Swerve (SubsystemBase):
         ypr = [self.navx.getYaw(), self.navx.getPitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
         wpilib.SmartDashboard.putNumberArray('2x_navx_YPR', ypr)
 
-    def getPose(self) -> Pose2d:
+    def get_pose(self) -> Pose2d:
         """Returns the currently-estimated pose of the robot.
 
         :returns: The pose.
