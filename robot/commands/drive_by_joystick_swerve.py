@@ -32,25 +32,25 @@ class DriveByJoystickSwerve(commands2.CommandBase):
 
         max_linear = 1  # m/s
         max_angular = 1  # rad/s
-        desired_x = -self.input_transform(1.0*self.container.driver_controller.getRawAxis(0)) * max_linear
-        desired_y = -self.input_transform(1.0 * self.container.driver_controller.getRawAxis(1)) * max_linear
+        # note that x is up/down on the left stick.  Don't want to invert x?  Also no idea about rot yet.
+        desired_fwd = -self.input_transform(1.0*self.container.driver_controller.getRawAxis(1)) * max_linear
+        desired_strafe = self.input_transform(1.0 * self.container.driver_controller.getRawAxis(0)) * max_linear
         desired_rot = -self.input_transform(1.0 * self.container.driver_controller.getRawAxis(4)) * max_angular
 
         correct_like_1706 = False  # this is what 1706 does, but Rev put all that in the swerve module's drive
         if correct_like_1706:
-            desired_translation = Translation2d(desired_x, desired_y)
+            desired_translation = Translation2d(desired_fwd, desired_strafe)
             desired_magnitude = desired_translation.norm()
             if desired_magnitude > max_linear:
                 desired_translation = desired_translation * max_linear / desired_magnitude
             self.swerve.drive(desired_translation.X(), desired_translation.Y(), desired_rot,
                           fieldRelative=self.field_oriented, rateLimit=True)
         else:
-            self.swerve.drive(desired_x, desired_y, desired_rot,
-                              fieldRelative=self.field_oriented, rateLimit=True)
+            self.swerve.drive(xSpeed=desired_fwd,ySpeed=desired_strafe, rot=desired_rot,
+                              fieldRelative=self.field_oriented, rateLimit=False)
 
     def end(self, interrupted: bool) -> None:
-        self.swerve.drive(0, 0, 0,
-                          fieldRelative=self.field_oriented, rateLimit=True)
+        self.swerve.drive(0, 0, 0, fieldRelative=self.field_oriented, rateLimit=True)
 
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'

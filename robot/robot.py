@@ -58,6 +58,8 @@ class MyRobot(commands2.TimedCommandRobot):
         if self.autonomousCommand:
             self.autonomousCommand.cancel()
 
+        self.container.drive.navx.reset()
+
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""
 

@@ -29,6 +29,8 @@ from commands.generic_drive import GenericDrive
 from commands.manipulator_auto_grab import ManipulatorAutoGrab
 from commands.toggle_ground_pickup import ToggleGroundPickup
 from commands.drive_by_joystick_swerve import DriveByJoystickSwerve
+from commands.swerve_x import SwerveX
+from autonomous.swerve_calibrate import SwerveCalibrate
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.wrist_calibration import WristCalibration
@@ -178,7 +180,6 @@ class RobotContainer:
         self.co_buttonLeftAxis = AxisButton(self.co_driver_controller, 2)
         self.co_buttonRightAxis = AxisButton(self.co_driver_controller, 3)
 
-
         # All untested still
         # bind commands to driver
         self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=10))
@@ -186,6 +187,9 @@ class RobotContainer:
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
 
+        #self.buttonA.whileHeld(SwerveX(container=self, swerve=self.drive))
+        self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
+        self.buttonB.whenPressed(SwerveCalibrate(container=self, swerve=self.drive))
 
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
