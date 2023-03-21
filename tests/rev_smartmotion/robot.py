@@ -15,7 +15,7 @@ import wpilib
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
-        can_id = 20  # change as needed
+        can_id = 21  # change as needed
         drivetrain = True
         self.use_absolute_encoder = False
         self.use_alternate_encoder = False
@@ -26,19 +26,19 @@ class Robot(wpilib.TimedRobot):
         # also note that if you do change these, the PIDs will have to change as well
         # the default values below are good for conversion factors of 1.
         position_conversion_factor = 3.14 * 4 * 0.0254 / 6.75  # swerve drive motors
-        position_conversion_factor = 2 * 3.14 / 21.428  # radians for swerve turning (gear ratio is 150/7)
+        #position_conversion_factor = 2 * 3.14 / 21.428  # radians for swerve turning (gear ratio is 150/7)
         velocity_conversion_factor = position_conversion_factor / 60  # 60 if per sec, otherwise 1
 
         self.motor = rev.CANSparkMax(can_id, rev.CANSparkMax.MotorType.kBrushless)
         # self.motor.restoreFactoryDefaults()
-        self.motor.setInverted(True)
+        self.motor.setInverted(False)
 
         if drivetrain:
-            self.motor2 = rev.CANSparkMax(22, rev.CANSparkMax.MotorType.kBrushless)
-            self.motor2.follow(self.motor)
-            self.motor3 = rev.CANSparkMax(24, rev.CANSparkMax.MotorType.kBrushless)
+            self.motor2 = rev.CANSparkMax(can_id + 2, rev.CANSparkMax.MotorType.kBrushless)
+            self.motor2.follow(self.motor, invert=False)
+            self.motor3 = rev.CANSparkMax(can_id + 4, rev.CANSparkMax.MotorType.kBrushless)
             self.motor3.follow(self.motor, invert=False)
-            self.motor4 = rev.CANSparkMax(26, rev.CANSparkMax.MotorType.kBrushless)
+            self.motor4 = rev.CANSparkMax(can_id + 6, rev.CANSparkMax.MotorType.kBrushless)
             self.motor4.follow(self.motor, invert=False)
 
         self.pid_controller = self.motor.getPIDController()

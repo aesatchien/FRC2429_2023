@@ -186,6 +186,7 @@ class RobotContainer:
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
 
+        self.buttonA.whenPressed(lambda: self.drive.setX)
 
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))

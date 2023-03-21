@@ -32,8 +32,9 @@ class DriveByJoystickSwerve(commands2.CommandBase):
 
         max_linear = 1  # m/s
         max_angular = 1  # rad/s
-        desired_x = -self.input_transform(1.0*self.container.driver_controller.getRawAxis(0)) * max_linear
-        desired_y = -self.input_transform(1.0 * self.container.driver_controller.getRawAxis(1)) * max_linear
+        # note that x is up/down on the left stick
+        desired_x = -self.input_transform(1.0*self.container.driver_controller.getRawAxis(1)) * max_linear
+        desired_y = self.input_transform(1.0 * self.container.driver_controller.getRawAxis(0)) * max_linear
         desired_rot = -self.input_transform(1.0 * self.container.driver_controller.getRawAxis(4)) * max_angular
 
         correct_like_1706 = False  # this is what 1706 does, but Rev put all that in the swerve module's drive
@@ -45,12 +46,10 @@ class DriveByJoystickSwerve(commands2.CommandBase):
             self.swerve.drive(desired_translation.X(), desired_translation.Y(), desired_rot,
                           fieldRelative=self.field_oriented, rateLimit=True)
         else:
-            self.swerve.drive(desired_x, desired_y, desired_rot,
-                              fieldRelative=self.field_oriented, rateLimit=True)
+            self.swerve.drive(desired_x, desired_y, desired_rot, fieldRelative=self.field_oriented, rateLimit=True)
 
     def end(self, interrupted: bool) -> None:
-        self.swerve.drive(0, 0, 0,
-                          fieldRelative=self.field_oriented, rateLimit=True)
+        self.swerve.drive(0, 0, 0, fieldRelative=self.field_oriented, rateLimit=True)
 
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'
