@@ -1,6 +1,6 @@
 import commands2
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
-from autonomous.drive_move import DriveMove
+from autonomous import drive_robot
 
 class ScoreHiAndMove(commands2.SequentialCommandGroup):  # change the name for your command
 
@@ -16,4 +16,4 @@ class ScoreHiAndMove(commands2.SequentialCommandGroup):  # change the name for y
         # Step 2.a
         # drive forward
         # note: hi score doesn't reset rotation anymore (due to break during auto)
-        self.addCommands(DriveMove(container=self.container, drive=self.container.drive, setpoint=3, wait_to_finish=True))
+        self.addCommands(drive_robot.get_command_for_driving_meters(container=self.container, setpoint=3))

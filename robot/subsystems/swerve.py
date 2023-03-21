@@ -11,10 +11,11 @@ from wpimath.kinematics import (
     SwerveDrive4Kinematics,
     SwerveDrive4Odometry,
 )
+import rev
 import navx
 from .maxswervemodule import MAXSwerveModule
 from .swerve_constants import DriveConstants
-from . import swerveutils
+import subsystems.swerveutils
 
 class Swerve (SubsystemBase):
     def __init__(self) -> None:
@@ -84,7 +85,7 @@ class Swerve (SubsystemBase):
             self.rearRight.getPosition(),
         )
 
-    def getPose(self) -> Pose2d:
+    def get_pose(self) -> Pose2d:
         """Returns the currently-estimated pose of the robot.
 
         :returns: The pose.
@@ -212,6 +213,22 @@ class Swerve (SubsystemBase):
         self.frontRight.setDesiredState(swerveModuleStates[1])
         self.rearLeft.setDesiredState(swerveModuleStates[2])
         self.rearRight.setDesiredState(swerveModuleStates[3])
+
+    def drive_forwards_vel_with_slot(self, targetvel, pidSlot, l_feed_forward, r_feed_forward):
+        self.setModuleStates([SwerveModuleState(0, Rotation2d.radians(0))]*4)
+        self.frontLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                         pidSlot=pidSlot, arbFeedforward=l_feed_forward)
+        self.rearLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                         pidSlot=pidSlot, arbFeedforward=l_feed_forward)
+        self.frontRight.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                         pidSlot=pidSlot, arbFeedforward=r_feed_forward)
+        self.rearRight.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                         pidSlot=pidSlot, arbFeedforward=r_feed_forward)
+
+
+    def set_brake_mode(self, mode='brake'):
+        if mode == 'brake':
+            self.setX()
 
     def setX(self) -> None:
         """Sets the wheels into an X formation to prevent movement."""

@@ -2,6 +2,7 @@ import math
 from wpimath import units
 from wpimath.geometry import Translation2d
 from wpimath.kinematics import SwerveDrive4Kinematics
+from wpimath.trajectory import TrapezoidProfileRadians
 from rev import CANSparkMax
 
 class DriveConstants:
@@ -108,3 +109,18 @@ class ModuleConstants:
 
     kDrivingMotorCurrentLimit = 50  # amp
     kTurningMotorCurrentLimit = 20  # amp
+
+class AutoConstants:
+    kMaxSpeedMetersPerSecond = 3
+    kMaxAccelerationMetersPerSecondSquared = 3
+    kMaxAngularSpeedRadiansPerSecond = math.pi
+    kMaxAngularSpeedRadiansPerSecondSquared = math.pi
+
+    kPXController = 1
+    kPYController = 1
+    kPThetaController = 1
+
+    # Constraint for the motion profiled robot angle controller
+    kThetaControllerConstraints = TrapezoidProfileRadians.Constraints(
+        kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared
+    )

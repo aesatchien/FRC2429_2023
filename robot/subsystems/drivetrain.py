@@ -70,7 +70,7 @@ class Drivetrain(SubsystemBase):
 
     # ----------------- DRIVE METHODS -----------------------
 
-    def smart_motion(self, distance, feed_forward, slot=1):
+    def smart_motion(self, distance, feed_forward=0, slot=1):
         # use smartmotion to send you there quickly  TODO - check if the right needs to be negated
         control_type = rev.CANSparkMax.ControlType.kSmartMotion
         self.spark_PID_controller_left_front.setReference(value=distance, ctrl=control_type, arbFeedforward=feed_forward, pidSlot=slot)
@@ -98,6 +98,12 @@ class Drivetrain(SubsystemBase):
         # Resets the timer for this subsystem's MotorSafety
         self.drive.feed()
 
+    def drive_forwards_vel_with_slot(self, targetvel, pidSlot, l_feed_forward, r_feed_forward):
+        self.spark_PID_controller_left_front.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                          pidSlot=pidSlot, feed_forward=l_feed_forward)
+        self.spark_PID_controller_right_front.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                          pidSlot=pidSlot, feed_forward=r_feed_forward)
+
     # ----------------- DRIVETRAIN STATE AND MODIFICATION METHODS -----------------------
     def configure_controllers(self):
         for encoder in self.encoders:
@@ -123,7 +129,7 @@ class Drivetrain(SubsystemBase):
         right_position = self.spark_neo_right_encoder.getPosition()
         return (left_position, right_position)
 
-    def set_brake_mode(self, mode):
+    def set_brake_mode(self, mode='brake'):
         """ Sets the brake mode for the drivetrain to coast or brake"""
         brake_mode = rev.CANSparkMax.IdleMode.kBrake
         if mode == 'coast':

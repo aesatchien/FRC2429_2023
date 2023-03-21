@@ -43,8 +43,7 @@ class DriveClimber(commands2.CommandBase):
             rfeed = - kp_angle * current_angle
         else:
             pass
-        self.l_controller.setReference(self.setpoint_velocity, self.control_type, pidSlot=2, arbFeedforward=lfeed)
-        self.r_controller.setReference(self.setpoint_velocity, self.control_type, pidSlot=2, arbFeedforward=rfeed)
+        self.drive.drive_forwards_vel_with_slot(self.setpoint_velocity, pidSlot=2, l_feed_forward=lfeed, r_feed_forward=rfeed)
         self.drive.feed()
 
         wpilib.SmartDashboard.putNumber("left IAccum", self.l_controller.getIAccum())
@@ -59,9 +58,8 @@ class DriveClimber(commands2.CommandBase):
     def isFinished(self) -> bool:
         if wpilib.RobotBase.isSimulation():
             return False
-        if self.wait_to_finish:  # wait for the arm to get within x mm
-            left_position, right_position = self.drive.get_positions()
-            return abs(left_position - self.setpoint_distance) < self.tolerance
+        if self.wait_to_finish:  # wait for the robot to get within some number of meters
+            return abs(self.drive.get_pose.X()) < self.tolerance
         else:
             return True
 

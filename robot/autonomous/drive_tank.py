@@ -3,7 +3,7 @@ import wpilib
 from wpilib import SmartDashboard
 from subsystems.drivetrain import Drivetrain
 
-class DriveMove(commands2.CommandBase):
+class DriveTank(commands2.CommandBase):
 
     def __init__(self, container, drive:Drivetrain, setpoint=None, direction=None, wait_to_finish=True) -> None:
         super().__init__()

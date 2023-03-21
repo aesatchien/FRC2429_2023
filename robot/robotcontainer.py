@@ -41,12 +41,12 @@ from autonomous.drive_wait import DriveWait
 from autonomous.turret_initialize import TurretInitialize
 from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.release_and_stow import ReleaseAndStow
-from autonomous.drive_move import DriveMove
 from autonomous.drive_and_balance import DriveAndBalance
 from autonomous.score_hi_and_move import ScoreHiAndMove
 from autonomous.drive_climber import DriveClimber
 from autonomous.score_drive_and_balance import ScoreDriveAndBalance
 
+import autonomous.drive_robot
 
 class RobotContainer:
     """
