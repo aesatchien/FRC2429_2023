@@ -46,7 +46,8 @@ class DriveByJoystickSwerve(commands2.CommandBase):
             self.swerve.drive(desired_translation.X(), desired_translation.Y(), desired_rot,
                           fieldRelative=self.field_oriented, rateLimit=True)
         else:
-            self.swerve.drive(desired_fwd, desired_strafe, desired_rot, fieldRelative=self.field_oriented, rateLimit=True)
+            self.swerve.drive(xSpeed=desired_fwd,ySpeed=desired_strafe, rot=desired_rot,
+                              fieldRelative=self.field_oriented, rateLimit=False)
 
     def end(self, interrupted: bool) -> None:
         self.swerve.drive(0, 0, 0, fieldRelative=self.field_oriented, rateLimit=True)
