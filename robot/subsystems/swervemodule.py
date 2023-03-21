@@ -19,6 +19,9 @@ class SwerveModule:
         """
         # TODO: If absolute encoder doesn't come with turning motor's sparkmax, add new parameter for
         # absolute encoder and set the turning motor's sparkmax's feedback device to the absolute encoder
+        self.turning_absolute_max = turning_absolute_max
+        self.turning_zero_offset = turning_zero_offset
+
         self.chassisAngularOffset = 0
         self.desiredState = SwerveModuleState(0.0, Rotation2d())
 
@@ -100,11 +103,15 @@ class SwerveModule:
         self.turningEncoder.setPosition(0)
         self.drivingEncoder.setPosition(0)
         absolute_turning_position = calculate_absolute_angle(measured_value=self.turningEncoder.getPosition(),
-                                        absolute_max=turning_absolute_max, absolute_offset=turning_zero_offset)
+                                        absolute_max=self.turning_absolute_max, absolute_offset=self.turning_zero_offset)
         # self.turningEncoder.setPosition(absolute_turning_position)
 
         self.chassisAngularOffset = chassisAngularOffset
         self.desiredState.angle = Rotation2d(self.turningEncoder.getPosition())
+
+    def update_turning_encoder(self, new_absolute_measurement):
+        calculate_absolute_angle(measured_value=new_absolute_measurement,
+                                 absolute_max=self.turning_absolute_max, absolute_offset=self.turning_zero_offset)
 
     def getState(self) -> SwerveModuleState:
         """Returns the current state of the module.

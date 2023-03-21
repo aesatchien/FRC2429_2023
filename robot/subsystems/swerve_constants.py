@@ -36,13 +36,13 @@ class DriveConstants:
 
     # which motors need to be inverted  -
     # rf and rb go backwards relative to robot front when spinning clockwise, so must invert?
-    # code seems to ignore this, so I turned the wheels around.
+    # code seems to ignore this, so I turned the wheels around instead.
     k_lf_drive_motor_inverted = False
     k_lb_drive_motor_inverted = False
     k_rf_drive_motor_inverted = False
     k_rb_drive_motor_inverted = False
 
-    # absolute encoder values when wheels facing forward  - 20230321 CJH
+    # absolute encoder values when wheels facing forward  - 20230321 CJH  need to swap right wheels
     k_lf_zero_offset = 6.013
     k_rf_zero_offset = 1.193
     k_lb_zero_offset = 3.333
