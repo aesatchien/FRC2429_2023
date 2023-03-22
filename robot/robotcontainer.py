@@ -101,23 +101,25 @@ class RobotContainer:
             self.drive = Swerve()
         else:
             self.drive = Drivetrain()
-        self.turret = Turret()
-        self.arm = Arm()
-        self.wrist = Wrist()
-        self.elevator = Elevator()
-        self.pneumatics = Pneumatics()
-        self.vision = Vision()
+        #self.turret = Turret()
+        #self.arm = Arm()
+        #self.wrist = Wrist()
+        #self.elevator = Elevator()
+        #self.pneumatics = Pneumatics()
+        #self.vision = Vision()
 
         self.game_piece_mode = 'cube'
 
-        self.configureButtonBindings()
 
-        self.initialize_dashboard()
+        self.configure_joysticks()
+        #self.bind_buttons()
+        self.configure_swerve_bindings()
+
+        #self.initialize_dashboard()
 
         # Set up default drive command
       #  if wpilib.RobotBase.isSimulation():
         if False:
-
             self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
                     lambda: self.driver_controller.getRawAxis(4),))
         if False:
@@ -132,7 +134,10 @@ class RobotContainer:
 
 
         # initialize the turret
-        commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
+        # commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
+        if constants.k_use_abs_encoder_on_swerve:
+            # pass
+            commands2.ScheduleCommand(SwerveCalibrate(container=self, swerve=self.drive))
 
     def set_start_time(self):  # call in teleopInit and autonomousInit in the robot
         self.start_time = time.time()
@@ -140,7 +145,7 @@ class RobotContainer:
     def get_enabled_time(self):  # call when we want to know the start/elapsed time for status and debug messages
         return time.time() - self.start_time
 
-    def configureButtonBindings(self):
+    def configure_joysticks(self):
         """
         Use this method to define your button->command mappings. Buttons can be created by
         instantiating a :GenericHID or one of its subclasses (Joystick or XboxController),
@@ -180,16 +185,19 @@ class RobotContainer:
         self.co_buttonLeftAxis = AxisButton(self.co_driver_controller, 2)
         self.co_buttonRightAxis = AxisButton(self.co_driver_controller, 3)
 
+    def configure_swerve_bindings(self):
+        #self.buttonA.whileHeld(SwerveX(container=self, swerve=self.drive))
+        self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
+        self.buttonB.whenPressed(SwerveCalibrate(container=self, swerve=self.drive))
+
+
+    def bind_buttons(self):
         # All untested still
         # bind commands to driver
         self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=10))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
-
-        #self.buttonA.whileHeld(SwerveX(container=self, swerve=self.drive))
-        self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
-        self.buttonB.whenPressed(SwerveCalibrate(container=self, swerve=self.drive))
 
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))

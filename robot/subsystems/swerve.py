@@ -71,12 +71,13 @@ class Swerve (SubsystemBase):
             self.rearRight.getPosition(),
         )
 
-    def periodic(self):
         angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
-        wpilib.SmartDashboard.putNumberArray(f'2x_angles', angles)
-        wpilib.SmartDashboard.putNumber('2x_navx', self.navx.getAngle())
+        absolutes = [m.absoluteEncoder.getPosition() for m in self.swerve_modules]
+        wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
+        wpilib.SmartDashboard.putNumberArray(f'_analog_radians', absolutes)
+        wpilib.SmartDashboard.putNumber('_navx', self.navx.getAngle())
         ypr = [self.navx.getYaw(), self.navx.getPitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
-        wpilib.SmartDashboard.putNumberArray('2x_navx_YPR', ypr)
+        wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
     def get_pose(self) -> Pose2d:
         """Returns the currently-estimated pose of the robot.
@@ -165,6 +166,7 @@ class Swerve (SubsystemBase):
         ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond
         rotDelivered = self.currentRotation * DriveConstants.kMaxAngularSpeed
 
+        wpilib.SmartDashboard.putNumberArray('_xyr', [xSpeedDelivered, ySpeedDelivered, rotDelivered])
         swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
             ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(self.gyro.getAngle()),)
             if fieldRelative else ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered))

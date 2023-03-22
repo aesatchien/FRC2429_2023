@@ -20,9 +20,9 @@ class SwerveModule:
         # TODO: If absolute encoder doesn't come with turning motor's sparkmax, add new parameter for
         # absolute encoder and set the turning motor's sparkmax's feedback device to the absolute encoder
         self.turning_absolute_max = turning_absolute_max
-        self.turning_zero_offset = turning_zero_offset
+        self.turning_zero_offset = chassisAngularOffset
 
-        self.chassisAngularOffset = 0
+        self.chassisAngularOffset = 0  # I do not want to use this yet - CJH more for Rev's approach w/ their encoder
         self.desiredState = SwerveModuleState(0.0, Rotation2d())
 
         self.drivingSparkMax = CANSparkMax(drivingCANId, CANSparkMax.MotorType.kBrushless)
@@ -32,11 +32,14 @@ class SwerveModule:
             self.dummy_motor_driving = wpilib.PWMSparkMax(drivingCANId-16)
             self.dummy_motor_turning = wpilib.PWMSparkMax(turningCANId-16)
 
-        self.absoluteEncoder = self.turningSparkMax.getAnalog()  # AnalogEncoder(absEncoderPort)
         # Factory reset, so we get the SPARKS MAX to a known state before configuring
         # them. This is useful in case a SPARK MAX is swapped out.
-        #self.drivingSparkMax.restoreFactoryDefaults()
-        #self.turningSparkMax.restoreFactoryDefaults()
+        self.drivingSparkMax.restoreFactoryDefaults()
+        self.turningSparkMax.restoreFactoryDefaults()
+
+        self.absoluteEncoder = self.turningSparkMax.getAnalog()  # AnalogEncoder(absEncoderPort)
+        self.absoluteEncoder.setPositionConversionFactor(math.tau / turning_absolute_max)  # now returns radians
+        # self.absoluteEncoder.setPositionConversionFactor(1)
 
         # Setup encoders and PID controllers for the driving and turning SPARKS MAX.
         self.drivingEncoder = self.drivingSparkMax.getEncoder()
@@ -45,8 +48,8 @@ class SwerveModule:
         self.turningPIDController = self.turningSparkMax.getPIDController()
 
         # aren't these redundant?
-        # self.drivingPIDController.setFeedbackDevice(self.drivingEncoder)
-        # self.turningPIDController.setFeedbackDevice(self.turningEncoder)
+        self.drivingPIDController.setFeedbackDevice(self.drivingEncoder)
+        self.turningPIDController.setFeedbackDevice(self.turningEncoder)
 
         # Apply position and velocity conversion factors for the driving encoder. The
         # native units for position and velocity are rotations and RPM, respectively,
@@ -100,18 +103,20 @@ class SwerveModule:
             self.turningSparkMax.burnFlash()
 
         # TODO: use the absolute encoder to set this - need to check the math carefully
-        self.turningEncoder.setPosition(0)
         self.drivingEncoder.setPosition(0)
-        absolute_turning_position = calculate_absolute_angle(measured_value=self.turningEncoder.getPosition(),
-                                        absolute_max=self.turning_absolute_max, absolute_offset=self.turning_zero_offset)
-        # self.turningEncoder.setPosition(absolute_turning_position)
 
-        self.chassisAngularOffset = chassisAngularOffset
+        if constants.k_use_abs_encoder_on_swerve:
+            self.update_turning_encoder(self.absoluteEncoder.getPosition())
+        else:
+            self.turningEncoder.setPosition(0)
+
+        # self.chassisAngularOffset = chassisAngularOffset  # not yet
         self.desiredState.angle = Rotation2d(self.turningEncoder.getPosition())
 
     def update_turning_encoder(self, new_absolute_measurement):
-        calculate_absolute_angle(measured_value=new_absolute_measurement,
-                                 absolute_max=self.turning_absolute_max, absolute_offset=self.turning_zero_offset)
+        current_angle = calculate_absolute_angle(measured_value=new_absolute_measurement, absolute_offset=self.turning_zero_offset)
+        self.turningEncoder.setPosition(current_angle)
+        # self.setDesiredState(SwerveModuleState(0, Rotation2d(current_angle)))
 
     def getState(self) -> SwerveModuleState:
         """Returns the current state of the module.
@@ -172,4 +177,3 @@ class SwerveModule:
         Zeroes all the SwerveModule encoders.
         """
         self.drivingEncoder.setPosition(0)
-

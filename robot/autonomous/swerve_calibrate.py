@@ -1,10 +1,12 @@
 import commands2
 from wpilib import SmartDashboard
 
+import constants
+
 
 class SwerveCalibrate(commands2.CommandBase):
 
-    def __init__(self, container, swerve, samples=25) -> None:
+    def __init__(self, container, swerve, samples=50) -> None:
         super().__init__()
         self.setName('SwerveCalibrate')
         self.container = container
@@ -31,21 +33,25 @@ class SwerveCalibrate(commands2.CommandBase):
 
     def execute(self) -> None:
         for idx,  m in enumerate(self.swerve.swerve_modules):
-            (self.data[idx])[self.counter % self.samples] = m.turningEncoder.getPosition()
+            measurement = m.absoluteEncoder.getPosition()
+            (self.data[idx])[self.counter % self.samples] = measurement
         self.counter += 1
 
     def isFinished(self) -> bool:
-        return self.counter >= self.samples
+        return self.counter > self.samples
 
     def end(self, interrupted: bool) -> None:
-
         final_values = [0] * 4
-        for idx,  m in enumerate(self.swerve.swerve_modules):
+        for idx, m in enumerate(self.swerve.swerve_modules):
             average_encoder_values = sum(self.data[idx]) / self.samples
-            m.update_turning_encoder(average_encoder_values)
-            final_values[idx] = average_encoder_values
+            if constants.k_use_abs_encoder_on_swerve:
+                m.update_turning_encoder(average_encoder_values)
+            else:
+                m.turningEncoder.setPosition(0)
+            final_values[idx] = round(average_encoder_values, 4)
 
         print(f"Average encoder values is {final_values}")
+        # print(self.data)
         #print(f'set swerve sparkmax encoders using {average_encoder_value} to {calibrated_angle}')
 
         end_time = self.container.get_enabled_time()
