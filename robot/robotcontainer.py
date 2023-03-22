@@ -13,6 +13,7 @@ from subsystems.elevator import Elevator
 from subsystems.turret import Turret
 from subsystems.pneumatics import Pneumatics
 from subsystems.vision import Vision
+from subsystems.led import Led
 
 from misc.axis_button import AxisButton
 from commands.drive_by_joystick import DriveByJoystick
@@ -27,6 +28,7 @@ from commands.compressor_toggle import CompressorToggle
 from commands.generic_drive import GenericDrive
 from commands.manipulator_auto_grab import ManipulatorAutoGrab
 from commands.toggle_ground_pickup import ToggleGroundPickup
+from commands.led_loop import LedLoop
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.wrist_calibration import WristCalibration
@@ -99,6 +101,7 @@ class RobotContainer:
         self.elevator = Elevator()
         self.pneumatics = Pneumatics()
         self.vision = Vision()
+        self.led = Led()
 
         self.game_piece_mode = 'cube'
 
@@ -114,6 +117,8 @@ class RobotContainer:
                     lambda: self.driver_controller.getRawAxis(4),))
         else:
             self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
+
+        self.led.setDefaultCommand(LedLoop(container=self))
 
         # initialize the turret
         commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
@@ -288,6 +293,13 @@ class RobotContainer:
         self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
         self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))
 
+        self.led_modes = wpilib.SendableChooser()
+        wpilib.SmartDashboard.putData('LED', self.led_modes)
+        self.led_modes.setDefaultOption('NONE', 'NONE')
+        self.led_modes.addOption('CONE', Led.Mode.CONE)
+        self.led_modes.addOption('CUBE', Led.Mode.CUBE)
+        self.led_modes.addOption('READY', Led.Mode.READY)
+        self.led_modes.addOption('OFF', Led.Mode.OFF)
 
     def get_autonomous_command(self):
         return self.autonomous_chooser.getSelected()

@@ -113,6 +113,10 @@ k_manipulator_open_port = 0  # Double solenoid port 1 of two
 k_manipulator_closed_port = 1  #
 k_manipulator_timeofflight = 14
 
+# ------------------- LED -------------------
+k_led_pwm_port = 7
+k_led_count = 40
+
 # --------------  SIMULATION  ---------------
 k_start_x = 7.647
 k_start_y = 1.935
