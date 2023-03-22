@@ -11,7 +11,7 @@ class DriveByJoystickSwerve(commands2.CommandBase):
     def __init__(
         self, container,
         swerve: Swerve,
-        field_oriented=True
+        field_oriented=False
     ) -> None:
 
         super().__init__()
@@ -32,7 +32,7 @@ class DriveByJoystickSwerve(commands2.CommandBase):
 
         max_linear = 1  # m/s
         max_angular = 1  # rad/s
-        # note that x is up/down on the left stick.  Don't want to invert x?  Also no idea about rot yet.
+        # note that x is up/down on the left stick.  Don't want to invert x?
         desired_fwd = -self.input_transform(1.0*self.container.driver_controller.getRawAxis(1)) * max_linear
         desired_strafe = self.input_transform(1.0 * self.container.driver_controller.getRawAxis(0)) * max_linear
         desired_rot = -self.input_transform(1.0 * self.container.driver_controller.getRawAxis(4)) * max_angular

@@ -8,51 +8,52 @@ class DriveConstants:
     # Driving Parameters - Note that these are not the maximum capable speeds of
     # the robot, rather the allowed maximum speeds
     kMaxSpeedMetersPerSecond = 1  # 4.8
-    kMaxAngularSpeed = math.tau  # radians per second
+    kMaxAngularSpeed = 1 # math.tau  # radians per second
 
     kDirectionSlewRate = 1.2  # radians per second
     kMagnitudeSlewRate = 1.8  # percent per second (1 = 100%)
     kRotationalSlewRate = 2.0  # percent per second (1 = 100%)
 
     # Chassis configuration
-    kTrackWidth = units.inchesToMeters(26.5)
-    # Distance between centers of right and left wheels on robot
-    kWheelBase = units.inchesToMeters(26.5)
+    kTrackWidth = units.inchesToMeters(24.0)  # Distance between centers of right and left wheels on robot
+    kWheelBase = units.inchesToMeters(24.0)   # Distance between front and back wheels on robot
 
-    # Distance between front and back wheels on robot
+    # This is key !  Here is where you get left and right correct
+    # It's the minus signs in the 2nd column that swap l/r
     kModulePositions = [
+        Translation2d(kWheelBase / 2, -kTrackWidth / 2),  # i swapped L and R to get the diamond on rotation
         Translation2d(kWheelBase / 2, kTrackWidth / 2),
-        Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-        Translation2d(-kWheelBase / 2, kTrackWidth / 2),
         Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
+        Translation2d(-kWheelBase / 2, kTrackWidth / 2),
     ]
     kDriveKinematics = SwerveDrive4Kinematics(*kModulePositions)
 
-    # Angular offsets of the modules relative to the chassis in radians  - (CJH: not 100% sure why rev uses these)
-    kFrontLeftChassisAngularOffset = 0  # -math.pi / 2
-    kFrontRightChassisAngularOffset = 0
-    kBackLeftChassisAngularOffset = 0  # math.pi
-    kBackRightChassisAngularOffset = 0  # math.pi / 2
-
-    # which motors need to be inverted  -
-    # rf and rb go backwards relative to robot front when spinning clockwise, so must invert?
-    # code seems to ignore this, so I turned the wheels around instead.
+    # which motors need to be inverted  - none?
+    # code seems to ignore this, so I turned the right wheels around instead.
     k_lf_drive_motor_inverted = False
     k_lb_drive_motor_inverted = False
     k_rf_drive_motor_inverted = False
     k_rb_drive_motor_inverted = False
 
-    # absolute encoder values when wheels facing forward  - 20230321 CJH  need to swap right wheels
-    k_lf_zero_offset = 6.013
-    k_rf_zero_offset = 1.193
-    k_lb_zero_offset = 3.333
-    k_rb_zero_offset = 1.807
+    # absolute encoder values when wheels facing forward  - 20230322 CJH
+    # turns out this was at first garbage data, we needed to solder the 3.3V in this Thrifty encoder.  (Never go cheap with FRC.)
+    k_lf_zero_offset = 2.840
+    k_rf_zero_offset = 2.470  # 1.193 if gear in vs gear out
+    k_lb_zero_offset = 2.447
+    k_rb_zero_offset = 2.973  # 1.807 if gear in vs gear out
 
-    # max absolute encoder value on each wheel  - 20230321 CJH
-    k_lf_filtered_abs_max = 6.072
-    k_rf_filtered_abs_max = 6.184
-    k_lb_filtered_abs_max = 6.150
-    k_rb_filtered_abs_max = 6.140
+    # max absolute encoder value on each wheel  - 20230322 CJH
+    k_lf_filtered_abs_max = 3.311
+    k_rf_filtered_abs_max = 3.280
+    k_lb_filtered_abs_max = 3.334
+    k_rb_filtered_abs_max = 3.347
+
+    # Angular offsets of the modules relative to the chassis in radians  -
+    # (CJH: they want to put the abs encoder offsets here and set and forget)
+    kFrontLeftChassisAngularOffset = math.tau * k_lf_zero_offset / k_lf_filtered_abs_max  # 5.389
+    kFrontRightChassisAngularOffset = math.tau * k_rf_zero_offset / k_rf_filtered_abs_max  # 4.732
+    kBackLeftChassisAngularOffset = math.tau * k_lb_zero_offset / k_lb_filtered_abs_max  # 4.611
+    kBackRightChassisAngularOffset = math.tau * k_rb_zero_offset / k_rb_filtered_abs_max  # 5.581
 
     # SPARK MAX CAN IDs
     kFrontLeftDrivingCanId = 21
@@ -65,6 +66,7 @@ class DriveConstants:
     kFrontRightTurningCanId = 24
     kRearRightTurningCanId = 26
 
+    # not used but looks like we may have to use the Rio
     kFrontLeftAbsEncoderPort = 0
     kFrontRightAbsEncoderPort = 1
     kBackLeftAbsEncoderPort = 2
@@ -84,7 +86,7 @@ class ModuleConstants:
 
     # Invert the turning encoder, since the output shaft rotates in the opposite direction of
     # the steering motor in the MAXSwerve Module.
-    kTurningEncoderInverted = True # Change? Might not be true for 2429
+    kTurningEncoderInverted = False # True for absolute encoder, but not built-in
 
     # Calculations required for driving motor conversion factors and feed forward
     kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60
@@ -97,7 +99,7 @@ class ModuleConstants:
     kDrivingEncoderPositionFactor = (kWheelDiameterMeters * math.pi) / kDrivingMotorReduction  # meters
     kDrivingEncoderVelocityFactor = kDrivingEncoderPositionFactor / 60.0  # meters per second
 
-    k_turning_motor_gear_ratio = 150/7
+    k_turning_motor_gear_ratio = 150/7  #  not needed when we switch to absolute encoder of 150/7
     kTurningEncoderPositionFactor = math.tau / k_turning_motor_gear_ratio # radian
     kTurningEncoderVelocityFactor = kTurningEncoderPositionFactor / 60.0  # radians per second
 
@@ -111,27 +113,26 @@ class ModuleConstants:
     kDrivingMinOutput = -1
     kDrivingMaxOutput = 1
 
-    kTurningP = 0.25 #  CJH tested this 3/19/2023  and 0.25 was good
+    kTurningP = 0.26 #  CJH tested this 3/19/2023  and 0.25 was good
     kTurningI = 0.0
-    kTurningD = 0
+    kTurningD = 0.0
     kTurningFF = 0
     kTurningMinOutput = -1
     kTurningMaxOutput = 1
 
     kDrivingMotorIdleMode = CANSparkMax.IdleMode.kBrake
-    kTurningMotorIdleMode = CANSparkMax.IdleMode.kCoast
+    kTurningMotorIdleMode = CANSparkMax.IdleMode.kCoast  # for now it's easier to move by hand when testing
 
     kDrivingMotorCurrentLimit = 50  # amp
     kTurningMotorCurrentLimit = 20  # amp
 
-def calculate_absolute_angle(measured_value, absolute_max, absolute_offset):
+def calculate_absolute_angle(measured_value, absolute_offset):
     # calculate the current driving motor angle, in radians, based on the absolute encoder value
-    radian_scaling = math.tau / absolute_max  # convert encoder value to radians
     offset_corrected_value = measured_value - absolute_offset  #  absolute angle relative to aligned forward
-    if offset_corrected_value > absolute_max:  # not sure this is possible
-        offset_corrected_value = offset_corrected_value - absolute_max
-    elif offset_corrected_value < 0:  # this is definitley possible
-        offset_corrected_value = offset_corrected_value + absolute_max  # basically add 2pi
+    if offset_corrected_value > math.tau:  # not sure this is possible
+        offset_corrected_value = offset_corrected_value - math.tau
+    elif offset_corrected_value < 0:  # this is definitely possible
+        offset_corrected_value = offset_corrected_value + math.tau  # basically add 2pi
     else:
         pass
-    return radian_scaling * offset_corrected_value
+    return offset_corrected_value
