@@ -136,8 +136,8 @@ class RobotContainer:
         # initialize the turret
         # commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
         if constants.k_use_abs_encoder_on_swerve:
-            pass
-            # commands2.ScheduleCommand(SwerveCalibrate(container=self, swerve=self.drive))
+            # pass
+            commands2.ScheduleCommand(SwerveCalibrate(container=self, swerve=self.drive))
 
     def set_start_time(self):  # call in teleopInit and autonomousInit in the robot
         self.start_time = time.time()

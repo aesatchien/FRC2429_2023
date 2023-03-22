@@ -106,8 +106,7 @@ class SwerveModule:
         self.drivingEncoder.setPosition(0)
 
         if constants.k_use_abs_encoder_on_swerve:
-            absolute_turning_position = self.absoluteEncoder.getPosition() - chassisAngularOffset
-            self.turningEncoder.setPosition(absolute_turning_position)
+            self.update_turning_encoder(self.absoluteEncoder.getPosition())
         else:
             self.turningEncoder.setPosition(0)
 
@@ -117,7 +116,7 @@ class SwerveModule:
     def update_turning_encoder(self, new_absolute_measurement):
         current_angle = calculate_absolute_angle(measured_value=new_absolute_measurement, absolute_offset=self.turning_zero_offset)
         self.turningEncoder.setPosition(current_angle)
-        self.setDesiredState(SwerveModuleState(0, Rotation2d(current_angle)))
+        # self.setDesiredState(SwerveModuleState(0, Rotation2d(current_angle)))
 
     def getState(self) -> SwerveModuleState:
         """Returns the current state of the module.

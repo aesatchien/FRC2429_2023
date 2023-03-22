@@ -7,8 +7,8 @@ from rev import CANSparkMax
 class DriveConstants:
     # Driving Parameters - Note that these are not the maximum capable speeds of
     # the robot, rather the allowed maximum speeds
-    kMaxSpeedMetersPerSecond = 1  # 4.8
-    kMaxAngularSpeed = 1 # math.tau  # radians per second
+    kMaxSpeedMetersPerSecond = 2  # 4.8
+    kMaxAngularSpeed = 4.5 # math.tau  # radians per second
 
     kDirectionSlewRate = 1.2  # radians per second
     kMagnitudeSlewRate = 1.8  # percent per second (1 = 100%)
@@ -129,10 +129,7 @@ class ModuleConstants:
 def calculate_absolute_angle(measured_value, absolute_offset):
     # calculate the current driving motor angle, in radians, based on the absolute encoder value
     offset_corrected_value = measured_value - absolute_offset  #  absolute angle relative to aligned forward
-    if offset_corrected_value > math.tau:  # not sure this is possible
+    offset_corrected_value = offset_corrected_value % math.tau
+    if offset_corrected_value > math.pi:
         offset_corrected_value = offset_corrected_value - math.tau
-    elif offset_corrected_value < 0:  # this is definitely possible
-        offset_corrected_value = offset_corrected_value + math.tau  # basically add 2pi
-    else:
-        pass
     return offset_corrected_value

@@ -6,7 +6,7 @@ import constants
 
 class SwerveCalibrate(commands2.CommandBase):
 
-    def __init__(self, container, swerve, samples=25) -> None:
+    def __init__(self, container, swerve, samples=50) -> None:
         super().__init__()
         self.setName('SwerveCalibrate')
         self.container = container
@@ -38,7 +38,7 @@ class SwerveCalibrate(commands2.CommandBase):
         self.counter += 1
 
     def isFinished(self) -> bool:
-        return self.counter >= self.samples
+        return self.counter > self.samples
 
     def end(self, interrupted: bool) -> None:
         final_values = [0] * 4
