@@ -13,6 +13,7 @@ k_field_centric = False
 k_competition_mode = True  # use for compressor and some joystick settings
 k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
 k_enable_soft_limts = True
+k_volt_compensation = 12.6
 
 # --------------  OI  ---------------
 # ID for the driver's joystick (template)
@@ -72,7 +73,7 @@ k_deriv_tolerance = 5  # 5 degrees per second. (Experimental value; not determin
 
 # --------------  TURRET  ---------------
 k_turret_motor_port = 9  # sparkmax with a NEO550 - full speed is 11k
-k_turret_abs_encoder_port = 1  # analog absolute encoder on turret
+k_turret_abs_encoder_port = 5  # analog absolute encoder on turret
 k_turret_encoder_conversion_factor = 360 / 462.2  # Armabot has 462:1 gear ratio?  Circle has 360 degrees-->  0.779°/rot
 # TODO: verify turret velocity PID values, burn to slot 0  - tested on 2023 0226
 k_PID_dict_vel_turret = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.4e-4, 'kArbFF':0,

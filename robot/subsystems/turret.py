@@ -51,7 +51,7 @@ class Turret(SubsystemBase):
                            pid_dict=constants.k_PID_dict_vel_turret, pid_only=True, burn_flash=constants.k_burn_flash)
 
         # same here, and need the turret encoder to be set to analog (jumper change)
-        self.analog_abs_encoder = wpilib.AnalogEncoder(1)  # plug the analog encoder into channel 1
+        self.analog_abs_encoder = wpilib.AnalogEncoder(constants.k_turret_abs_encoder_port)  # plug the analog encoder into channel 1
         self.analog_conversion_factor = 360.0  # 5V is 360 degrees
         self.analog_abs_encoder.setDistancePerRotation(self.analog_conversion_factor)
 

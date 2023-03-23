@@ -137,6 +137,7 @@ class AutoConstants:
     kThetaControllerConstraints = TrapezoidProfileRadians.Constraints(
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared
     )
+
 def calculate_absolute_angle(measured_value, absolute_offset):
     # calculate the current driving motor angle, in radians, based on the absolute encoder value
     offset_corrected_value = measured_value - absolute_offset  #  absolute angle relative to aligned forward

@@ -44,13 +44,13 @@ class DriveByJoystickSwerve(commands2.CommandBase):
             if desired_magnitude > max_linear:
                 desired_translation = desired_translation * max_linear / desired_magnitude
             self.swerve.drive(desired_translation.X(), desired_translation.Y(), desired_rot,
-                          fieldRelative=self.field_oriented, rateLimit=True)
+                          fieldRelative=self.field_oriented, rate_limited=True)
         else:
             self.swerve.drive(xSpeed=desired_fwd,ySpeed=desired_strafe, rot=desired_rot,
-                              fieldRelative=self.field_oriented, rateLimit=False)
+                              fieldRelative=self.field_oriented, rate_limited=False)
 
     def end(self, interrupted: bool) -> None:
-        self.swerve.drive(0, 0, 0, fieldRelative=self.field_oriented, rateLimit=True)
+        self.swerve.drive(0, 0, 0, fieldRelative=self.field_oriented, rate_limited=True)
 
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'

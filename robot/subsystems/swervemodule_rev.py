@@ -26,7 +26,6 @@ class SwerveModule:
         self.desiredState = SwerveModuleState(0.0, Rotation2d())
 
         self.drivingSparkMax = CANSparkMax(drivingCANId, CANSparkMax.MotorType.kBrushless)
-        self.drivingSparkMax.setInverted(driving_motor_inverted)
         self.turningSparkMax = CANSparkMax(turningCANId, CANSparkMax.MotorType.kBrushless)
         if wpilib.RobotBase.isSimulation():  # check in sim to see if we are reacting to inputs
             self.dummy_motor_driving = wpilib.PWMSparkMax(drivingCANId-16)

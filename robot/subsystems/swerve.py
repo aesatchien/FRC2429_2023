@@ -8,7 +8,7 @@ from wpimath.geometry import Pose2d, Rotation2d
 from wpimath.kinematics import (ChassisSpeeds, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry,)
 import navx
 import rev
-from .swervemodule_rev import SwerveModule
+from .swervemodule_2429 import SwerveModule
 from .swerve_constants import DriveConstants
 
 
@@ -18,21 +18,18 @@ class Swerve (SubsystemBase):
 
         # Create SwerveModules
         self.frontLeft = SwerveModule(
-            DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId,
-            DriveConstants.kFrontLeftAbsEncoderPort, DriveConstants.kFrontLeftChassisAngularOffset,
-            DriveConstants.k_lf_zero_offset, DriveConstants.k_lf_filtered_abs_max)
+            drivingCANId=DriveConstants.kFrontLeftDrivingCanId, turningCANId=DriveConstants.kFrontLeftTurningCanId,
+            encoder_analog_port=DriveConstants.kFrontLeftAbsEncoderPort,
+            turning_encoder_offset=DriveConstants.k_lf_zero_offset, label='lf' )
         self.frontRight = SwerveModule(
             DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId,
-            DriveConstants.kFrontRightAbsEncoderPort, DriveConstants.kFrontRightChassisAngularOffset,
-            DriveConstants.k_rf_zero_offset, DriveConstants.k_rf_filtered_abs_max)
+            DriveConstants.kFrontRightAbsEncoderPort, DriveConstants.k_rf_zero_offset, label='rf')
         self.rearLeft = SwerveModule(
             DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId,
-            DriveConstants.kBackLeftAbsEncoderPort, DriveConstants.kBackLeftChassisAngularOffset,
-            DriveConstants.k_lb_zero_offset, DriveConstants.k_lb_filtered_abs_max)
+            DriveConstants.kBackLeftAbsEncoderPort, DriveConstants.k_lb_zero_offset, label='lb')
         self.rearRight = SwerveModule(
             DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId,
-            DriveConstants.kBackRightAbsEncoderPort, DriveConstants.kBackRightChassisAngularOffset,
-            DriveConstants.k_rb_zero_offset, DriveConstants.k_rb_filtered_abs_max)
+            DriveConstants.kBackRightAbsEncoderPort, DriveConstants.k_rb_zero_offset, label='rb')
 
         # let's make this pythonic so we can do things quickly and with readability
         self.swerve_modules = [self.frontLeft, self.frontRight, self.rearLeft, self.rearRight]
@@ -59,11 +56,10 @@ class Swerve (SubsystemBase):
         # Update the odometry in the periodic block
         self.odometry.update(
             Rotation2d.fromDegrees(self.navx.getAngle()),
-            self.frontLeft.getPosition(), self.frontRight.getPosition(), self.rearLeft.getPosition(),
-            self.rearRight.getPosition(),)
+            *self.get_module_positions(),)
 
         angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
-        absolutes = [m.absoluteEncoder.getPosition() for m in self.swerve_modules]
+        absolutes = [m.get_turn_encoder() for m in self.swerve_modules]
         wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
         wpilib.SmartDashboard.putNumberArray(f'_analog_radians', absolutes)
         wpilib.SmartDashboard.putNumber('_navx', self.navx.getAngle())
@@ -138,7 +134,7 @@ class Swerve (SubsystemBase):
         :param desiredStates: The desired SwerveModule states.
         """
         desiredStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kMaxSpeedMetersPerSecond)
-        for idx, m in self.swerve_modules:
+        for idx, m in enumerate(self.swerve_modules):
             m.setDesiredState(desiredStates[idx])
 
     def resetEncoders(self) -> None:

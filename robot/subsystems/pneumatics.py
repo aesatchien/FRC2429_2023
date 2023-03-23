@@ -25,7 +25,7 @@ class Pneumatics(SubsystemBase):
         #self.manipulator_piston = DoubleSolenoid(wpilib.PneumaticsModuleType.CTREPCM,
         #   constants.k_manipulator_open_port, constants.k_manipulator_closed_port)
 
-        self.pressure_sensor = AnalogInput(0)  # may skip this unless we really want one
+        # self.pressure_sensor = AnalogInput(0)  # may skip this unless we really want one
         self.close_loop_enable = True
 
         competition = constants.k_competition_mode  # set this in constants
