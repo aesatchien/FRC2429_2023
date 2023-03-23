@@ -8,32 +8,33 @@ from wpimath.geometry import Pose2d, Rotation2d
 from wpimath.kinematics import (ChassisSpeeds, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry,)
 import navx
 import rev
-from .swervemodule import SwerveModule
+from .swervemodule_rev import SwerveModule
 from .swerve_constants import DriveConstants
-from subsystems import swerveutils
+
 
 class Swerve (SubsystemBase):
     def __init__(self) -> None:
         super().__init__()
 
-        # Create MAXSwerveModules
+        # Create SwerveModules
         self.frontLeft = SwerveModule(
             DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId,
             DriveConstants.kFrontLeftAbsEncoderPort, DriveConstants.kFrontLeftChassisAngularOffset,
-            DriveConstants.k_lf_zero_offset, DriveConstants.k_lf_filtered_abs_max, DriveConstants.k_lf_drive_motor_inverted)
+            DriveConstants.k_lf_zero_offset, DriveConstants.k_lf_filtered_abs_max)
         self.frontRight = SwerveModule(
             DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId,
             DriveConstants.kFrontRightAbsEncoderPort, DriveConstants.kFrontRightChassisAngularOffset,
-            DriveConstants.k_rf_zero_offset, DriveConstants.k_rf_filtered_abs_max, DriveConstants.k_rf_drive_motor_inverted)
+            DriveConstants.k_rf_zero_offset, DriveConstants.k_rf_filtered_abs_max)
         self.rearLeft = SwerveModule(
             DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId,
             DriveConstants.kBackLeftAbsEncoderPort, DriveConstants.kBackLeftChassisAngularOffset,
-            DriveConstants.k_lb_zero_offset, DriveConstants.k_lb_filtered_abs_max, DriveConstants.k_lb_drive_motor_inverted)
+            DriveConstants.k_lb_zero_offset, DriveConstants.k_lb_filtered_abs_max)
         self.rearRight = SwerveModule(
             DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId,
             DriveConstants.kBackRightAbsEncoderPort, DriveConstants.kBackRightChassisAngularOffset,
-            DriveConstants.k_rb_zero_offset, DriveConstants.k_rb_filtered_abs_max, DriveConstants.k_rb_drive_motor_inverted)
+            DriveConstants.k_rb_zero_offset, DriveConstants.k_rb_filtered_abs_max)
 
+        # let's make this pythonic so we can do things quickly and with readability
         self.swerve_modules = [self.frontLeft, self.frontRight, self.rearLeft, self.rearRight]
 
         # The gyro sensor
@@ -44,9 +45,7 @@ class Swerve (SubsystemBase):
         self.gyro_calibrated = False
 
         # Slew rate filter variables for controlling lateral acceleration
-        self.currentRotation = 0.0
-        self.currentTranslationDir = 0.0
-        self.currentTranslationMag = 0.0
+        self.currentRotation, self.currentTranslationDir, self.currentTranslationMag  = 0.0, 0.0, 0.0
 
         self.magLimiter = SlewRateLimiter(DriveConstants.kMagnitudeSlewRate)
         self.rotLimiter = SlewRateLimiter(DriveConstants.kRotationalSlewRate)
@@ -54,23 +53,14 @@ class Swerve (SubsystemBase):
 
         # Odometry class for tracking robot pose
         self.odometry = SwerveDrive4Odometry(
-            DriveConstants.kDriveKinematics,
-            Rotation2d.fromDegrees(self.gyro.getAngle()),
-            [   self.frontLeft.getPosition(),
-                self.frontRight.getPosition(),
-                self.rearLeft.getPosition(),
-                self.rearRight.getPosition(),
-            ],)
+            DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(self.gyro.getAngle()), self.get_module_positions())
 
     def periodic(self) -> None:
         # Update the odometry in the periodic block
         self.odometry.update(
             Rotation2d.fromDegrees(self.navx.getAngle()),
-            self.frontLeft.getPosition(),
-            self.frontRight.getPosition(),
-            self.rearLeft.getPosition(),
-            self.rearRight.getPosition(),
-        )
+            self.frontLeft.getPosition(), self.frontRight.getPosition(), self.rearLeft.getPosition(),
+            self.rearRight.getPosition(),)
 
         angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
         absolutes = [m.absoluteEncoder.getPosition() for m in self.swerve_modules]
@@ -81,115 +71,57 @@ class Swerve (SubsystemBase):
         wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
     def get_pose(self) -> Pose2d:
-        """Returns the currently-estimated pose of the robot.
-
-        :returns: The pose.
-        """
+        # return the pose of the robot  TODO: update the dashboard here?
         return self.odometry.getPose()
 
     def resetOdometry(self, pose: Pose2d) -> None:
         """Resets the odometry to the specified pose.
-
         :param pose: The pose to which to set the odometry.
-
         """
         self.odometry.resetPosition(
-            Rotation2d.fromDegrees(self.navx.getAngle()),
-            pose,
-            self.frontLeft.getPosition(),
-            self.frontRight.getPosition(),
-            self.rearLeft.getPosition(),
-            self.rearRight.getPosition(),
-        )
+            Rotation2d.fromDegrees(self.navx.getAngle()), pose, *self.get_module_positions())
 
-    def drive(self, xSpeed: float, ySpeed: float, rot: float, fieldRelative: bool, rateLimit: bool,) -> None:
+    def drive(self, xSpeed: float, ySpeed: float, rot: float, fieldRelative: bool, rate_limited: bool,) -> None:
         """Method to drive the robot using joystick info.
-
         :param xSpeed:        Speed of the robot in the x direction (forward).
         :param ySpeed:        Speed of the robot in the y direction (sideways).
         :param rot:           Angular rate of the robot.
-        :param fieldRelative: Whether the provided x and y speeds are relative to the
-                              field.
+        :param fieldRelative: Whether the provided x and y speeds are relative to the field.
         :param rateLimit:     Whether to enable rate limiting for smoother control.
         """
 
-        xSpeedCommanded = xSpeed
-        ySpeedCommanded = ySpeed
-
-        if rateLimit:
-            # Convert XY to polar for rate limiting
-            inputTranslationDir = math.atan2(ySpeed, xSpeed)
-            inputTranslationMag = math.hypot(xSpeed, ySpeed)
-
-            # Calculate the direction slew rate based on an estimate of the lateral acceleration
-            if self.currentTranslationMag != 0.0:
-                directionSlewRate = abs(DriveConstants.kDirectionSlewRate / self.currentTranslationMag)
-            else:
-                directionSlewRate = 500.0
-                # some high number that means the slew rate is effectively instantaneous
-
-            currentTime = wpilib.Timer.getFPGATimestamp()
-            elapsedTime = currentTime - self.prevTime
-            angleDif = swerveutils.angleDifference(inputTranslationDir, self.currentTranslationDir)
-            if angleDif < 0.45 * math.pi:
-                self.currentTranslationDir = swerveutils.stepTowardsCircular(
-                    self.currentTranslationDir,
-                    inputTranslationDir,
-                    directionSlewRate * elapsedTime,
-                )
-                self.currentTranslationMag = self.magLimiter.calculate(inputTranslationMag)
-
-            elif angleDif > 0.85 * math.pi:
-                # some small number to avoid floating-point errors with equality checking
-                # keep currentTranslationDir unchanged
-                if self.currentTranslationMag > 1e-4:
-                    self.currentTranslationMag = self.magLimiter.calculate(0.0)
-                else:
-                    self.currentTranslationDir = swerveutils.wrapAngle(self.currentTranslationDir + math.pi)
-                    self.currentTranslationMag = self.magLimiter.calculate(inputTranslationMag)
-
-            else:
-                self.currentTranslationDir = swerveutils.stepTowardsCircular(self.currentTranslationDir,
-                    inputTranslationDir, directionSlewRate * elapsedTime, )
-                self.currentTranslationMag = self.magLimiter.calculate(0.0)
-
-            self.prevTime = currentTime
-
-            xSpeedCommanded = self.currentTranslationMag * math.cos(self.currentTranslationDir)
-            ySpeedCommanded = self.currentTranslationMag * math.sin(self.currentTranslationDir)
-            self.currentRotation = self.rotLimiter.calculate(rot)
-
+        if rate_limited:
+            xSpeedCommanded = self.magLimiter.calculate(xSpeed)
+            ySpeedCommanded = self.magLimiter.calculate(ySpeed)
+            rotation_commanded = self.rotLimiter.calculate(rot)
         else:
-            self.currentRotation = rot
+            xSpeedCommanded = xSpeed
+            ySpeedCommanded = ySpeed
+            rotation_commanded = rot
 
         # Convert the commanded speeds into the correct units for the drivetrain
         xSpeedDelivered = xSpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond
         ySpeedDelivered = ySpeedCommanded * DriveConstants.kMaxSpeedMetersPerSecond
-        rotDelivered = self.currentRotation * DriveConstants.kMaxAngularSpeed
+        rotDelivered = rotation_commanded * DriveConstants.kMaxAngularSpeed
 
         wpilib.SmartDashboard.putNumberArray('_xyr', [xSpeedDelivered, ySpeedDelivered, rotDelivered])
+
+        # create the swerve state array depending on if we are field relative or not
         swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
             ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(self.gyro.getAngle()),)
             if fieldRelative else ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered))
 
+        # normalize wheel speeds so we do not exceed our speed limit
         swerveModuleStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond)
-
-        self.frontLeft.setDesiredState(swerveModuleStates[0])
-        self.frontRight.setDesiredState(swerveModuleStates[1])
-        self.rearLeft.setDesiredState(swerveModuleStates[2])
-        self.rearRight.setDesiredState(swerveModuleStates[3])
+        for state, module in zip(swerveModuleStates, self.swerve_modules):
+            module.setDesiredState(state)
 
     def drive_forwards_vel(self, targetvel, pidSlot=0, l_feed_forward=0, r_feed_forward=0):
+        feeds = [l_feed_forward, r_feed_forward, l_feed_forward, r_feed_forward]
+        control_type = rev.CANSparkMax.ControlType.kSmartVelocity
         self.setModuleStates([SwerveModuleState(0, Rotation2d.fromDegrees(0))]*4) # Turn the swerve into a tank drive
-        self.frontLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
-                                                         pidSlot=pidSlot, arbFeedforward=l_feed_forward)
-        self.rearLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
-                                                         pidSlot=pidSlot, arbFeedforward=l_feed_forward)
-        self.frontRight.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
-                                                         pidSlot=pidSlot, arbFeedforward=r_feed_forward)
-        self.rearRight.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
-                                                         pidSlot=pidSlot, arbFeedforward=r_feed_forward)
-
+        for feed, module in zip (feeds, self.swerve_modules):
+            module.drivingPIDController.setReference(targetvel, control_type, pidSlot=pidSlot, arbFeedforward=feed)
 
     def set_brake_mode(self, mode='brake'):
         if mode == 'brake':
@@ -197,28 +129,21 @@ class Swerve (SubsystemBase):
 
     def setX(self) -> None:
         """Sets the wheels into an X formation to prevent movement."""
-        self.frontLeft.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
-        self.frontRight.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
-        self.rearLeft.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(-45)))
-        self.rearRight.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(45)))
+        angles = [4, -45, -45, 45]
+        for angle, swerve_module in zip(angles, self.swerve_modules):
+            swerve_module.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(angle)))
 
     def setModuleStates(self, desiredStates: typing.Tuple[SwerveModuleState]) -> None:
         """Sets the swerve ModuleStates.
-
         :param desiredStates: The desired SwerveModule states.
         """
         desiredStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kMaxSpeedMetersPerSecond)
-        self.frontLeft.setDesiredState(desiredStates[0])
-        self.frontRight.setDesiredState(desiredStates[1])
-        self.rearLeft.setDesiredState(desiredStates[2])
-        self.rearRight.setDesiredState(desiredStates[3])
+        for idx, m in self.swerve_modules:
+            m.setDesiredState(desiredStates[idx])
 
     def resetEncoders(self) -> None:
         """Resets the drive encoders to currently read a position of 0."""
-        self.frontLeft.resetEncoders()
-        self.rearLeft.resetEncoders()
-        self.frontRight.resetEncoders()
-        self.rearRight.resetEncoders()
+        [m.resetEncoders() for m in self.swerve_modules]
 
     def zeroHeading(self) -> None:
         """Zeroes the heading of the robot."""
@@ -235,3 +160,8 @@ class Swerve (SubsystemBase):
         :returns: The turn rate of the robot, in degrees per second
         """
         return self.gyro.getRate() * (-1.0 if DriveConstants.kGyroReversed else 1.0)
+
+    def get_module_positions(self):
+        """ CJH-added helper function to clean up some calls above"""
+        # note lots of the calls want tuples, so _could_ convert if we really want to
+        return [m.getPosition() for m in self.swerve_modules]

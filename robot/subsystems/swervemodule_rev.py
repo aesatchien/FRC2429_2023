@@ -11,7 +11,7 @@ from .swerve_constants import ModuleConstants, calculate_absolute_angle
 
 class SwerveModule:
     def __init__(self, drivingCANId: int, turningCANId: int, absEncoderPort: int, chassisAngularOffset: float,
-    turning_zero_offset, turning_absolute_max, driving_motor_inverted) -> None:
+    turning_zero_offset, turning_absolute_max) -> None:
         """Constructs a MAXSwerveModule and configures the driving and turning motor,
         encoder, and PID controller. This configuration is specific to the REV
         MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore

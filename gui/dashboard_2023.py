@@ -74,7 +74,8 @@ class Ui(QtWidgets.QMainWindow):
         # set up network tables
         self.ntinst = NetworkTableInstance.getDefault()
         self.servers = ["10.24.29.2", "127.0.0.1"] #  "roboRIO-2429-FRC.local"]  # need to add the USB one here
-        self.ntinst.startClient3(identity=f'PyQt Dashboard {datetime.today().strftime("%H%M%S")}')
+        # self.ntinst.startClient3(identity=f'PyQt Dashboard {datetime.today().strftime("%H%M%S")}')
+        self.ntinst.startClient4(identity=f'PyQt Dashboard {datetime.today().strftime("%H%M%S")}')
         self.server_index = 0  # manually do a round-robin later
         # self.ntinst.setServer("127.0.0.1",0)
         #self.ntinst.setServer(servers=self.servers)  # does not seem to work in round-robin in 2023 code
@@ -288,7 +289,7 @@ class Ui(QtWidgets.QMainWindow):
     def label_click(self, label):
         # print(f"Running command to {label} {self.widget_dict[label]['command']}")
         toggled_state = not self.widget_dict[label]['command_entry'].getBoolean(True)
-        print(f'You clicked {label} whose command is currently {not toggled_state}.  Firing command...', flush=True)
+        print(f'You clicked {label} whose command is currently {not toggled_state}.  Firing command at {datetime.today().strftime("%H:%M:%S")} ...', flush=True)
         self.widget_dict[label]['command_entry'].setBoolean(toggled_state)
 
     # ------------------- INITIALIZING WIDGETS --------------------------

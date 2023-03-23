@@ -5,7 +5,10 @@ changes.
 
 2023 robot for team 2429 - the blockheads
 """
-k_use_abs_encoder_on_swerve = True
+#  scorpion: rio runs potentiometer vs rev with turning encoder going to sparkmax
+# note the analog encoder has to be 3.3V for rev style (man i wish i had not bought them)
+l_swerve_type = 'scorpion'
+k_use_abs_encoder_on_swerve = True  # initialize the rev-style swerve with the absolute encoders
 k_field_centric = False
 k_competition_mode = True  # use for compressor and some joystick settings
 k_burn_flash = False  # if we want to burn the settings to the sparkmaxes

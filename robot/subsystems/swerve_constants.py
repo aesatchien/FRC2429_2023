@@ -10,12 +10,11 @@ class DriveConstants:
     # the robot, rather the allowed maximum speeds
     kMaxSpeedMetersPerSecond = 1.5  # 4.8
     kMaxAngularSpeed = 2 * math.tau  # radians per second
-
     kDirectionSlewRate = 1.2  # radians per second
     kMagnitudeSlewRate = 1.8  # percent per second (1 = 100%)
     kRotationalSlewRate = 2.0  # percent per second (1 = 100%)
 
-    # Chassis configuration
+    # Chassis configuration - not sure it even matters if we're square
     kTrackWidth = units.inchesToMeters(24.0)  # Distance between centers of right and left wheels on robot
     kWheelBase = units.inchesToMeters(24.0)   # Distance between front and back wheels on robot
 
@@ -30,7 +29,7 @@ class DriveConstants:
     kDriveKinematics = SwerveDrive4Kinematics(*kModulePositions)
 
     # which motors need to be inverted  - none?
-    # code seems to ignore this, so I turned the right wheels around instead.
+    # code seems to ignore this, so I turned the right wheels around instead, to have billet gears always point right.
     k_lf_drive_motor_inverted = False
     k_lb_drive_motor_inverted = False
     k_rf_drive_motor_inverted = False
@@ -44,6 +43,7 @@ class DriveConstants:
     k_rb_zero_offset = 2.973  # 1.807 if gear in vs gear out
 
     # max absolute encoder value on each wheel  - 20230322 CJH
+    # going to stop using this - it's probably 3.3 and it doesn't actually matter much considering our noise level
     k_lf_filtered_abs_max = 3.311
     k_rf_filtered_abs_max = 3.280
     k_lb_filtered_abs_max = 3.334
@@ -80,10 +80,6 @@ class NeoMotorConstants:
     kFreeSpeedRpm = 5676
 
 class ModuleConstants:
-    # The MAXSwerve module can be configured with one of three pinion gears: 12T, 13T, or 14T.
-    # This changes the drive speed of the module (a pinion gear with more teeth will result in a
-    # robot that drives faster).
-    kDrivingMotorPinionTeeth = 14
 
     # Invert the turning encoder, since the output shaft rotates in the opposite direction of
     # the steering motor in the MAXSwerve Module.
