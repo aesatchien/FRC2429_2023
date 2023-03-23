@@ -76,13 +76,14 @@ class ChargeStationBalance(commands2.CommandBase):
         SmartDashboard.putNumber("dpitch_filtered: ", roc_angle_filtered)
         SmartDashboard.putNumber("pitch: ", self.pitch)
 
-        self.drive.feed()
+        if isinstance(self.drive, Drivetrain):
+            self.drive.feed()
 
     def isFinished(self) -> bool:
         return False
 
     def end(self, interrupted: bool) -> None:
-        self.drive.drive_forwards_vel(0, pidslot=1)
+        self.drive.drive_forwards_vel(0, pidSlot=1)
         self.drive.set_brake_mode(mode='brake')
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'

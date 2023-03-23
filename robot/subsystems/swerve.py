@@ -180,7 +180,7 @@ class Swerve (SubsystemBase):
         self.rearRight.setDesiredState(swerveModuleStates[3])
 
     def drive_forwards_vel(self, targetvel, pidSlot=0, l_feed_forward=0, r_feed_forward=0):
-        self.setModuleStates([SwerveModuleState(0, Rotation2d.radians(0))]*4) # Turn the swerve into a tank drive
+        self.setModuleStates([SwerveModuleState(0, Rotation2d.fromDegrees(0))]*4) # Turn the swerve into a tank drive
         self.frontLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
                                                          pidSlot=pidSlot, arbFeedforward=l_feed_forward)
         self.rearLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,

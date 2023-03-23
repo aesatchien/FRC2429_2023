@@ -101,12 +101,12 @@ class RobotContainer:
             self.drive = Swerve()
         else:
             self.drive = Drivetrain()
-        #self.turret = Turret()
-        #self.arm = Arm()
-        #self.wrist = Wrist()
-        #self.elevator = Elevator()
-        #self.pneumatics = Pneumatics()
-        #self.vision = Vision()
+        self.turret = Turret()
+        self.arm = Arm()
+        self.wrist = Wrist()
+        self.elevator = Elevator()
+        self.pneumatics = Pneumatics()
+        self.vision = Vision()
 
         self.game_piece_mode = 'cube'
 
@@ -115,13 +115,13 @@ class RobotContainer:
         #self.bind_buttons()
         self.configure_swerve_bindings()
 
-        #self.initialize_dashboard()
+        self.initialize_dashboard()
 
         # Set up default drive command
       #  if wpilib.RobotBase.isSimulation():
         if False:
             self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
-                    lambda: self.driver_controller.getRawAxis(4),))
+                    lambda: self.driver_controller.getRawAxis(3),))
         if False:
             self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
 
@@ -189,6 +189,7 @@ class RobotContainer:
         #self.buttonA.whileHeld(SwerveX(container=self, swerve=self.drive))
         self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
         self.buttonB.whenPressed(SwerveCalibrate(container=self, swerve=self.drive))
+        self.buttonX.whenPressed(ChargeStationBalance(self, self.drive))
 
 
     def bind_buttons(self):
@@ -306,6 +307,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
         self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
         self.autonomous_chooser.setDefaultOption('score hi and move', ScoreHiAndMove(self))
+        self.autonomous_chooser.setDefaultOption('score hi and balance', ScoreDriveAndBalance(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
         #self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
@@ -316,4 +318,4 @@ class RobotContainer:
 
 
     def get_autonomous_command(self):
-        return ScoreHiAndMove(self)
+        return self.autonomous_chooser.getSelected()

@@ -1,6 +1,7 @@
 import commands2
 import wpilib
 from wpilib import SmartDashboard
+from subsystems.drivetrain import Drivetrain
 
 class DriveClimber(commands2.CommandBase):
 
@@ -34,7 +35,8 @@ class DriveClimber(commands2.CommandBase):
         else:
             pass
         self.drive.drive_forwards_vel(self.setpoint_velocity, pidSlot=2, l_feed_forward=lfeed, r_feed_forward=rfeed)
-        self.drive.feed()
+        if isinstance(self.drive, Drivetrain):
+            self.drive.feed()
 
     def isFinished(self) -> bool:
         if wpilib.RobotBase.isSimulation():

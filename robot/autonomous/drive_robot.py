@@ -6,12 +6,13 @@ from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
 from wpimath.controller import PIDController, ProfiledPIDControllerRadians
 from subsystems.drivetrain import Drivetrain
 from subsystems.swerve import Swerve
-from subsystems.swerve_constants import DriveConstants, AutoConstants
 from .drive_tank import DriveTank
+from subsystems.swerve_constants import DriveConstants, AutoConstants
 
 
 def get_command_for_driving_meters(container, setpoint, wait_to_finish=True):
     '''Returns a command that drives the container's drive setpoint meters. Works with Swerve and Drivetrain.'''
+    print(f'** Getting command to drive robot {setpoint} meters **')
     if isinstance(container.drive, Drivetrain):
         return DriveTank(container=container, drive=container.drive, setpoint=setpoint, wait_to_finish=wait_to_finish)
     elif isinstance(container.drive, Swerve):
