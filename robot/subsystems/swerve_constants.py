@@ -8,9 +8,8 @@ from rev import CANSparkMax
 class DriveConstants:
     # Driving Parameters - Note that these are not the maximum capable speeds of
     # the robot, rather the allowed maximum speeds
-    kMaxSpeedMetersPerSecond = 1.5  # 4.8
-    kMaxAngularSpeed = 2 * math.tau  # radians per second
-    kDirectionSlewRate = 1.2  # radians per second
+    kMaxSpeedMetersPerSecond = 2  # 4.8
+    kMaxAngularSpeed = 1 * math.tau  # radians per second
     kMagnitudeSlewRate = 1.8  # percent per second (1 = 100%)
     kRotationalSlewRate = 2.0  # percent per second (1 = 100%)
 
@@ -36,18 +35,21 @@ class DriveConstants:
     k_rb_drive_motor_inverted = False
 
     # absolute encoder values when wheels facing forward  - 20230322 CJH
-    # turns out this was at first garbage data, we needed to solder the 3.3V in this Thrifty encoder.  (Never go cheap with FRC.)
-    k_lf_zero_offset = 2.840
-    k_rf_zero_offset = 2.470  # 1.193 if gear in vs gear out
-    k_lb_zero_offset = 2.447
-    k_rb_zero_offset = 2.973  # 1.807 if gear in vs gear out
+    # NOW IN RADIANS to feed right to the AnalogPotentiometer on the module
+    k_lf_zero_offset = 1.011 * math.tau * 0.016  # 0.105 rad
+    k_rf_zero_offset = 1.011 * math.tau * 0.745  # 4.682 rad   billet gear out on rf
+    k_lb_zero_offset = 1.011 * math.tau * 0.723  # 4.531 rad
+    k_rb_zero_offset = 1.011 * math.tau * 0.866  # 5.450 rad  billet gear out on rf
+
 
     # max absolute encoder value on each wheel  - 20230322 CJH
     # going to stop using this - it's probably 3.3 and it doesn't actually matter much considering our noise level
-    k_lf_filtered_abs_max = 3.311
-    k_rf_filtered_abs_max = 3.280
-    k_lb_filtered_abs_max = 3.334
-    k_rb_filtered_abs_max = 3.347
+    # need to figure out where to account for this
+    k_analog_encoder_scale_factor = 1.011  #  this thing only hits 0.989 for some reason
+    k_lf_filtered_abs_max = 0.989
+    k_rf_filtered_abs_max = 0.989
+    k_lb_filtered_abs_max = 0.989
+    k_rb_filtered_abs_max = 0.989
 
     # Angular offsets of the modules relative to the chassis in radians  -
     # (CJH: they want to put the abs encoder offsets here and set and forget)

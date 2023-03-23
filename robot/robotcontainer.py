@@ -30,6 +30,7 @@ from commands.manipulator_auto_grab import ManipulatorAutoGrab
 from commands.toggle_ground_pickup import ToggleGroundPickup
 from commands.drive_by_joystick_swerve import DriveByJoystickSwerve
 from commands.swerve_x import SwerveX
+from commands.swerve_angle_test import SwerveAngleTest
 from autonomous.swerve_calibrate import SwerveCalibrate
 
 from autonomous.arm_calibration import ArmCalibration
@@ -101,12 +102,12 @@ class RobotContainer:
             self.drive = Swerve()
         else:
             self.drive = Drivetrain()
-        self.turret = Turret()
-        self.arm = Arm()
-        self.wrist = Wrist()
-        self.elevator = Elevator()
-        self.pneumatics = Pneumatics()
-        self.vision = Vision()
+        #self.turret = Turret()
+        #self.arm = Arm()
+        #self.wrist = Wrist()
+        #self.elevator = Elevator()
+        #self.pneumatics = Pneumatics()
+        #self.vision = Vision()
 
         self.game_piece_mode = 'cube'
 
@@ -115,7 +116,7 @@ class RobotContainer:
         #self.bind_buttons()
         self.configure_swerve_bindings()
 
-        self.initialize_dashboard()
+        #self.initialize_dashboard()
 
         # Set up default drive command
       #  if wpilib.RobotBase.isSimulation():
@@ -190,7 +191,8 @@ class RobotContainer:
         #self.buttonA.whileHeld(SwerveX(container=self, swerve=self.drive))
         self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
         self.buttonB.whenPressed(SwerveCalibrate(container=self, swerve=self.drive))
-        self.buttonX.whenPressed(ChargeStationBalance(self, self.drive))
+        # self.buttonX.whenPressed(ChargeStationBalance(self, self.drive))
+        self.buttonX.debounce(0.1).onTrue(SwerveAngleTest(self, self.drive))
 
 
     def bind_buttons(self):
