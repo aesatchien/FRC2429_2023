@@ -7,9 +7,10 @@ from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Pose2d, Rotation2d
 from wpimath.kinematics import (ChassisSpeeds, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry,)
 import navx
+import rev
 from .swervemodule import SwerveModule
 from .swerve_constants import DriveConstants
-from . import swerveutils
+from subsystems import swerveutils
 
 class Swerve (SubsystemBase):
     def __init__(self) -> None:
@@ -64,7 +65,7 @@ class Swerve (SubsystemBase):
     def periodic(self) -> None:
         # Update the odometry in the periodic block
         self.odometry.update(
-            Rotation2d.fromDegrees(self.gyro.getAngle()),
+            Rotation2d.fromDegrees(self.navx.getAngle()),
             self.frontLeft.getPosition(),
             self.frontRight.getPosition(),
             self.rearLeft.getPosition(),
@@ -79,7 +80,7 @@ class Swerve (SubsystemBase):
         ypr = [self.navx.getYaw(), self.navx.getPitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
         wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
-    def getPose(self) -> Pose2d:
+    def get_pose(self) -> Pose2d:
         """Returns the currently-estimated pose of the robot.
 
         :returns: The pose.
@@ -93,7 +94,7 @@ class Swerve (SubsystemBase):
 
         """
         self.odometry.resetPosition(
-            Rotation2d.fromDegrees(self.gyro.getAngle()),
+            Rotation2d.fromDegrees(self.navx.getAngle()),
             pose,
             self.frontLeft.getPosition(),
             self.frontRight.getPosition(),
@@ -177,6 +178,22 @@ class Swerve (SubsystemBase):
         self.frontRight.setDesiredState(swerveModuleStates[1])
         self.rearLeft.setDesiredState(swerveModuleStates[2])
         self.rearRight.setDesiredState(swerveModuleStates[3])
+
+    def drive_forwards_vel(self, targetvel, pidSlot=0, l_feed_forward=0, r_feed_forward=0):
+        self.setModuleStates([SwerveModuleState(0, Rotation2d.fromDegrees(0))]*4) # Turn the swerve into a tank drive
+        self.frontLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                         pidSlot=pidSlot, arbFeedforward=l_feed_forward)
+        self.rearLeft.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                         pidSlot=pidSlot, arbFeedforward=l_feed_forward)
+        self.frontRight.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                         pidSlot=pidSlot, arbFeedforward=r_feed_forward)
+        self.rearRight.drivingPIDController.setReference(targetvel, rev.CANSparkMax.ControlType.kSmartVelocity,
+                                                         pidSlot=pidSlot, arbFeedforward=r_feed_forward)
+
+
+    def set_brake_mode(self, mode='brake'):
+        if mode == 'brake':
+            self.setX()
 
     def setX(self) -> None:
         """Sets the wheels into an X formation to prevent movement."""
