@@ -1,5 +1,6 @@
 import commands2
 from wpilib import SmartDashboard
+from subsystems.led import Led
 
 
 class LedLoop(commands2.CommandBase):
@@ -19,10 +20,13 @@ class LedLoop(commands2.CommandBase):
     def execute(self) -> None:
         selected = self.container.led_modes.getSelected()
 
-        print(selected, flush=True)
-
         if selected != 'NONE':
             self.container.led.set_mode(selected)
+        else:
+            if self.container.game_piece_mode == 'cube':
+                self.container.led.set_mode(Led.Mode.CUBE)
+            elif self.container.game_piece_mode == 'cone':
+                self.container.led.set_mode(Led.Mode.CONE)
 
     def isFinished(self) -> bool:
         return False

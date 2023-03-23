@@ -29,6 +29,7 @@ from commands.generic_drive import GenericDrive
 from commands.manipulator_auto_grab import ManipulatorAutoGrab
 from commands.toggle_ground_pickup import ToggleGroundPickup
 from commands.led_loop import LedLoop
+from commands.toggle_high_pickup import ToggleHighPickup
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.wrist_calibration import WristCalibration
@@ -194,8 +195,10 @@ class RobotContainer:
         self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
-        self.co_buttonLB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
-        self.co_buttonA.whenPressed(ToggleGroundPickup(container=self, pneumatics=self.pneumatics, wrist=self.wrist, button=1))
+        # self.co_buttonLB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
+        # self.co_buttonA.whenPressed(ToggleGroundPickup(container=self, pneumatics=self.pneumatics, wrist=self.wrist, button=1))
+
+        self.co_buttonA.whenPressed(ToggleHighPickup(container=self, turret=self.turret, elevator=self.elevator, wrist=self.wrist, pneumatics=self.pneumatics, vision=self.vision))
 
         preset_command_map = [
             (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),

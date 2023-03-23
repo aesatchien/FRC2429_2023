@@ -1,54 +1,55 @@
 import commands2
-
+import commands2.cmd as cmd
 import constants
 
-from arm_move import ArmMove
-from elevator_move import ElevatorMove
-from manipulator_auto_grab import ManipulatorAutoGrab
-from wrist_move import WristMove
-from turret_move import TurretMove
+from commands.elevator_move import ElevatorMove
+from commands.wrist_move import WristMove
+from commands.turret_move import TurretMove
+from commands.manipulator_toggle import ManipulatorToggle
+from autonomous.turret_move_by_vision import TurretMoveByVision
 
+from subsystems.elevator import Elevator
+from subsystems.turret import Turret
 from subsystems.pneumatics import Pneumatics
 from subsystems.wrist import Wrist
-from subsystems.elevator import Elevator
-from subsystems.arm import Arm
-from playingwithfusion import TimeOfFlight
 from subsystems.vision import Vision
 
-class ToggleHighPickup(commands2.SequentialCommandGroup):  # change the name for your command
+class ToggleHighPickup(commands2.SequentialCommandGroup):
 
-    def __init__(self, container) -> None:
+    def __init__(self, container, turret: Turret, elevator: Elevator, wrist: Wrist, pneumatics: Pneumatics, vision: Vision) -> None:
         super().__init__()
-        self.setName('ToggleHighPickup')  # change this to something appropriate for this command
-        self.container = container
+        self.setName('ToggleHighPickup')
+
+        # ToDo: all timeouts need tweaking
 
         #move elevator
-        self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, setpoint=Elevator.positions['upper_pickup']).withTimeout(1.5))
+        self.addCommands(WristMove(container=container, wrist=wrist, setpoint=wrist.positions['stow'], wait_to_finish=False))
+        self.addCommands(ElevatorMove(container=container, elevator=elevator, setpoint=elevator.positions['upper_pickup'], wait_to_finish=True))
 
         #open wrist
-        wrist_setpoint=Wrist.positions['flat']  #ToDo: logical statement that checks if we're picking up a cone or a cube
-        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=wrist_setpoint).withTimeout(1.0)) #not sure what timeout is best
+        self.addCommands(ManipulatorToggle(container=container, pneumatics=pneumatics, force='open'))
+        self.addCommands(commands2.WaitCommand(0.25))
 
-        #detect gamepiece
-        angle=0 #the detected angle of the game piece
+        # rotate turret
+        # turret prioritizes green targets first, so turn off the ring light
+        self.addCommands(cmd.runOnce(action=lambda: vision.set_relay(state=False)))
+        # self.addCommands(TurretMoveByVision(container=container, turret=turret, vision=vision, wait_to_finish=True)
+        #                  .withTimeout(2))
+        self.addCommands(cmd.runOnce(action=lambda: vision.set_relay(state=True)))
 
-        #rotate turret
-        self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=angle).withTimeout(1.0)) #not sure what timeout is best
+        # deploy wrist
+        self.addCommands(WristMove(container=container, wrist=wrist, setpoint=wrist.positions['flat'], wait_to_finish=True)
+                                   .withTimeout(1))
 
-        #extend arm
-        distance = self.container.pneumatics.pneumatics.target_distance_sensor.getRange() 
-        self.addCommands(ArmMove(container=self.container, arm=self.container.turret, setpoint=distance).withTimeout(1.0)) #not sure what timeout is best. Also not sure what unit the "setpoint" is in.
+        # ToDo: extend arm until within range using ToF?
 
-        #clamp
-            #do we need to check whether or not the gamepiece is in the manipulator before closing?
-        self.addCommands(ManipulatorAutoGrab(container=self.container, pneumatics=self.container.pneumatics).withTimeout(0.5)) #not sure what timeout is best. Also not sure what unit the "setpoint" is in.
+        # clamp
+        self.addCommands(commands2.WaitCommand(0.25))
+        self.addCommands(ManipulatorToggle(container=container, pneumatics=pneumatics, force='close'))
+        self.addCommands(commands2.WaitCommand(1))
 
-        #stow
-            # What should happen?
-            # Elevator goes all the way down
-            # Wrist stowed
-            # Arm stowed
-            # Turret zeroed
-
-
-
+        # stow
+        self.addCommands(WristMove(container=container, wrist=wrist, setpoint=wrist.positions['stow'], wait_to_finish=True)
+                         .withTimeout(2))
+        self.addCommands(TurretMove(container=container, turret=turret, setpoint=0, wait_to_finish=False))
+        self.addCommands(ElevatorMove(container=container, elevator=elevator, setpoint=elevator.positions['bottom'], wait_to_finish=True))
