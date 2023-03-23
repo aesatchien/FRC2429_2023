@@ -7,6 +7,7 @@ from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Pose2d, Rotation2d
 from wpimath.kinematics import (ChassisSpeeds, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry,)
 import navx
+import rev
 from .swervemodule import SwerveModule
 from .swerve_constants import DriveConstants
 from subsystems import swerveutils

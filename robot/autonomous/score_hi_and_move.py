@@ -11,7 +11,7 @@ class ScoreHiAndMove(commands2.SequentialCommandGroup):  # change the name for y
 
         # Step 1.a
         # score hi from stow
-        self.addCommands(ScoreHiConeFromStow(container=self.container))
+        # self.addCommands(ScoreHiConeFromStow(container=self.container))
 
         # Step 2.a
         # drive forward

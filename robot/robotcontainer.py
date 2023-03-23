@@ -316,4 +316,4 @@ class RobotContainer:
 
 
     def get_autonomous_command(self):
-        return self.autonomous_chooser.getSelected()
+        return ScoreHiAndMove(self)
