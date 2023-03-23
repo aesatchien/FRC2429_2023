@@ -30,8 +30,8 @@ class DriveByJoystickSwerve(commands2.CommandBase):
 
     def execute(self) -> None:
 
-        max_linear = 1  # m/s
-        max_angular = 1  # rad/s
+        max_linear = 1  # stick values  - actual rates are in the constants files
+        max_angular = 1
         # note that x is up/down on the left stick.  Don't want to invert x?
         desired_fwd = -self.input_transform(1.0*self.container.driver_controller.getRawAxis(1)) * max_linear
         desired_strafe = self.input_transform(1.0 * self.container.driver_controller.getRawAxis(0)) * max_linear

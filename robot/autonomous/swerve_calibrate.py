@@ -33,7 +33,7 @@ class SwerveCalibrate(commands2.CommandBase):
 
     def execute(self) -> None:
         for idx,  m in enumerate(self.swerve.swerve_modules):
-            measurement = m.absoluteEncoder.getPosition()
+            measurement = m.get_turn_encoder()
             (self.data[idx])[self.counter % self.samples] = measurement
         self.counter += 1
 
@@ -45,7 +45,7 @@ class SwerveCalibrate(commands2.CommandBase):
         for idx, m in enumerate(self.swerve.swerve_modules):
             average_encoder_values = sum(self.data[idx]) / self.samples
             if constants.k_use_abs_encoder_on_swerve:
-                m.update_turning_encoder(average_encoder_values)
+                m.turningEncoder.setPosition(average_encoder_values)
             else:
                 m.turningEncoder.setPosition(0)
             final_values[idx] = round(average_encoder_values, 4)
