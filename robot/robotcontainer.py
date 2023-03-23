@@ -127,7 +127,8 @@ class RobotContainer:
 
         # swerve driving
         if use_swerve:
-            self.drive.setDefaultCommand(DriveByJoystickSwerve(container=self, swerve=self.drive))
+            self.drive.setDefaultCommand(DriveByJoystickSwerve(container=self,
+                                            swerve=self.drive, field_oriented=constants.k_field_centric))
         else:
             self.drive.setDefaultCommand(
                 DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))

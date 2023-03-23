@@ -7,8 +7,8 @@ from rev import CANSparkMax
 class DriveConstants:
     # Driving Parameters - Note that these are not the maximum capable speeds of
     # the robot, rather the allowed maximum speeds
-    kMaxSpeedMetersPerSecond = 2  # 4.8
-    kMaxAngularSpeed = 4.5 # math.tau  # radians per second
+    kMaxSpeedMetersPerSecond = 1.5  # 4.8
+    kMaxAngularSpeed = 2 * math.tau  # radians per second
 
     kDirectionSlewRate = 1.2  # radians per second
     kMagnitudeSlewRate = 1.8  # percent per second (1 = 100%)
@@ -113,7 +113,7 @@ class ModuleConstants:
     kDrivingMinOutput = -1
     kDrivingMaxOutput = 1
 
-    kTurningP = 0.26 #  CJH tested this 3/19/2023  and 0.25 was good
+    kTurningP = 0.3 #  CJH tested this 3/19/2023  and 0.25 was good
     kTurningI = 0.0
     kTurningD = 0.0
     kTurningFF = 0

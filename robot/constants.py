@@ -6,8 +6,9 @@ changes.
 2023 robot for team 2429 - the blockheads
 """
 k_use_abs_encoder_on_swerve = True
+k_field_centric = False
 k_competition_mode = True  # use for compressor and some joystick settings
-k_burn_flash = True  # if we want to burn the settings to the sparkmaxes
+k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
 k_enable_soft_limts = True
 
 # --------------  OI  ---------------
