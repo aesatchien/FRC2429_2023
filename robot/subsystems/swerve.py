@@ -50,19 +50,19 @@ class Swerve (SubsystemBase):
 
         # Odometry class for tracking robot pose
         self.odometry = SwerveDrive4Odometry(
-            DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(self.gyro.getAngle()), self.get_module_positions())
+            DriveConstants.kDriveKinematics, Rotation2d.fromDegrees(self.get_angle()), self.get_module_positions())
 
     def periodic(self) -> None:
         # Update the odometry in the periodic block
         self.odometry.update(
-            Rotation2d.fromDegrees(self.navx.getAngle()),
+            Rotation2d.fromDegrees(self.get_angle()),
             *self.get_module_positions(),)
 
         angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
         absolutes = [m.get_turn_encoder() for m in self.swerve_modules]
         wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
         wpilib.SmartDashboard.putNumberArray(f'_analog_radians', absolutes)
-        wpilib.SmartDashboard.putNumber('_navx', self.navx.getAngle())
+        wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
         ypr = [self.navx.getYaw(), self.navx.getPitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
         wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
@@ -75,7 +75,7 @@ class Swerve (SubsystemBase):
         :param pose: The pose to which to set the odometry.
         """
         self.odometry.resetPosition(
-            Rotation2d.fromDegrees(self.navx.getAngle()), pose, *self.get_module_positions())
+            Rotation2d.fromDegrees(self.get_angle()), pose, *self.get_module_positions())
 
     def drive(self, xSpeed: float, ySpeed: float, rot: float, fieldRelative: bool, rate_limited: bool,) -> None:
         """Method to drive the robot using joystick info.
@@ -104,11 +104,11 @@ class Swerve (SubsystemBase):
 
         # create the swerve state array depending on if we are field relative or not
         swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(self.gyro.getAngle()),)
+            ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(self.get_angle()),)
             if fieldRelative else ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered))
 
         # normalize wheel speeds so we do not exceed our speed limit
-        swerveModuleStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond)
+        swerveModuleStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxTotalSpeed)
         for state, module in zip(swerveModuleStates, self.swerve_modules):
             module.setDesiredState(state)
 
@@ -133,7 +133,7 @@ class Swerve (SubsystemBase):
         """Sets the swerve ModuleStates.
         :param desiredStates: The desired SwerveModule states.
         """
-        desiredStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kMaxSpeedMetersPerSecond)
+        desiredStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kMaxTotalSpeed)
         for idx, m in enumerate(self.swerve_modules):
             m.setDesiredState(desiredStates[idx])
 
@@ -149,7 +149,7 @@ class Swerve (SubsystemBase):
         """Returns the heading of the robot.
         :returns: the robot's heading in degrees, from -180 to 180
         """
-        return Rotation2d.fromDegrees(self.gyro.getAngle()).getDegrees()
+        return Rotation2d.fromDegrees(self.get_angle()).getDegrees()
 
     def getTurnRate(self) -> float:
         """Returns the turn rate of the robot.
@@ -161,3 +161,6 @@ class Swerve (SubsystemBase):
         """ CJH-added helper function to clean up some calls above"""
         # note lots of the calls want tuples, so _could_ convert if we really want to
         return [m.getPosition() for m in self.swerve_modules]
+
+    def get_angle(self):
+        return -self.gyro.getAngle() if DriveConstants.kGyroReversed else self.gyro.getAngle()

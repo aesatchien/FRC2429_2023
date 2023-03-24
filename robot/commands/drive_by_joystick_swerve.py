@@ -11,7 +11,7 @@ class DriveByJoystickSwerve(commands2.CommandBase):
     def __init__(
         self, container,
         swerve: Swerve,
-        field_oriented=False
+        field_oriented=True
     ) -> None:
 
         super().__init__()

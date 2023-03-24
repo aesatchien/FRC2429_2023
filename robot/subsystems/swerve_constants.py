@@ -10,6 +10,7 @@ class DriveConstants:
     # the robot, rather the allowed maximum speeds
     kMaxSpeedMetersPerSecond = 2  # 4.8
     kMaxAngularSpeed = 1 * math.tau  # radians per second
+    kMaxTotalSpeed = kMaxSpeedMetersPerSecond + kMaxAngularSpeed  # sum of angular and rotational, should probably do hypotenuse
     kMagnitudeSlewRate = 1.8  # percent per second (1 = 100%)
     kRotationalSlewRate = 2.0  # percent per second (1 = 100%)
 
@@ -21,7 +22,7 @@ class DriveConstants:
     # It's the minus signs in the 2nd column that swap l/r
     kModulePositions = [
         Translation2d(kWheelBase / 2, -kTrackWidth / 2),  # i swapped L and R to get the diamond on rotation
-        Translation2d(kWheelBase / 2, kTrackWidth / 2),
+        Translation2d(kWheelBase / 2, -kTrackWidth / 2),
         Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
         Translation2d(-kWheelBase / 2, kTrackWidth / 2),
     ]
