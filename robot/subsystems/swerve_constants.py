@@ -19,21 +19,32 @@ class DriveConstants:
     kWheelBase = units.inchesToMeters(24.0)   # Distance between front and back wheels on robot
 
     # This is key !  Here is where you get left and right correct
-    # It's the minus signs in the 2nd column that swap l/r
+    # It's the minus signs in the 2nd column that swap l/r  - but it can still mess up
+    # kinematics gets passed [self.frontLeft, self.frontRight, self.rearLeft, self.rearRight]
+    # Front left is X+Y+, Front right is + -, Rear left is - +, Rear right is - -
+    # this should be left as the convention, so match the above.  Then take care of turning issues with the
+    # INVERSION OF THE TURN OR DRIVE MOTORS
+
     kModulePositions = [
-        Translation2d(kWheelBase / 2, -kTrackWidth / 2),  # i swapped L and R to get the diamond on rotation
+        Translation2d(kWheelBase / 2, kTrackWidth / 2),  # i swapped L and R to get the diamond on rotation
         Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-        Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
         Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+        Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
     ]
     kDriveKinematics = SwerveDrive4Kinematics(*kModulePositions)
 
     # which motors need to be inverted  - none?
     # code seems to ignore this, so I turned the right wheels around instead, to have billet gears always point right.
+    # that is a mistake, and need to rectify this
     k_lf_drive_motor_inverted = False
     k_lb_drive_motor_inverted = False
     k_rf_drive_motor_inverted = False
     k_rb_drive_motor_inverted = False
+
+    k_lf_turn_motor_inverted = False
+    k_lb_turn_motor_inverted = False
+    k_rf_turn_motor_inverted = False
+    k_rb_turn_motor_inverted = False
 
     # absolute encoder values when wheels facing forward  - 20230322 CJH
     # NOW IN RADIANS to feed right to the AnalogPotentiometer on the module
@@ -141,10 +152,3 @@ class AutoConstants:
         kMaxAngularSpeedRadiansPerSecond, kMaxAngularSpeedRadiansPerSecondSquared
     )
 
-def calculate_absolute_angle(measured_value, absolute_offset):
-    # calculate the current driving motor angle, in radians, based on the absolute encoder value
-    offset_corrected_value = measured_value - absolute_offset  #  absolute angle relative to aligned forward
-    offset_corrected_value = offset_corrected_value % math.tau
-    if offset_corrected_value > math.pi:
-        offset_corrected_value = offset_corrected_value - math.tau
-    return offset_corrected_value

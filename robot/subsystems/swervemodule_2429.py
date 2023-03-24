@@ -7,11 +7,13 @@ from wpimath.controller import PIDController
 import math
 
 import constants
-from .swerve_constants import ModuleConstants, DriveConstants, calculate_absolute_angle
+from .swerve_constants import ModuleConstants
+from .swerve_constants import DriveConstants as dc
 
 
 class SwerveModule:
-    def __init__(self, drivingCANId: int, turningCANId: int, encoder_analog_port: int, turning_encoder_offset: float, label='') -> None:
+    def __init__(self, drivingCANId: int, turningCANId: int, encoder_analog_port: int, turning_encoder_offset: float,
+                 driving_inverted=False, turning_inverted=False, label='') -> None:
 
         self.label = label
         self.desiredState = SwerveModuleState(0.0, Rotation2d())  # initialize desired state
@@ -29,7 +31,7 @@ class SwerveModule:
         self.drivingSparkMax.restoreFactoryDefaults()
         self.drivingSparkMax.setIdleMode(ModuleConstants.kDrivingMotorIdleMode)
         self.drivingSparkMax.setSmartCurrentLimit(ModuleConstants.kDrivingMotorCurrentLimit)
-        self.drivingSparkMax.setInverted(False)
+        self.drivingSparkMax.setInverted(driving_inverted)
         self.drivingSparkMax.enableVoltageCompensation(constants.k_volt_compensation)
 
         # Get driving encoder from the sparkmax
@@ -49,7 +51,7 @@ class SwerveModule:
         self.turningSparkMax.restoreFactoryDefaults()
         self.turningSparkMax.setIdleMode(ModuleConstants.kTurningMotorIdleMode)
         self.turningSparkMax.setSmartCurrentLimit(ModuleConstants.kTurningMotorCurrentLimit)
-        self.turningSparkMax.setInverted(False)
+        self.turningSparkMax.setInverted(turning_inverted)
         self.turningSparkMax.enableVoltageCompensation(constants.k_volt_compensation)
 
         # Setup encoders for the turning SPARKMAX - just to watch it if we need to for velocities, etc.
@@ -67,7 +69,7 @@ class SwerveModule:
         # create the AnalogPotentiometer with the offset.  TODO: this probably has to be 5V hardware but need to check
         # automatically always in radians and the turnover offset is built in, so the PID is easier
         self.absolute_encoder = AnalogPotentiometer(encoder_analog_port,
-                                DriveConstants.k_analog_encoder_scale_factor *  math.tau, -turning_encoder_offset)
+                                                    dc.k_analog_encoder_scale_factor * math.tau, -turning_encoder_offset)
         self.turning_PID_controller = PIDController(Kp=ModuleConstants.kTurningP, Ki=ModuleConstants.kTurningI, Kd=ModuleConstants.kTurningD)
         self.turning_PID_controller.enableContinuousInput(minimumInput=-math.pi, maximumInput=math.pi)
 
@@ -85,12 +87,6 @@ class SwerveModule:
     def get_turn_encoder(self):
         # how we invert the absolute encoder
         return -1 * self.absolute_encoder.get()
-
-    @DeprecationWarning
-    def update_turning_encoder(self, new_absolute_measurement):
-        current_angle = calculate_absolute_angle(measured_value=new_absolute_measurement, absolute_offset=self.turning_zero_offset)
-        self.turningEncoder.setPosition(current_angle)
-        # self.setDesiredState(SwerveModuleState(0, Rotation2d(current_angle)))
 
     def getState(self) -> SwerveModuleState:
         """Returns the current state of the module.
