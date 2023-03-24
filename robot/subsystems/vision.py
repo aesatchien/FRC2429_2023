@@ -25,9 +25,16 @@ class Vision(SubsystemBase):
         self.cube_distance = 0
         self.cube_rotation = 0
 
-        self.armcam_table = self.ntinst.getTable('ArmCam')
         self.camera_dict = {'yellow': {}, 'purple': {}, 'green': {}}
         self.camera_values = {}
+
+        self.armcam_table = self.ntinst.getTable('ArmCam')
+        #self.armcam_table.putBoolean('training', False)
+        #self.armcam_table.putString('training_color', 'yellow')
+        #self.training_chooser = wpilib.SendableChooser()
+        #[self.training_chooser.addOption(c, c) for c in self.camera_dict.keys()]
+        # wpilib.SmartDashboard.putData('\Armcam\training_choices', self.training_chooser)
+
 
         self.relay = wpilib.Relay(0, direction=wpilib.Relay.Direction.kForwardOnly)
         self.relay.set(wpilib.Relay.Value.kForward)

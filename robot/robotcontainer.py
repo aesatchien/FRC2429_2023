@@ -107,7 +107,7 @@ class RobotContainer:
         #self.wrist = Wrist()
         #self.elevator = Elevator()
         #self.pneumatics = Pneumatics()
-        #self.vision = Vision()
+        self.vision = Vision()
 
         self.game_piece_mode = 'cube'
 
