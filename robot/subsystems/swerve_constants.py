@@ -36,10 +36,10 @@ class DriveConstants:
 
     # absolute encoder values when wheels facing forward  - 20230322 CJH
     # NOW IN RADIANS to feed right to the AnalogPotentiometer on the module
-    k_lf_zero_offset = 1.011 * math.tau * 0.016  # 0.105 rad
+    k_lf_zero_offset = 1.011 * math.tau * 0.836  # 0.105 rad
     k_rf_zero_offset = 1.011 * math.tau * 0.745  # 4.682 rad   billet gear out on rf
     k_lb_zero_offset = 1.011 * math.tau * 0.723  # 4.531 rad
-    k_rb_zero_offset = 1.011 * math.tau * 0.866  # 5.450 rad  billet gear out on rf
+    k_rb_zero_offset = 1.011 * math.tau * 0.872  # 5.478 rad  billet gear out on rf
 
 
     # max absolute encoder value on each wheel  - 20230322 CJH
