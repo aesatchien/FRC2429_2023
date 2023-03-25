@@ -80,21 +80,21 @@ class PhysicsEngine(PhysicsEngine):
         # self.drivetrain = drivetrains.four_motor_swerve_drivetrain(deadzone=drivetrains.linear_deadzone(0.1))
 
     def update_sim(self, now, tm_diff):
-        velocity_scale = 10  # faking PWM signals in from -1 to 1, multiply by to 10 get velocities
-        lr_motor = self.lr_motor.getSpeed()
-        rr_motor = self.rr_motor.getSpeed()
-        lf_motor = self.lf_motor.getSpeed()
-        rf_motor = self.rf_motor.getSpeed()
+        velocity_scale, angular_scale = 10, 10  # faking PWM signals in from -1 to 1, multiply by to x get velocities,
+        lr_motor = self.lr_motor.getSpeed() * velocity_scale
+        rr_motor = self.rr_motor.getSpeed() * velocity_scale
+        lf_motor = self.lf_motor.getSpeed() * velocity_scale
+        rf_motor = self.rf_motor.getSpeed() * velocity_scale
 
-        lr_angle = self.lr_angle.getSpeed()
-        rr_angle = self.rr_angle.getSpeed()
-        lf_angle = self.lf_angle.getSpeed()
-        rf_angle = self.rf_angle.getSpeed()
+        lr_angle = self.lr_angle.getSpeed() * angular_scale   # multiply by 10 to get dummy angles from simulated pwms
+        rr_angle = self.rr_angle.getSpeed() * angular_scale
+        lf_angle = self.lf_angle.getSpeed() * angular_scale
+        rf_angle = self.rf_angle.getSpeed() * angular_scale
 
-
-        speeds = four_motor_swerve_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor,
-        lr_angle, rr_angle, lf_angle, rf_angle, x_wheelbase = 2, y_wheelbase = 2,
-        speed=10, deadzone=None,)
+        # had to mess with the orders and the vx, vy to get things to sim properly
+        speeds = four_motor_swerve_drivetrain(lf_motor, rf_motor, lr_motor, rr_motor,
+        lf_angle, rf_angle, lr_angle, rr_angle, x_wheelbase = 2, y_wheelbase = 2,
+        speed=5, deadzone=None,)
 
         self.physics_controller.drive(speeds, tm_diff)
         self.field.setRobotPose(self.physics_controller.get_pose())
@@ -161,23 +161,23 @@ def four_motor_swerve_drivetrain(
     rf = rf_motor * speed
 
     # Calculate angle in radians
-    lr_rad = lr_angle * 10
-    rr_rad = rr_angle * 10
-    lf_rad = lf_angle * 10
-    rf_rad = rf_angle * 10
+    lr_rad = lr_angle
+    rr_rad = rr_angle
+    lf_rad = lf_angle
+    rf_rad = rf_angle
 
     # Calculate wheelbase radius
     wheelbase_radius = math.hypot(x_wheelbase / 2.0, y_wheelbase / 2.0)
 
     # Calculates the Vx and Vy components
     # Sin an Cos inverted because forward is 0 on swerve wheels
-    Vx = (
+    Vy = (
         (math.sin(lr_rad) * lr)
         + (math.sin(rr_rad) * rr)
         + (math.sin(lf_rad) * lf)
         + (math.sin(rf_rad) * rf)
     )
-    Vy = (
+    Vx = (
         (math.cos(lr_rad) * lr)
         + (math.cos(rr_rad) * rr)
         + (math.cos(lf_rad) * lf)
