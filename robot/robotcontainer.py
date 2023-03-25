@@ -220,12 +220,12 @@ class RobotContainer:
             (self.CommandSelector.NONE, commands2.WaitCommand(0)),
         ]
 
-        self.co_buttonUp.whileHeld(commands2.SelectCommand(
+        self.co_buttonUp.debounce(debounceTime=0.1).whileTrue(commands2.SelectCommand(
             lambda: self.select_preset("UP_DRIVE"),
             preset_command_map,
         ))
 
-        self.co_buttonDown.whileHeld(commands2.SelectCommand(
+        self.co_buttonDown.debounce(debounceTime=0.1).whileTrue(commands2.SelectCommand(
             lambda: self.select_preset("DOWN_DRIVE"),
             preset_command_map,
         ))

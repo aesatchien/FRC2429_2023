@@ -13,20 +13,20 @@ from misc.configure_controllers import configure_sparkmax
 
 class Wrist(SubsystemBase):
     # wrist should probably have four positions that we need to map out
-    positions = {'stow': 84, 'score': 45, 'flat': 0, 'floor': -25}
+    positions = {'stow': 94, 'score': 45, 'flat': 0, 'floor': -25}
 
     def __init__(self):
         super().__init__()
         self. counter = 20  # offset the periodics
         # defining angles so 0 is horizontal
-        self.max_angle = 85  # call all the way up 125 degrees  todo: remeasure
+        self.max_angle = 96  # call all the way up 125 degrees  todo: remeasure
         self.min_angle = -26
 
         # initialize motors
         self.wrist_controller = rev.CANSparkMax(constants.k_wrist_motor_port, rev.CANSparkMax.MotorType.kBrushless)
 
         # self.wrist_controller.restoreFactoryDefaults()
-        
+        self.wrist_controller.setIdleMode(mode=rev.CANSparkMax.IdleMode.kBrake)
         self.wrist_controller.setInverted(True)  # verified that this is true for the directions we want on wrist
         self.sparkmax_encoder = self.wrist_controller.getEncoder()
 
