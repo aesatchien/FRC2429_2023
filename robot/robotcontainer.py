@@ -38,6 +38,7 @@ from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
 from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
+from autonomous.score_by_vision import ScoreByVision
 from autonomous.drive_wait import DriveWait
 from autonomous.turret_initialize import TurretInitialize
 from autonomous.upper_substation_pickup import UpperSubstationPickup
@@ -278,6 +279,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='ArmCalibration', data=ArmCalibration(container=self, arm=self.arm).withTimeout(5))
         wpilib.SmartDashboard.putData(key='WristCalibration', data=WristCalibration(container=self, wrist=self.wrist).withTimeout(5))
         wpilib.SmartDashboard.putData(key='TurretMoveByVision', data=TurretMoveByVision(container=self, turret=self.turret, vision=self.vision, color='green').withTimeout(5))
+        wpilib.SmartDashboard.putData(key='ScoreByVision', data=ScoreByVision(container=self, turret=self.turret, elevator=self.elevator, arm=self.arm, pneumatics=self.pneumatics, vision=self.vision))
         wpilib.SmartDashboard.putData(key='UpperSubstationPickup', data=UpperSubstationPickup(container=self).withTimeout(6))
         wpilib.SmartDashboard.putData(key='ReleaseAndStow', data=ReleaseAndStow(container=self).withTimeout(5))
         wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))

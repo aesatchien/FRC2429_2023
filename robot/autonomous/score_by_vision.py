@@ -14,8 +14,8 @@ from autonomous.turret_move_by_vision import TurretMoveByVision
 
 
 class ScoreByVision(commands2.SequentialCommandGroup):
-    def __init__(self, container, turret: Turret, elevator: Elevator, arm: Arm, pneumatics: Pneumatics, vision: Vision, position='hi'):
-        super.__init__()
+    def __init__(self, container, turret: Turret, elevator: Elevator, arm: Arm, pneumatics: Pneumatics, vision: Vision, position='top'):
+        super().__init__()
         self.setName('ScoreByVision')
 
         self.addCommands(ElevatorMove(container=container, elevator=elevator, setpoint=elevator.positions[position], wait_to_finish=True))
