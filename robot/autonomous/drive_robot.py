@@ -7,7 +7,7 @@ from wpimath.controller import PIDController, ProfiledPIDControllerRadians
 from subsystems.drivetrain import Drivetrain
 from subsystems.swerve import Swerve
 from .drive_tank import DriveTank
-from subsystems.swerve_constants import DriveConstants, AutoConstants
+from subsystems.swerve_constants import DriveConstants as dc, AutoConstants
 
 
 def get_command_for_driving_meters(container, setpoint, wait_to_finish=True):
@@ -21,7 +21,7 @@ def get_command_for_driving_meters(container, setpoint, wait_to_finish=True):
             AutoConstants.kMaxAccelerationMetersPerSecondSquared,
         )
         # Add kinematics to ensure max speed is actually obeyed
-        config.setKinematics(DriveConstants.kDriveKinematics)
+        config.setKinematics(dc.kDriveKinematics)
 
         # An example trajectory to follow. All units in meters.
         trajectory = TrajectoryGenerator.generateTrajectory(
@@ -41,7 +41,7 @@ def get_command_for_driving_meters(container, setpoint, wait_to_finish=True):
         swerveControllerCommand = commands2.Swerve4ControllerCommand(
             trajectory,
             container.drive.get_pose,  # Functional interface to feed supplier
-            DriveConstants.kDriveKinematics,
+            dc.kDriveKinematics,
             # Position controllers
             PIDController(AutoConstants.kPXController, 0, 0),
             PIDController(AutoConstants.kPYController, 0, 0),

@@ -33,9 +33,12 @@ class DriveByJoystickSwerve(commands2.CommandBase):
         max_linear = 1  # stick values  - actual rates are in the constants files
         max_angular = 1
         # note that x is up/down on the left stick.  Don't want to invert x?
+        # according to the templates, these are all multiplied by -1
+        # SO IF IT DOES NOT DRIVE CORRECTLY THAT WAY, CHECK KINEMATICS, THEN INVERSION OF DRIVE/ TURNING MOTORS
+        # not all swerves are the same - some require inversion of drive and or turn motors
         desired_fwd = -self.input_transform(1.0*self.container.driver_controller.getRawAxis(1)) * max_linear
-        desired_strafe = self.input_transform(1.0 * self.container.driver_controller.getRawAxis(0)) * max_linear
-        desired_rot = self.input_transform(1.0 * self.container.driver_controller.getRawAxis(4)) * max_angular
+        desired_strafe = -self.input_transform(1.0 * self.container.driver_controller.getRawAxis(0)) * max_linear
+        desired_rot = -self.input_transform(1.0 * self.container.driver_controller.getRawAxis(4)) * max_angular
 
         correct_like_1706 = False  # this is what 1706 does, but Rev put all that in the swerve module's drive
         if correct_like_1706:
@@ -50,6 +53,7 @@ class DriveByJoystickSwerve(commands2.CommandBase):
                               fieldRelative=self.field_oriented, rate_limited=False)
 
     def end(self, interrupted: bool) -> None:
+        # probably should leave the wheels where they are?
         self.swerve.drive(0, 0, 0, fieldRelative=self.field_oriented, rate_limited=True)
 
         end_time = self.container.get_enabled_time()
