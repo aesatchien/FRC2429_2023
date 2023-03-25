@@ -24,6 +24,9 @@ class Wrist(SubsystemBase):
 
         # initialize motors
         self.wrist_controller = rev.CANSparkMax(constants.k_wrist_motor_port, rev.CANSparkMax.MotorType.kBrushless)
+
+        # self.wrist_controller.restoreFactoryDefaults()
+        
         self.wrist_controller.setInverted(True)  # verified that this is true for the directions we want on wrist
         self.sparkmax_encoder = self.wrist_controller.getEncoder()
 
@@ -50,6 +53,8 @@ class Wrist(SubsystemBase):
         self.abs_encoder.setInverted(True)
         self.abs_encoder.setPositionConversionFactor(360)
         self.abs_encoder.setZeroOffset(360 * 0.38)
+
+        # self.pid_controller.setFeedbackDevice(sensor=self.abs_encoder)
 
         # initialize the location of the wrist - from absolute encoder
         self.angle = self.abs_encoder.getPosition()
