@@ -307,6 +307,7 @@ class RobotContainer:
 
         # populate autonomous routines
         self.autonomous_chooser = wpilib.SendableChooser()
+        print("Putting datas")
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
         self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
         self.autonomous_chooser.setDefaultOption('score hi and move', ScoreHiAndMove(self))

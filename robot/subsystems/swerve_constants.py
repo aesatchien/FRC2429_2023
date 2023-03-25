@@ -23,7 +23,7 @@ class DriveConstants:
     kModulePositions = [
         Translation2d(kWheelBase / 2, -kTrackWidth / 2),  # i swapped L and R to get the diamond on rotation
         Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-        Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
+        Translation2d(-kWheelBase / 2, kTrackWidth / 2),
         Translation2d(-kWheelBase / 2, kTrackWidth / 2),
     ]
     kDriveKinematics = SwerveDrive4Kinematics(*kModulePositions)
