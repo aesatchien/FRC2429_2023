@@ -5,6 +5,10 @@
 /robot/imgui.ini
 /robot/simg*
 
+.vscode*
+.vscode/*
+
+
 # too many ini files for the gui
 *.ini
 
