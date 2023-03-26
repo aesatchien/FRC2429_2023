@@ -44,10 +44,10 @@ class SwerveCalibrate(commands2.CommandBase):
         final_values = [0] * 4
         for idx, m in enumerate(self.swerve.swerve_modules):
             average_encoder_values = sum(self.data[idx]) / self.samples
-            if constants.k_use_abs_encoder_on_swerve:
-                m.turningEncoder.setPosition(average_encoder_values)
-            else:
-                m.turningEncoder.setPosition(0)
+
+            # nothing to do now but print the values - now that we have absolute encoders
+            # previously was used for calibrating the relative encoders on the spark max
+
             final_values[idx] = round(average_encoder_values, 4)
 
         print(f"Average encoder values is {final_values}")

@@ -7,16 +7,15 @@ changes.
 """
 #  scorpion: rio runs potentiometer vs rev with turning encoder going to sparkmax
 # note the analog encoder has to be 3.3V for rev style (man i wish i had not bought them)
-l_swerve_type = 'scorpion'
-k_use_abs_encoder_on_swerve = True  # initialize the rev-style swerve with the absolute encoders
+k_use_swerve = True
 k_field_centric = True
 k_competition_mode = True  # use for compressor and some joystick settings
 k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
-k_enable_soft_limts = True
+k_enable_soft_limits = True
 k_volt_compensation = 12.6
 
 # --------------  OI  ---------------
-# ID for the driver's joystick (template)
+# ID for the driver's TANK joystick (template)
 k_driver_controller_port = 0
 k_co_driver_controller_port = 1
 k_controller_thrust_axis = 1
@@ -33,14 +32,8 @@ k_controller_elevator_axis = 1
 k_controller_turret_axis = 4
 
 
-# --------------  DRIVETRAIN  ---------------
+# --------------  TANK DRIVETRAIN  ---------------
 # The CAN IDs for the drivetrain SparkMAX motor controllers
-# For when turret is front
-# k_left_motor1_port = 1
-# k_left_motor2_port = 2
-# k_right_motor1_port = 3
-# k_right_motor2_port = 4
-
 # For when battery is front
 k_left_motor1_port = 3
 k_left_motor2_port = 4
@@ -128,8 +121,6 @@ k_start_y = 1.935
 k_start_heading = -90  # looking at the drawing originally tried -109. TODO: Swerve uses 0, maybe change for compatibility
 k_drivetrain_motor_count = 4
 k_wheel_diameter_m = 6 * 0.0254  # wheel diameter in meters
-k_gear_ratio = 5.39  # 4.17 # high gear 2022
-k_track_width_meters = 24 * 0.0254
 robot_characterization = {'ks':0.291, 'kv':1.63, 'ka':0.293, 'track_width':0.89}  # 2022 climberbot
 ks_volts = robot_characterization['ks']  # so far this is only used in the Ramsete command, but in 2021 we used it in tank model as well
 kv_volt_seconds_per_meter = robot_characterization['kv']  # used in physics_old.py LinearSystemId and Ramsete

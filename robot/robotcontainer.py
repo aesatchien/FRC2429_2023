@@ -1,23 +1,18 @@
-import wpilib
+#  Container for 2429's 2023 swerve robot with turret, elevator, arm, wrist, and manipulator
 
+import time, enum
+import wpilib
 import commands2
 from commands2.button import JoystickButton, POVButton
-import time
-import enum
-import constants
+
+import constants  # all of the constants except for swerve
 
 from subsystems.drivetrain import Drivetrain
-from subsystems.arm import Arm
-from subsystems.wrist import Wrist
-from subsystems.elevator import Elevator
-from subsystems.turret import Turret
-from subsystems.pneumatics import Pneumatics
 from subsystems.vision import Vision
 from subsystems.led import Led
 from subsystems.swerve import Swerve
 
 from misc.axis_button import AxisButton
-from commands.drive_by_joystick import DriveByJoystick
 from commands.drive_velocity_stick import DriveByJoystickVelocity
 from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
@@ -26,18 +21,14 @@ from commands.elevator_move import ElevatorMove
 from commands.wrist_move import WristMove
 from commands.manipulator_toggle import ManipulatorToggle
 from commands.compressor_toggle import CompressorToggle
-from commands.generic_drive import GenericDrive
-from commands.manipulator_auto_grab import ManipulatorAutoGrab
-from commands.toggle_ground_pickup import ToggleGroundPickup
+from commands.generic_drive import GenericDrive  # Siraaj's way of moving all subsystems
 from commands.led_loop import LedLoop
 from commands.toggle_high_pickup import ToggleHighPickup
 from commands.drive_by_joystick_swerve import DriveByJoystickSwerve
 from commands.swerve_x import SwerveX
 from commands.swerve_angle_test import SwerveAngleTest
-from autonomous.swerve_calibrate import SwerveCalibrate
 
 from autonomous.arm_calibration import ArmCalibration
-from autonomous.wrist_calibration import WristCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
 from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
 from autonomous.charge_station_balance import ChargeStationBalance
@@ -47,12 +38,9 @@ from autonomous.drive_wait import DriveWait
 from autonomous.turret_initialize import TurretInitialize
 from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.release_and_stow import ReleaseAndStow
-from autonomous.drive_and_balance import DriveAndBalance
 from autonomous.score_hi_and_move import ScoreHiAndMove
-from autonomous.drive_climber import DriveClimber
 from autonomous.score_drive_and_balance import ScoreDriveAndBalance
 
-import autonomous.drive_robot
 
 class RobotContainer:
     """
@@ -100,8 +88,7 @@ class RobotContainer:
         self.start_time = time.time()
 
         # The robot's subsystems
-        use_swerve = True
-        if use_swerve:
+        if constants.k_use_swerve:
             self.drive = Swerve()
         else:
             self.drive = Drivetrain()
@@ -124,17 +111,11 @@ class RobotContainer:
 
         # Set up default drive command
       #  if wpilib.RobotBase.isSimulation():
-        if False:
-            self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
-                    lambda: self.driver_controller.getRawAxis(3),))
-        if False:
-            self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
-
 
         self.led.setDefaultCommand(LedLoop(container=self))
 
         # swerve driving
-        if use_swerve:
+        if constants.k_use_swerve:
             self.drive.setDefaultCommand(DriveByJoystickSwerve(container=self,
                                             swerve=self.drive, field_oriented=constants.k_field_centric))
         else:
@@ -145,9 +126,6 @@ class RobotContainer:
 
         # initialize the turret
         # commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
-        if constants.k_use_abs_encoder_on_swerve:
-            # pass
-            commands2.ScheduleCommand(SwerveCalibrate(container=self, swerve=self.drive))
 
     def set_start_time(self):  # call in teleopInit and autonomousInit in the robot
         self.start_time = time.time()
@@ -198,7 +176,6 @@ class RobotContainer:
     def configure_swerve_bindings(self):
         #self.buttonA.whileHeld(SwerveX(container=self, swerve=self.drive))
         self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
-        self.buttonB.whenPressed(SwerveCalibrate(container=self, swerve=self.drive))
         # self.buttonX.whenPressed(ChargeStationBalance(self, self.drive))
         self.buttonX.debounce(0.1).onTrue(SwerveAngleTest(self, self.drive))
 
@@ -308,7 +285,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='TurretMoveUp', data=TurretMove(container=self, turret=self.turret, direction='up', wait_to_finish=False))
         wpilib.SmartDashboard.putData(key='TurretMoveDown', data=TurretMove(container=self, turret=self.turret, direction='down', wait_to_finish=False))
         wpilib.SmartDashboard.putData(key='ArmCalibration', data=ArmCalibration(container=self, arm=self.arm).withTimeout(5))
-        wpilib.SmartDashboard.putData(key='WristCalibration', data=WristCalibration(container=self, wrist=self.wrist).withTimeout(5))
+        # wpilib.SmartDashboard.putData(key='WristCalibration', data=WristCalibration(container=self, wrist=self.wrist).withTimeout(5))
         wpilib.SmartDashboard.putData(key='TurretMoveByVision', data=TurretMoveByVision(container=self, turret=self.turret, vision=self.vision, color='green').withTimeout(5))
         wpilib.SmartDashboard.putData(key='UpperSubstationPickup', data=UpperSubstationPickup(container=self).withTimeout(6))
         wpilib.SmartDashboard.putData(key='ReleaseAndStow', data=ReleaseAndStow(container=self).withTimeout(5))
