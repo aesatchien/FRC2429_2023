@@ -183,8 +183,8 @@
               "_title": "Set Velocity",
               "_glyph": 148,
               "_showGlyph": false,
-              "Slider Settings/Min": -1500.0,
-              "Slider Settings/Max": 1500.0,
+              "Slider Settings/Min": -5.0,
+              "Slider Settings/Max": 5.0,
               "Slider Settings/Block increment": 1.0,
               "Visuals/Display value": true
             }
@@ -290,8 +290,7 @@
               "Y-axis/Automatic bounds": true,
               "Y-axis/Upper bound": 1.0,
               "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul",
-              "Visible data/SmartDashboard/RioEncoder": true
+              "Y-axis/Unit": "ul"
             }
           },
           "8,4": {
@@ -310,8 +309,7 @@
               "Y-axis/Automatic bounds": true,
               "Y-axis/Upper bound": 1.0,
               "Y-axis/Lower bound": -1.0,
-              "Y-axis/Unit": "ul",
-              "Visible data/SmartDashboard/AbsEncoder": true
+              "Y-axis/Unit": "ul"
             }
           }
         }
@@ -332,9 +330,9 @@
     }
   ],
   "windowGeometry": {
-    "x": 413.0,
-    "y": 15.0,
+    "x": 134.0,
+    "y": 0.0,
     "width": 1793.0,
-    "height": 1100.0
+    "height": 1047.0
   }
 }

@@ -1,187 +1,207 @@
-#  2429 robot simulation - 2023 2016 CJH
+"""
+    CJH Copied from robotpy docs example drivetrain physics, keeping only swerve  2023/03/19
 
+    .. warning:: These drivetrain models are not particularly realistic, and
+                 if you are using a tank drive style drivetrain you should use
+                 the :class:`.TankModel` instead.
+
+    Based on input from various drive motors, these helper functions
+    simulate moving the robot in various ways. Many thanks to
+    `Ether <http://www.chiefdelphi.com/forums/member.php?u=34863>`_
+    for assistance with the motion equations.
+
+    When specifying the robot speed to the below functions, the following
+    may help you determine the approximate speed of your robot:
+
+    * Slow: 4ft/s
+    * Typical: 5 to 7ft/s
+    * Fast: 8 to 12ft/s
+
+    Obviously, to get the best simulation results, you should try to
+    estimate the speed of your robot accurately.
+
+    Here's an example usage of the drivetrains::
+
+        import hal.simulation
+        from pyfrc.physics import drivetrains
+
+        class PhysicsEngine:
+
+            def __init__(self, physics_controller):
+                self.physics_controller = physics_controller
+                self.drivetrain = drivetrains.TwoMotorDrivetrain(deadzone=drivetrains.linear_deadzone(0.2))
+
+                self.l_motor = hal.simulation.PWMSim(1)
+                self.r_motor = hal.simulation.PWMSim(2)
+
+            def update_sim(self, now, tm_diff):
+                l_motor = self.l_motor.getSpeed()
+                r_motor = self.r_motor.getSpeed()
+
+                speeds = self.drivetrain.calculate(l_motor, r_motor)
+                self.physics_controller.drive(speeds, tm_diff)
+
+                # optional: compute encoder
+                # l_encoder = self.drivetrain.wheelSpeeds.left * tm_diff
+
+    .. versionchanged:: 2020.1.0
+
+       The input speeds and output rotation angles were changed to reflect
+       the current WPILib drivetrain/field objects. Wheelbases and default
+       speeds all require units.
+"""
 import math
-import wpilib.simulation as simlib  # 2021 name for the simulation library
-from wpilib import RobotController, SmartDashboard
-from wpimath.system import LinearSystemId
-from wpimath.system.plant import DCMotor
-import wpimath.geometry as geo
-import ntcore as nt
+import typing
 
-import constants
-from pyfrc.physics.core import PhysicsInterface
+import wpilib
+import wpilib.simulation as simlib
+from pyfrc.physics.core import PhysicsEngine, Pose2d
+from pyfrc.physics.drivetrains import DeadzoneCallable, linear_deadzone
+from wpimath.kinematics import ChassisSpeeds
 
-import robot  # we may be able to import the robot or container and use them
 
-class PhysicsEngine:
+class PhysicsEngine(PhysicsEngine):
+
+    def __init__(self, physics_controller):
+        self.physics_controller = physics_controller
+        self.field = wpilib.Field2d()
+
+        offset = 16
+        self.lf_motor = simlib.PWMSim(21 - offset)
+        self.lr_motor = simlib.PWMSim(23-offset)
+        self.rf_motor = simlib.PWMSim(25-offset)
+        self.rr_motor = simlib.PWMSim(27-offset)
+
+        self.lf_angle = simlib.PWMSim(20-offset)
+        self.lr_angle = simlib.PWMSim(22-offset)
+        self.rf_angle = simlib.PWMSim(24-offset)
+        self.rr_angle = simlib.PWMSim(26-offset)
+
+        # self.drivetrain = drivetrains.four_motor_swerve_drivetrain(deadzone=drivetrains.linear_deadzone(0.1))
+
+    def update_sim(self, now, tm_diff):
+        velocity_scale, angular_scale = 10, 10  # faking PWM signals in from -1 to 1, multiply by to x get velocities,
+        lr_motor = self.lr_motor.getSpeed() * velocity_scale
+        rr_motor = self.rr_motor.getSpeed() * velocity_scale
+        lf_motor = self.lf_motor.getSpeed() * velocity_scale
+        rf_motor = self.rf_motor.getSpeed() * velocity_scale
+
+        lr_angle = self.lr_angle.getSpeed() * angular_scale   # multiply by 10 to get dummy angles from simulated pwms
+        rr_angle = self.rr_angle.getSpeed() * angular_scale
+        lf_angle = self.lf_angle.getSpeed() * angular_scale
+        rf_angle = self.rf_angle.getSpeed() * angular_scale
+
+        # had to mess with the orders and the vx, vy to get things to sim properly
+        speeds = four_motor_swerve_drivetrain(lf_motor, rf_motor, lr_motor, rr_motor,
+        lf_angle, rf_angle, lr_angle, rr_angle, x_wheelbase = 2, y_wheelbase = 2,
+        speed=5, deadzone=None,)
+
+        self.physics_controller.drive(speeds, tm_diff)
+        self.field.setRobotPose(self.physics_controller.get_pose())
+        x = self.field.getRobotPose().X()
+        y = self.field.getRobotPose().Y()
+        theta = self.field.getRobotPose().rotation().degrees()
+        wpilib.SmartDashboard.putNumberArray('sim_pose', [x,y,theta])
+        # optional: compute encoder
+        # l_encoder = self.drivetrain.wheelSpeeds.left * tm_diff
+
+def four_motor_swerve_drivetrain(
+    lr_motor: float,
+    rr_motor: float,
+    lf_motor: float,
+    rf_motor: float,
+    lr_angle: float,
+    rr_angle: float,
+    lf_angle: float,
+    rf_angle: float,
+    x_wheelbase=2,
+    y_wheelbase=2,
+    speed=10,
+    deadzone=None,
+) -> ChassisSpeeds:
     """
-    Updated 2022 0103 CJH as a template for commandsv2
-    2429's sim uses the latest conventions from the robotpy commandsv2 examples, except:
-    1) We use SparkMAX controllers for drivetrain, and since they do not update their sim device we
-      a) use two dummy PWM motors that follow the actual controllers in simulationPeriodic()
-      b) read those dummy PWM values and use them to update the SparkMAX's SimDeviceSim
-    2) We add boundaries to the field so the robot stays on the screen
-      a) we can do that with a simple teleport that always pushes us back in bounds
-      b) we can be more involved and undo the movement that put us out of bounds (or into an obstacle)
+    Four motors that can be rotated in any direction
+
+    If any motors are inverted, then you will need to multiply that motor's
+    value by -1.
+
+    :param lr_motor:   Left rear motor value (-1 to 1); 1 is forward
+    :param rr_motor:   Right rear motor value (-1 to 1); 1 is forward
+    :param lf_motor:   Left front motor value (-1 to 1); 1 is forward
+    :param rf_motor:   Right front motor value (-1 to 1); 1 is forward
+
+    :param lr_angle:   Left rear motor angle in degrees (0 to 360 measured clockwise from forward position)
+    :param rr_angle:   Right rear motor angle in degrees (0 to 360 measured clockwise from forward position)
+    :param lf_angle:   Left front motor angle in degrees (0 to 360 measured clockwise from forward position)
+    :param rf_angle:   Right front motor angle in degrees (0 to 360 measured clockwise from forward position)
+
+    :param x_wheelbase: The distance in feet between right and left wheels.
+    :param y_wheelbase: The distance in feet between forward and rear wheels.
+    :param speed:       Speed of robot in feet per second (see above)
+    :param deadzone:    A function that adjusts the output of the motor (see :func:`linear_deadzone`)
+
+    :returns: ChassisSpeeds that can be passed to 'drive'
+
+    .. versionchanged:: 2020.1.0
+
+       The output rotation angle was changed from CW to CCW to reflect the
+       current WPILib drivetrain/field objects
     """
 
-    def __init__(self, physics_controller: PhysicsInterface):
+    if deadzone:
+        lf_motor = deadzone(lf_motor)
+        lr_motor = deadzone(lr_motor)
+        rf_motor = deadzone(rf_motor)
+        rr_motor = deadzone(rr_motor)
 
-        self.physics_controller = physics_controller  # this is mandatory
+    # Calculate speed of each wheel
+    lr = lr_motor * speed
+    rr = rr_motor * speed
+    lf = lf_motor * speed
+    rf = rf_motor * speed
 
-        # variables to retain throughout simulation
-        self.counter = 0
+    # Calculate angle in radians
+    lr_rad = lr_angle
+    rr_rad = rr_angle
+    lf_rad = lf_angle
+    rf_rad = rf_angle
 
-        # SparkMAX does not write to its simdevice in the real robot, so use the generic wpilib PWM as a proxy
-        self.l_motor = simlib.PWMSim(1)
-        self.r_motor = simlib.PWMSim(3)
+    # Calculate wheelbase radius
+    wheelbase_radius = math.hypot(x_wheelbase / 2.0, y_wheelbase / 2.0)
 
-        # Motor simulation definitions. Each correlates to a motor defined in the drivetrain subsystem.
-        self.l_spark = simlib.SimDeviceSim('SPARK MAX [1]')  # SparkMAX sim device
-        self.r_spark = simlib.SimDeviceSim('SPARK MAX [3]')
-        self.l_spark_position = self.l_spark.getDouble('Position')  # SparkMAX encoder distance
-        self.r_spark_position = self.r_spark.getDouble('Position')
-        self.l_spark_velocity = self.l_spark.getDouble('Velocity')  # SparkMAX encoder rate
-        self.r_spark_velocity = self.r_spark.getDouble('Velocity')
-        self.l_spark_output = self.l_spark.getDouble('Applied Output')  # SparkMAX controller output
-        self.r_spark_output = self.r_spark.getDouble('Applied Output')
+    # Calculates the Vx and Vy components
+    # Sin an Cos inverted because forward is 0 on swerve wheels
+    Vy = (
+        (math.sin(lr_rad) * lr)
+        + (math.sin(rr_rad) * rr)
+        + (math.sin(lf_rad) * lf)
+        + (math.sin(rf_rad) * rf)
+    )
+    Vx = (
+        (math.cos(lr_rad) * lr)
+        + (math.cos(rr_rad) * rr)
+        + (math.cos(lf_rad) * lf)
+        + (math.cos(rf_rad) * rf)
+    )
 
-        self.system = LinearSystemId.identifyDrivetrainSystem(
-            constants.kv_volt_seconds_per_meter,  # The linear velocity gain in volt seconds per distance.
-            constants.ka_volt_seconds_squared_per_meter,  # The linear acceleration gain, in volt seconds^2 per distance.
-            1.5,  # The angular velocity gain, in volt seconds per angle.
-            0.3,  # The angular acceleration gain, in volt seconds^2 per angle.
-        )
+    # Adjusts the angle corresponding to a diameter that is perpendicular to the radius (add or subtract 45deg)
+    lr_rad = (lr_rad + (math.pi / 4)) % (2 * math.pi)
+    rr_rad = (rr_rad - (math.pi / 4)) % (2 * math.pi)
+    lf_rad = (lf_rad - (math.pi / 4)) % (2 * math.pi)
+    rf_rad = (rf_rad + (math.pi / 4)) % (2 * math.pi)
 
-        # The simulation model of the drivetrain.
-        self.drivesim = simlib.DifferentialDrivetrainSim(
-            # The state-space model for a drivetrain.
-            self.system,
-            # The robot's trackwidth, which is the distance between the wheels on the left side
-            # and those on the right side. The units is meters.
-            constants.k_track_width_meters,
-            # Four NEO drivetrain setup.
-            DCMotor.NEO(constants.k_drivetrain_motor_count),
-            # One to one output gearing.
-            constants.k_gear_ratio,
-            # The radius of the drivetrain wheels in meters.
-            (constants.k_wheel_diameter_m / 2),
-        )
+    # Finds the rotational velocity by finding the torque and adding them up
+    Vw = wheelbase_radius * (
+        (math.cos(lr_rad) * -lr)
+        + (math.cos(rr_rad) * rr)
+        + (math.cos(lf_rad) * -lf)
+        + (math.cos(rf_rad) * rf)
+    )
 
-        # NavX (SPI interface) - no idea why the "4" is there, seems to be the default name generated by the navx code
-        self.navx = simlib.SimDeviceSim("navX-Sensor[4]")
-        self.navx_yaw = self.navx.getDouble("Yaw")
+    Vx *= 0.25
+    Vy *= 0.25
+    Vw *= 0.25
 
-        # giving ourselves boundaries - ToDo: can we ask the field for this?
-        # self.x_limit, self.y_limit = 18.29 - 0.25, 9.14 - 0.25  # standard competition field
-        self.x_limit, self.y_limit = 16.54 - 0.25, 8.01 - 0.25  # standard competition field
-        self.sim_padding = 0.0  # how much to allow the robot to go out of bounds
-        self.edge_bounce = 0.0  # how much to force the robot to go back by when it hits the boundary
-
-        # initial position
-        self.x, self.y = constants.k_start_x, constants.k_start_y
-        initial_pose = geo.Pose2d(0, 0, geo.Rotation2d())
-        self.pose = geo.Pose2d(self.x, self.y, geo.Rotation2d().fromDegrees(constants.k_start_heading))
-        initial_position_transform = geo.Transform2d(initial_pose, self.pose)
-        self.drivesim.setState([self.x, self.y, self.pose.rotation().radians(), 0, 0, 0, 0])
-        #self.physics_controller.move_robot(initial_position_transform)
-        self.previous_pose = self.drivesim.getPose()
-
-        key = 'green'
-        self.ballcam_table = nt.NetworkTableInstance.getDefault().getTable('BallCam')
-        self.targets_entry = self.ballcam_table.getEntry(f"/{key}/targets")
-        self.distance_entry =  self.ballcam_table.getEntry(f"/{key}/distance")
-        self.rotation_entry =  self.ballcam_table.getEntry(f"/{key}/rotation")
-
-    def update_sim(self, now: float, tm_diff: float) -> None:
-        """
-        Called when the simulation parameters for the program need to be updated.
-        :param now: The current time as a float
-        :param tm_diff: The amount of time that has passed since the last time that this function was called
-        """
-
-        # ------------------  UPDATE DRIVETRAIN  --------------------
-        # Simulate the drivetrain - read the dummy PWMs that are following the SparkMAXes only in sim
-        l_motor, r_motor = self.l_motor.getSpeed(), self.r_motor.getSpeed()
-
-        # Update the navx gyro simulation
-        # -> FRC gyros like NavX are positive clockwise, but the returned pose is positive counter-clockwise
-        self.navx_yaw.set(-self.drivesim.getHeading().degrees())
-
-        voltage = RobotController.getInputVoltage()
-        self.drivesim.setInputs(l_motor * voltage, -r_motor * voltage)
-        self.drivesim.update(tm_diff)
-
-        # definitely simpler to sim a drivetrain now - can pull everything we need from wpilib's drivesim
-        self.l_spark_output.set(l_motor)  # update the SparkMAX motor output so you can plot
-        self.r_spark_output.set(r_motor)
-        self.l_spark_position.set(self.drivesim.getLeftPosition())  # update the SparkMAX encoder output
-        self.r_spark_position.set(-self.drivesim.getRightPosition())
-        self.l_spark_velocity.set(self.drivesim.getLeftVelocity())  # update the SparkMAX encoder rate
-        self.r_spark_velocity.set(-self.drivesim.getRightVelocity())
-
-        self.pose = self.drivesim.getPose()
-        self.x, self.y, self.rot = self.pose.translation().x, self.pose.translation().y, self.pose.rotation()
-
-        # place robot on field - choose place, reflect or bounce
-        self.bounce_robot()
-
-        # save pose for the next iteration
-        self.previous_pose = self.pose
-
-        # ------------------  UPDATE MECHANISMS  --------------------
-
-        # ------------------  DEBUG COMMUNICATIONS  --------------------
-        self.counter += 1
-        if self.counter % 5 == 0:
-            SmartDashboard.putNumber('/sim/field_x', round(self.x, 2))  # ramsete reads this for new trajectories
-            SmartDashboard.putNumber('/sim/field_y', round(self.y, 2))
-            SmartDashboard.putNumber('/sim/field_rot', round(self.rot.degrees(), 2))
-            hub_dist, hub_rot = self.distance_to_hub()
-            SmartDashboard.putNumber('/sim/hub_dist', round(hub_dist, 2))
-            SmartDashboard.putNumber('/sim/hub_rot', round(hub_rot, 2))
-            self.targets_entry.setDouble(2)
-            self.distance_entry.setDouble(hub_dist)
-            self.rotation_entry.setDouble(self.pose.rotation().degrees() -hub_rot)
-            #SmartDashboard.putNumber('sim/state', self.drivesim)
-
-
-    # ------------------  GAME SPECIFIC CALCULATIONS  --------------------
-    def distance_to_hub(self):
-        hub_x, hub_y  = 8.25, 4.1
-        dx = self.pose.X() - hub_x
-        dy = self.pose.Y() - hub_y
-        distance = (dx**2 + dy**2)**0.5
-        rotation = math.atan2(dy, dx) * 180/math.pi
-        return distance, rotation
-
-    # ------------------  ROBOT PLACEMENT OPTIONS --------------------
-    def place_robot(self): # example way, but VERY rigid - can't drag robot
-        self.physics_controller.field.setRobotPose(self.drivesim.getPose())
-
-    def reflect_robot(self):  # slightly better, at least you are always on screen
-        reflected_pose = geo.Pose2d(x=self.x % self.x_limit, y=self.y % self.y_limit, rotation=self.rot)
-        self.physics_controller.field.setRobotPose(reflected_pose)
-
-    def bounce_robot(self):
-        # correct for going out of bounds - simple teleport back to the boundary for now
-        movement_transform = self.pose - self.previous_pose  # how much we're intending to move
-        if (self.x < -self.sim_padding or self.x > self.x_limit + self.sim_padding or
-                self.y < -self.sim_padding or self.y > self.y_limit + self.sim_padding):
-            self.x = constants.clamp(value=self.x, bottom=0.05 + self.edge_bounce, top=self.x_limit-self.edge_bounce -0.05)
-            self.y = constants.clamp(value=self.y, bottom=0.05 + self.edge_bounce, top=self.y_limit-self.edge_bounce -0.05)
-            self.pose = geo.Pose2d(self.x, self.y, self.rot)
-            movement_transform = geo.Transform2d(0, 0, 0)
-            # movement_transform = movement_transform.inverse()
-            self.drivesim.setState([self.x, self.y, self.previous_pose.rotation().radians(),
-                                   self.drivesim.getLeftVelocity(), self.drivesim.getRightVelocity(),
-                                    self.drivesim.getLeftPosition(), self.drivesim.getRightPosition()])
-            self.pose = self.previous_pose  # what did i mean here?
-        else:
-            pass
-
-        #self.physics_controller.field.setRobotPose(self.pose)
-        self.pose = self.physics_controller.move_robot(movement_transform)
-        #self.drivesim.setPose(self.pose)
-
+    wpilib.SmartDashboard.putNumberArray('sim_chassis', [Vx, Vy, Vw])
+    return ChassisSpeeds.fromFeet(Vx, Vy, Vw)
 

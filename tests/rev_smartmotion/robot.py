@@ -15,28 +15,31 @@ import wpilib
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
-        can_id = 9  # change as needed
-        drivetrain = False
-        self.use_absolute_encoder = True
+        can_id = 21  # change as needed
+        drivetrain = True
+        self.use_absolute_encoder = False
         self.use_alternate_encoder = False
+        self.use_smartmotion = False
 
         # if you are going to change position factor, you should also change velocity.
         # smart motion does weird things on the decel if you don't.
         # also note that if you do change these, the PIDs will have to change as well
         # the default values below are good for conversion factors of 1.
-        position_conversion_factor = 1.47  # test to see if this changes PIDFs on velocity
+        position_conversion_factor = 3.14 * 4 * 0.0254 / 6.75  # swerve drive motors
+        #position_conversion_factor = 2 * 3.14 / 21.428  # radians for swerve turning (gear ratio is 150/7)
+        velocity_conversion_factor = position_conversion_factor / 60  # 60 if per sec, otherwise 1
 
         self.motor = rev.CANSparkMax(can_id, rev.CANSparkMax.MotorType.kBrushless)
         # self.motor.restoreFactoryDefaults()
-        self.motor.setInverted(True)
+        self.motor.setInverted(False)
 
         if drivetrain:
-            self.motor2 = rev.CANSparkMax(2, rev.CANSparkMax.MotorType.kBrushless)
-            self.motor2.follow(self.motor)
-            self.motor3 = rev.CANSparkMax(3, rev.CANSparkMax.MotorType.kBrushless)
-            self.motor3.follow(self.motor, invert=True)
-            self.motor4 = rev.CANSparkMax(4, rev.CANSparkMax.MotorType.kBrushless)
-            self.motor4.follow(self.motor, invert=True)
+            self.motor2 = rev.CANSparkMax(can_id + 2, rev.CANSparkMax.MotorType.kBrushless)
+            self.motor2.follow(self.motor, invert=False)
+            self.motor3 = rev.CANSparkMax(can_id + 4, rev.CANSparkMax.MotorType.kBrushless)
+            self.motor3.follow(self.motor, invert=False)
+            self.motor4 = rev.CANSparkMax(can_id + 6, rev.CANSparkMax.MotorType.kBrushless)
+            self.motor4.follow(self.motor, invert=False)
 
         self.pid_controller = self.motor.getPIDController()
 
@@ -45,7 +48,7 @@ class Robot(wpilib.TimedRobot):
         else:
             self.encoder = self.motor.getEncoder()
             self.encoder.setPositionConversionFactor(position_conversion_factor)
-            #self.encoder.setVelocityConversionFactor(position_conversion_factor)
+            self.encoder.setVelocityConversionFactor(velocity_conversion_factor)
             self.encoder.setPosition(0)
 
         if self.use_absolute_encoder:
@@ -60,7 +63,7 @@ class Robot(wpilib.TimedRobot):
         self.kI = 0
         self.kD = 0
         self.kIz = 0.00001
-        self.kFF = 0.0001
+        self.kFF = 0.223  # 0.0001
         self.kMaxOutput = 0.35
         self.kMinOutput = -0.35
         self.max_rpm = 5700
@@ -116,7 +119,10 @@ class Robot(wpilib.TimedRobot):
             pv = self.encoder.getVelocity()
         else:
             setpoint = wpilib.SmartDashboard.getNumber("Set Position", 0)
-            self.pid_controller.setReference(setpoint, rev.CANSparkMax.ControlType.kSmartMotion)
+            if self.use_smartmotion:
+                self.pid_controller.setReference(setpoint, rev.CANSparkMax.ControlType.kSmartMotion)
+            else:
+                self.pid_controller.setReference(setpoint, rev.CANSparkMax.ControlType.kPosition)
             pv = self.encoder.getPosition()
 
         self.counter += 1

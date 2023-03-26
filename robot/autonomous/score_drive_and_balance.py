@@ -2,7 +2,6 @@ import commands2
 
 import constants
 
-from autonomous.drive_move import DriveMove
 from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.drive_climber import DriveClimber
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
