@@ -11,6 +11,11 @@ from subsystems.drivetrain import Drivetrain
 from subsystems.vision import Vision
 from subsystems.led import Led
 from subsystems.swerve import Swerve
+from subsystems.arm import Arm
+from subsystems.elevator import Elevator
+from subsystems.turret import Turret
+from subsystems.wrist import Wrist
+from subsystems.pneumatics import Pneumatics
 
 from misc.axis_button import AxisButton
 from commands.drive_velocity_stick import DriveByJoystickVelocity
@@ -92,11 +97,11 @@ class RobotContainer:
             self.drive = Swerve()
         else:
             self.drive = Drivetrain()
-        #self.turret = Turret()
-        #self.arm = Arm()
-        #self.wrist = Wrist()
-        #self.elevator = Elevator()
-        #self.pneumatics = Pneumatics()
+        self.turret = Turret()
+        self.arm = Arm()
+        self.wrist = Wrist()
+        self.elevator = Elevator()
+        # self.pneumatics = Pneumatics()  # can't enable unless there is a module there
         self.vision = Vision()
         self.led = Led()
 
