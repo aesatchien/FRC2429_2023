@@ -1,22 +1,23 @@
-import wpilib
+#  Container for 2429's 2023 swerve robot with turret, elevator, arm, wrist, and manipulator
 
+import time, enum
+import wpilib
 import commands2
 from commands2.button import JoystickButton, POVButton
-import time
-import enum
-import constants
+
+import constants  # all of the constants except for swerve
 
 from subsystems.drivetrain import Drivetrain
-from subsystems.arm import Arm
-from subsystems.wrist import Wrist
-from subsystems.elevator import Elevator
-from subsystems.turret import Turret
-from subsystems.pneumatics import Pneumatics
 from subsystems.vision import Vision
 from subsystems.led import Led
+from subsystems.swerve import Swerve
+from subsystems.arm import Arm
+from subsystems.elevator import Elevator
+from subsystems.turret import Turret
+from subsystems.wrist import Wrist
+from subsystems.pneumatics import Pneumatics
 
 from misc.axis_button import AxisButton
-from commands.drive_by_joystick import DriveByJoystick
 from commands.drive_velocity_stick import DriveByJoystickVelocity
 from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
@@ -25,14 +26,15 @@ from commands.elevator_move import ElevatorMove
 from commands.wrist_move import WristMove
 from commands.manipulator_toggle import ManipulatorToggle
 from commands.compressor_toggle import CompressorToggle
-from commands.generic_drive import GenericDrive
-from commands.manipulator_auto_grab import ManipulatorAutoGrab
-from commands.toggle_ground_pickup import ToggleGroundPickup
+from commands.generic_drive import GenericDrive  # Siraaj's way of moving all subsystems
 from commands.led_loop import LedLoop
 from commands.toggle_high_pickup import ToggleHighPickup
+from commands.drive_by_joystick_swerve import DriveByJoystickSwerve
+from commands.swerve_x import SwerveX
+from commands.swerve_angle_test import SwerveAngleTest
+from commands.gyro_reset import GyroReset
 
 from autonomous.arm_calibration import ArmCalibration
-from autonomous.wrist_calibration import WristCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
 from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
 from autonomous.charge_station_balance import ChargeStationBalance
@@ -43,10 +45,7 @@ from autonomous.drive_wait import DriveWait
 from autonomous.turret_initialize import TurretInitialize
 from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.release_and_stow import ReleaseAndStow
-from autonomous.drive_move import DriveMove
-from autonomous.drive_and_balance import DriveAndBalance
 from autonomous.score_hi_and_move import ScoreHiAndMove
-from autonomous.drive_climber import DriveClimber
 from autonomous.score_drive_and_balance import ScoreDriveAndBalance
 
 
@@ -96,31 +95,40 @@ class RobotContainer:
         self.start_time = time.time()
 
         # The robot's subsystems
-        self.drive = Drivetrain()
+        if constants.k_use_swerve:
+            self.drive = Swerve()
+        else:
+            self.drive = Drivetrain()
         self.turret = Turret()
         self.arm = Arm()
         self.wrist = Wrist()
         self.elevator = Elevator()
-        self.pneumatics = Pneumatics()
+        self.pneumatics = Pneumatics()  # can't enable unless there is a module there
         self.vision = Vision()
         self.led = Led()
 
         self.game_piece_mode = 'cube'
 
-        self.configureButtonBindings()
+        self.configure_joysticks()
+        self.bind_buttons()
+        self.configure_swerve_bindings()
 
         self.initialize_dashboard()
 
         # Set up default drive command
-      #  if wpilib.RobotBase.isSimulation():
-        if False:
-
-            self.drive.setDefaultCommand(DriveByJoystick(self, self.drive,lambda: -self.driver_controller.getRawAxis(1),
-                    lambda: self.driver_controller.getRawAxis(4),))
-        else:
-            self.drive.setDefaultCommand(DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
+        # if wpilib.RobotBase.isSimulation():
 
         self.led.setDefaultCommand(LedLoop(container=self))
+
+        # swerve driving
+        if constants.k_use_swerve:
+            self.drive.setDefaultCommand(DriveByJoystickSwerve(container=self, swerve=self.drive,
+                            field_oriented=constants.k_field_centric, rate_limited=constants.k_rate_limited))
+        else:
+            self.drive.setDefaultCommand(
+                DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
+
+
 
         # initialize the turret
         commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
@@ -131,7 +139,7 @@ class RobotContainer:
     def get_enabled_time(self):  # call when we want to know the start/elapsed time for status and debug messages
         return time.time() - self.start_time
 
-    def configureButtonBindings(self):
+    def configure_joysticks(self):
         """
         Use this method to define your button->command mappings. Buttons can be created by
         instantiating a :GenericHID or one of its subclasses (Joystick or XboxController),
@@ -171,14 +179,21 @@ class RobotContainer:
         self.co_buttonLeftAxis = AxisButton(self.co_driver_controller, 2)
         self.co_buttonRightAxis = AxisButton(self.co_driver_controller, 3)
 
+    def configure_swerve_bindings(self):
+        #self.buttonA.whileHeld(SwerveX(container=self, swerve=self.drive))
+        self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
+        # self.buttonX.whenPressed(ChargeStationBalance(self, self.drive))
+        self.buttonX.debounce(0.1).onTrue(SwerveAngleTest(self, swerve=self.drive))
+        self.buttonB.debounce(0.1).onTrue(GyroReset(self, swerve=self.drive))
 
+
+    def bind_buttons(self):
         # All untested still
         # bind commands to driver
         self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=10))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
-
 
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
@@ -199,7 +214,7 @@ class RobotContainer:
         # self.co_buttonLB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
         # self.co_buttonA.whenPressed(ToggleGroundPickup(container=self, pneumatics=self.pneumatics, wrist=self.wrist, button=1))
 
-        self.co_buttonA.whenPressed(ToggleHighPickup(container=self, turret=self.turret, elevator=self.elevator, wrist=self.wrist, pneumatics=self.pneumatics, vision=self.vision))
+        self.co_buttonLB.whenPressed(ToggleHighPickup(container=self, turret=self.turret, elevator=self.elevator, wrist=self.wrist, pneumatics=self.pneumatics, vision=self.vision))
 
         preset_command_map = [
             (self.CommandSelector.TURRET_UP, TurretMove(self, self.turret, direction="up", wait_to_finish=False)),
@@ -221,12 +236,12 @@ class RobotContainer:
             (self.CommandSelector.NONE, commands2.WaitCommand(0)),
         ]
 
-        self.co_buttonUp.whileHeld(commands2.SelectCommand(
+        self.co_buttonUp.debounce(debounceTime=0.1).whileTrue(commands2.SelectCommand(
             lambda: self.select_preset("UP_DRIVE"),
             preset_command_map,
         ))
 
-        self.co_buttonDown.whileHeld(commands2.SelectCommand(
+        self.co_buttonDown.debounce(debounceTime=0.1).whileTrue(commands2.SelectCommand(
             lambda: self.select_preset("DOWN_DRIVE"),
             preset_command_map,
         ))
@@ -261,6 +276,7 @@ class RobotContainer:
     def initialize_dashboard(self):
 
         # lots of putdatas for testing on the dash
+        wpilib.SmartDashboard.putData(GyroReset(container=self, swerve=self.drive))
         wpilib.SmartDashboard.putData(TurretInitialize(container=self, turret=self.turret))
         wpilib.SmartDashboard.putData(ScoreHiConeFromStow(container=self))
         wpilib.SmartDashboard.putData(ScoreLowConeFromStow(container=self))
@@ -277,26 +293,29 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='TurretMoveUp', data=TurretMove(container=self, turret=self.turret, direction='up', wait_to_finish=False))
         wpilib.SmartDashboard.putData(key='TurretMoveDown', data=TurretMove(container=self, turret=self.turret, direction='down', wait_to_finish=False))
         wpilib.SmartDashboard.putData(key='ArmCalibration', data=ArmCalibration(container=self, arm=self.arm).withTimeout(5))
-        wpilib.SmartDashboard.putData(key='WristCalibration', data=WristCalibration(container=self, wrist=self.wrist).withTimeout(5))
+        # wpilib.SmartDashboard.putData(key='WristCalibration', data=WristCalibration(container=self, wrist=self.wrist).withTimeout(5))
         wpilib.SmartDashboard.putData(key='TurretMoveByVision', data=TurretMoveByVision(container=self, turret=self.turret, vision=self.vision, color='green').withTimeout(5))
         wpilib.SmartDashboard.putData(key='ScoreByVision', data=ScoreByVision(container=self, turret=self.turret, elevator=self.elevator, arm=self.arm, pneumatics=self.pneumatics, vision=self.vision))
         wpilib.SmartDashboard.putData(key='UpperSubstationPickup', data=UpperSubstationPickup(container=self).withTimeout(6))
         wpilib.SmartDashboard.putData(key='ReleaseAndStow', data=ReleaseAndStow(container=self).withTimeout(5))
-        wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
-        wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
+
+        #wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
+        #wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
 
         # populate autonomous routines
         self.autonomous_chooser = wpilib.SendableChooser()
+        print("Putting datas")
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
         self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
         self.autonomous_chooser.setDefaultOption('score hi and move', ScoreHiAndMove(self))
+        self.autonomous_chooser.setDefaultOption('score hi and balance', ScoreDriveAndBalance(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
         #self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
-        self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
-        self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
-        self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
-        self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))
+        #self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
+        #self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
+        #self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
+        #self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))
 
         self.led_modes = wpilib.SendableChooser()
         wpilib.SmartDashboard.putData('LED', self.led_modes)

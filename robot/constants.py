@@ -5,13 +5,18 @@ changes.
 
 2023 robot for team 2429 - the blockheads
 """
-
+#  scorpion: rio runs potentiometer vs rev with turning encoder going to sparkmax
+# note the analog encoder has to be 3.3V for rev style (man i wish i had not bought them)
+k_use_swerve = True
+k_field_centric = True
 k_competition_mode = True  # use for compressor and some joystick settings
 k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
-k_enable_soft_limts = True
+k_enable_soft_limits = True
+k_volt_compensation = 12.6
+k_rate_limited = True  # on swerve, use slew limiters to keep acceleration from being too abrupt
 
 # --------------  OI  ---------------
-# ID for the driver's joystick (template)
+# ID for the driver's TANK joystick (template)
 k_driver_controller_port = 0
 k_co_driver_controller_port = 1
 k_controller_thrust_axis = 1
@@ -28,14 +33,8 @@ k_controller_elevator_axis = 1
 k_controller_turret_axis = 4
 
 
-# --------------  DRIVETRAIN  ---------------
+# --------------  TANK DRIVETRAIN  ---------------
 # The CAN IDs for the drivetrain SparkMAX motor controllers
-# For when turret is front
-# k_left_motor1_port = 1
-# k_left_motor2_port = 2
-# k_right_motor1_port = 3
-# k_right_motor2_port = 4
-
 # For when battery is front
 k_left_motor1_port = 3
 k_left_motor2_port = 4
@@ -68,7 +67,7 @@ k_deriv_tolerance = 5  # 5 degrees per second. (Experimental value; not determin
 
 # --------------  TURRET  ---------------
 k_turret_motor_port = 9  # sparkmax with a NEO550 - full speed is 11k
-k_turret_abs_encoder_port = 1  # analog absolute encoder on turret
+k_turret_abs_encoder_port = 5  # analog absolute encoder on turret
 k_turret_encoder_conversion_factor = 360 / 462.2  # Armabot has 462:1 gear ratio?  Circle has 360 degrees-->  0.779°/rot
 # TODO: verify turret velocity PID values, burn to slot 0  - tested on 2023 0226
 k_PID_dict_vel_turret = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.4e-4, 'kArbFF':0,
@@ -114,21 +113,19 @@ k_manipulator_closed_port = 1  #
 k_manipulator_timeofflight = 14
 
 # ------------------- LED -------------------
-k_led_pwm_port = 7
-k_led_count = 40
+k_led_pwm_port = 3
+k_led_count = 10
 
 # --------------  SIMULATION  ---------------
 k_start_x = 7.647
 k_start_y = 1.935
-k_start_heading = -90  # looking at the drawing originally tried -109
+k_start_heading = -90  # looking at the drawing originally tried -109. TODO: Swerve uses 0, maybe change for compatibility
 k_drivetrain_motor_count = 4
 k_wheel_diameter_m = 6 * 0.0254  # wheel diameter in meters
-k_gear_ratio = 5.39  # 4.17 # high gear 2022
-k_track_width_meters = 24 * 0.0254
 robot_characterization = {'ks':0.291, 'kv':1.63, 'ka':0.293, 'track_width':0.89}  # 2022 climberbot
 ks_volts = robot_characterization['ks']  # so far this is only used in the Ramsete command, but in 2021 we used it in tank model as well
-kv_volt_seconds_per_meter = robot_characterization['kv']  # used in physics.py LinearSystemId and Ramsete
-ka_volt_seconds_squared_per_meter = robot_characterization['ka']  # used in physics.py LinearSystemId and Ramsete
+kv_volt_seconds_per_meter = robot_characterization['kv']  # used in physics_old.py LinearSystemId and Ramsete
+ka_volt_seconds_squared_per_meter = robot_characterization['ka']  # used in physics_old.py LinearSystemId and Ramsete
 
 # --------------  HELPER FUNCTIONS  ---------------
 def clamp(value: float, bottom: float, top: float) -> float:

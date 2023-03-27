@@ -17,15 +17,19 @@ class Pneumatics(SubsystemBase):
         self.counter = 10  # offset the periodics
 
         # rev version
-        self.hub = wpilib.PneumaticHub(14)  # need to figure out the REV ecosystem  it was not allowing us to actuate 20130225
-        self.manipulator_piston = self.hub.makeDoubleSolenoid(constants.k_manipulator_open_port, constants.k_manipulator_closed_port)
-        self.compressor = Compressor(14, wpilib.PneumaticsModuleType.REVPH)
+        self.hub_type = 'rev'
+        if self.hub_type == 'rev':
+            rev_can_id = 15
+            self.hub = wpilib.PneumaticHub(rev_can_id)  # need to figure out the REV ecosystem  it was not allowing us to actuate 20130225
+            self.manipulator_piston = self.hub.makeDoubleSolenoid(constants.k_manipulator_open_port, constants.k_manipulator_closed_port)
+            self.compressor = Compressor(rev_can_id, wpilib.PneumaticsModuleType.REVPH)
         # ctre version
-        #self.compressor = Compressor(0, wpilib.PneumaticsModuleType.CTREPCM)
-        #self.manipulator_piston = DoubleSolenoid(wpilib.PneumaticsModuleType.CTREPCM,
-        #   constants.k_manipulator_open_port, constants.k_manipulator_closed_port)
+        else:
+            self.compressor = Compressor(0, wpilib.PneumaticsModuleType.CTREPCM)
+            self.manipulator_piston = DoubleSolenoid(wpilib.PneumaticsModuleType.CTREPCM,
+                        constants.k_manipulator_open_port, constants.k_manipulator_closed_port)
 
-        self.pressure_sensor = AnalogInput(0)  # may skip this unless we really want one
+        # self.pressure_sensor = AnalogInput(0)  # may skip this unless we really want one
         self.close_loop_enable = True
 
         competition = constants.k_competition_mode  # set this in constants

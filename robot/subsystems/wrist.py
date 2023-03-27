@@ -13,17 +13,20 @@ from misc.configure_controllers import configure_sparkmax
 
 class Wrist(SubsystemBase):
     # wrist should probably have four positions that we need to map out
-    positions = {'stow': 84, 'score': 45, 'flat': 0, 'floor': -25}
+    positions = {'stow': 94, 'score': 45, 'flat': 0, 'floor': -25}
 
     def __init__(self):
         super().__init__()
         self. counter = 20  # offset the periodics
         # defining angles so 0 is horizontal
-        self.max_angle = 85  # call all the way up 125 degrees  todo: remeasure
+        self.max_angle = 96  # call all the way up 125 degrees  todo: remeasure
         self.min_angle = -26
 
         # initialize motors
         self.wrist_controller = rev.CANSparkMax(constants.k_wrist_motor_port, rev.CANSparkMax.MotorType.kBrushless)
+
+        # self.wrist_controller.restoreFactoryDefaults()
+        self.wrist_controller.setIdleMode(mode=rev.CANSparkMax.IdleMode.kBrake)
         self.wrist_controller.setInverted(True)  # verified that this is true for the directions we want on wrist
         self.sparkmax_encoder = self.wrist_controller.getEncoder()
 
@@ -37,8 +40,8 @@ class Wrist(SubsystemBase):
         SmartDashboard.putBoolean('wrist_limit', self.at_fwd_limit)
 
         # set soft limits - do not let spark max put out power above/below a certain value
-        self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, constants.k_enable_soft_limts)
-        self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limts)
+        self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, constants.k_enable_soft_limits)
+        self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, constants.k_enable_soft_limits)
         self.wrist_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_angle)
         self.wrist_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_angle)
         self.pid_controller.setSmartMotionAllowedClosedLoopError(1)
@@ -50,6 +53,8 @@ class Wrist(SubsystemBase):
         self.abs_encoder.setInverted(True)
         self.abs_encoder.setPositionConversionFactor(360)
         self.abs_encoder.setZeroOffset(360 * 0.38)
+
+        # self.pid_controller.setFeedbackDevice(sensor=self.abs_encoder)
 
         # initialize the location of the wrist - from absolute encoder
         self.angle = self.abs_encoder.getPosition()

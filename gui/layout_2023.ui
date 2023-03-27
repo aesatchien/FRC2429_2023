@@ -744,6 +744,65 @@ background-color:rgb(80, 235, 0);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
+      <widget class="QLabel" name="label_11">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>19</y>
+         <width>131</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>navX Heading</string>
+       </property>
+      </widget>
+      <widget class="QLCDNumber" name="qlcd_navx_heading">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>40</y>
+         <width>101</width>
+         <height>41</height>
+        </rect>
+       </property>
+       <property name="digitCount">
+        <number>4</number>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_navx_reset_indicator">
+       <property name="geometry">
+        <rect>
+         <x>121</x>
+         <y>50</y>
+         <width>51</width>
+         <height>21</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>10</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+color:rgb(255, 255, 255);
+background-color:rgb(0, 20, 250);</string>
+       </property>
+       <property name="text">
+        <string>RESET</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_3">
       <property name="geometry">

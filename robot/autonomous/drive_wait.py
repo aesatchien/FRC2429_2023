@@ -1,4 +1,5 @@
 from commands2 import WaitCommand
+from subsystems.drivetrain import Drivetrain
 
 # overload the WaitCommand so our drive does not complain
 class DriveWait(WaitCommand):  # change the name for your command
@@ -11,4 +12,6 @@ class DriveWait(WaitCommand):  # change the name for your command
         # self.addRequirements(self.drive)  # commandsv2 version of requirements
 
     def execute(self) -> None:
-        self.drive.feed()
+        if isinstance(self.drive, Drivetrain):
+            self.drive.feed()        
+        else: pass

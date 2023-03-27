@@ -40,9 +40,14 @@ class TurretInitialize(commands2.CommandBase):
 
         average_encoder_value = sum(self.data) / self.samples
         print(f"Average encoder value is {average_encoder_value}")
-        calibrated_angle = average_encoder_value + 57  # our absolute encoder's offset from our zero is 57
-        if calibrated_angle > 270:  # keep us within -90 to 270
+        calibrated_angle = average_encoder_value - 83 # was 57, now 83  # our absolute encoder's offset from our zero is 57
+        if calibrated_angle > self.turret.max_angle:  # keep us within -90 to 270
             calibrated_angle = calibrated_angle - 360
+        elif calibrated_angle < self.turret.min_angle:  # what if we then get greater than our max allowed?
+            calibrated_angle = calibrated_angle + 360
+        else:
+            pass
+
         self.turret.sparkmax_encoder.setPosition(calibrated_angle)
         print(f'set turret sparkmax encoder using {average_encoder_value} to {calibrated_angle}')
 
