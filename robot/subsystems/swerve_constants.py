@@ -33,6 +33,8 @@ class DriveConstants:
     ]
     kDriveKinematics = SwerveDrive4Kinematics(*kModulePositions)
 
+    kGyroReversed = True
+
     # which motors need to be inverted  - none?
     # code seems to ignore this, so I turned the right wheels around instead, to have billet gears always point right.
     # that is a mistake, and need to rectify this
@@ -86,9 +88,6 @@ class DriveConstants:
     kFrontRightAbsEncoderPort = 1
     kBackLeftAbsEncoderPort = 2
     kBackRightAbsEncoderPort = 3
-
-    kGyroReversed = True
-
 
 class NeoMotorConstants:
     kFreeSpeedRpm = 5676
