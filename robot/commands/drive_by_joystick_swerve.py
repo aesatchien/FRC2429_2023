@@ -9,16 +9,14 @@ from wpimath.geometry import Translation2d
 
 class DriveByJoystickSwerve(commands2.CommandBase):
     def __init__(
-        self, container,
-        swerve: Swerve,
-        field_oriented=True
-    ) -> None:
+        self, container, swerve: Swerve, field_oriented=True, rate_limited=False,) -> None:
 
         super().__init__()
         self.setName('drive_by_joystick_swerve')
         self.container = container
         self.swerve = swerve
         self.field_oriented = field_oriented
+        self.rate_limited=rate_limited
 
         self.addRequirements([self.swerve])
 
@@ -37,7 +35,7 @@ class DriveByJoystickSwerve(commands2.CommandBase):
         # SO IF IT DOES NOT DRIVE CORRECTLY THAT WAY, CHECK KINEMATICS, THEN INVERSION OF DRIVE/ TURNING MOTORS
         # not all swerves are the same - some require inversion of drive and or turn motors
         desired_fwd = -self.input_transform(1.0*self.container.driver_controller.getRawAxis(1)) * max_linear
-        desired_strafe = -self.input_transform(1.0 * self.container.driver_controller.getRawAxis(0)) * max_linear
+        desired_strafe = self.input_transform(1.0 * self.container.driver_controller.getRawAxis(0)) * max_linear
         desired_rot = -self.input_transform(1.0 * self.container.driver_controller.getRawAxis(4)) * max_angular
 
         correct_like_1706 = False  # this is what 1706 does, but Rev put all that in the swerve module's drive
@@ -47,10 +45,10 @@ class DriveByJoystickSwerve(commands2.CommandBase):
             if desired_magnitude > max_linear:
                 desired_translation = desired_translation * max_linear / desired_magnitude
             self.swerve.drive(desired_translation.X(), desired_translation.Y(), desired_rot,
-                          fieldRelative=self.field_oriented, rate_limited=True)
+                          fieldRelative=self.field_oriented, rate_limited=self.rate_limited)
         else:
             self.swerve.drive(xSpeed=desired_fwd,ySpeed=desired_strafe, rot=desired_rot,
-                              fieldRelative=self.field_oriented, rate_limited=False)
+                              fieldRelative=self.field_oriented, rate_limited=self.rate_limited)
 
     def end(self, interrupted: bool) -> None:
         # probably should leave the wheels where they are?

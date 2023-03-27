@@ -8,9 +8,9 @@ from rev import CANSparkMax
 class DriveConstants:
     # Driving Parameters - Note that these are not the maximum capable speeds of
     # the robot, rather the allowed maximum speeds
-    kMaxSpeedMetersPerSecond = 2  # 4.8
-    kMaxAngularSpeed = 1 * math.tau  # radians per second
-    kMaxTotalSpeed = kMaxSpeedMetersPerSecond + kMaxAngularSpeed  # sum of angular and rotational, should probably do hypotenuse
+    kMaxSpeedMetersPerSecond = 1.5  # 4.8
+    kMaxAngularSpeed = 0.5 * math.tau  # radians per second
+    kMaxTotalSpeed = math.sqrt(2) *  kMaxAngularSpeed  # sum of angular and rotational, should probably do hypotenuse
     kMagnitudeSlewRate = 1.8  # percent per second (1 = 100%)
     kRotationalSlewRate = 2.0  # percent per second (1 = 100%)
 
@@ -26,10 +26,10 @@ class DriveConstants:
     # INVERSION OF THE TURN OR DRIVE MOTORS
 
     kModulePositions = [
-        Translation2d(kWheelBase / 2, kTrackWidth / 2),  # i swapped L and R to get the diamond on rotation
-        Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-        Translation2d(-kWheelBase / 2, kTrackWidth / 2),
+        Translation2d(-kWheelBase / 2, kTrackWidth / 2),  # i swapped L and R to get the diamond on rotation
         Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
+        Translation2d(kWheelBase / 2, kTrackWidth / 2),
+        Translation2d(kWheelBase / 2, -kTrackWidth / 2),
     ]
     kDriveKinematics = SwerveDrive4Kinematics(*kModulePositions)
 
@@ -87,7 +87,7 @@ class DriveConstants:
     kBackLeftAbsEncoderPort = 2
     kBackRightAbsEncoderPort = 3
 
-    kGyroReversed = False
+    kGyroReversed = True
 
 
 class NeoMotorConstants:
