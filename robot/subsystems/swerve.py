@@ -70,10 +70,7 @@ class Swerve (SubsystemBase):
             absolutes = [m.get_turn_encoder() for m in self.swerve_modules]
             wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
             wpilib.SmartDashboard.putNumberArray(f'_analog_radians', absolutes)
-            if wpilib.RobotBase.isReal():
-                wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
-            else:
-                wpilib.SmartDashboard.putNumber('_navx', (self.counter // 10 % 360) - 180)
+            wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
             ypr = [self.navx.getYaw(), self.navx.getPitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
             wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
