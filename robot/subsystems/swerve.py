@@ -64,13 +64,16 @@ class Swerve (SubsystemBase):
         # Update the odometry in the periodic block
         self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
 
-        self.debug = False
+        self.debug = True
         if self.debug and self.counter % 5 == 0:  # this is just a bit much
             angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
             absolutes = [m.get_turn_encoder() for m in self.swerve_modules]
             wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
             wpilib.SmartDashboard.putNumberArray(f'_analog_radians', absolutes)
-            wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
+            if wpilib.RobotBase.isReal():
+                wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
+            else:
+                wpilib.SmartDashboard.putNumber('_navx', (self.counter // 10 % 360) - 180)
             ypr = [self.navx.getYaw(), self.navx.getPitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
             wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
