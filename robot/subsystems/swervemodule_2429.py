@@ -34,6 +34,7 @@ class SwerveModule:
         self.drivingSparkMax.setInverted(driving_inverted)
         self.drivingSparkMax.enableVoltageCompensation(constants.k_volt_compensation)
 
+
         # Get driving encoder from the sparkmax
         self.drivingEncoder = self.drivingSparkMax.getEncoder()
         self.drivingEncoder.setPositionConversionFactor(ModuleConstants.kDrivingEncoderPositionFactor)

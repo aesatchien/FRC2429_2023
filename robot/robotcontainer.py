@@ -32,6 +32,7 @@ from commands.toggle_high_pickup import ToggleHighPickup
 from commands.drive_by_joystick_swerve import DriveByJoystickSwerve
 from commands.swerve_x import SwerveX
 from commands.swerve_angle_test import SwerveAngleTest
+from commands.gyro_reset import GyroReset
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
@@ -107,7 +108,6 @@ class RobotContainer:
 
         self.game_piece_mode = 'cube'
 
-
         self.configure_joysticks()
         self.bind_buttons()
         self.configure_swerve_bindings()
@@ -115,7 +115,7 @@ class RobotContainer:
         self.initialize_dashboard()
 
         # Set up default drive command
-      #  if wpilib.RobotBase.isSimulation():
+        # if wpilib.RobotBase.isSimulation():
 
         self.led.setDefaultCommand(LedLoop(container=self))
 
@@ -130,7 +130,7 @@ class RobotContainer:
 
 
         # initialize the turret
-        # commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
+        commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
 
     def set_start_time(self):  # call in teleopInit and autonomousInit in the robot
         self.start_time = time.time()
@@ -182,7 +182,8 @@ class RobotContainer:
         #self.buttonA.whileHeld(SwerveX(container=self, swerve=self.drive))
         self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
         # self.buttonX.whenPressed(ChargeStationBalance(self, self.drive))
-        self.buttonX.debounce(0.1).onTrue(SwerveAngleTest(self, self.drive))
+        self.buttonX.debounce(0.1).onTrue(SwerveAngleTest(self, swerve=self.drive))
+        self.buttonB.debounce(0.1).onTrue(GyroReset(self, swerve=self.drive))
 
 
     def bind_buttons(self):

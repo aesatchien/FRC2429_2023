@@ -6,6 +6,7 @@ import commands2
 from subsystems.swerve import Swerve  # allows us to access the definitions
 from wpilib import SmartDashboard
 from wpimath.geometry import Translation2d
+import constants
 
 class DriveByJoystickSwerve(commands2.CommandBase):
     def __init__(
@@ -28,8 +29,10 @@ class DriveByJoystickSwerve(commands2.CommandBase):
 
     def execute(self) -> None:
 
-        max_linear = 1  # stick values  - actual rates are in the constants files
-        max_angular = 1
+        # setting a slow mode here - not sure if it's the best way - may want a debouncer on it
+        slowmode_multiplier = constants.k_slowmode_multiplier if self.container.driver_controller.getRawButton(5) else 1.0
+        max_linear = 1 * slowmode_multiplier  # stick values  - actual rates are in the constants files
+        max_angular = 1 * slowmode_multiplier
         # note that x is up/down on the left stick.  Don't want to invert x?
         # according to the templates, these are all multiplied by -1
         # SO IF IT DOES NOT DRIVE CORRECTLY THAT WAY, CHECK KINEMATICS, THEN INVERSION OF DRIVE/ TURNING MOTORS

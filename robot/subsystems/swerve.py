@@ -6,6 +6,7 @@ from commands2 import SubsystemBase
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Pose2d, Rotation2d
 from wpimath.kinematics import (ChassisSpeeds, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry,)
+from wpilib.drive import RobotDriveBase
 import navx
 import rev
 from .swervemodule_2429 import SwerveModule
@@ -15,6 +16,10 @@ from .swerve_constants import DriveConstants as dc
 class Swerve (SubsystemBase):
     def __init__(self) -> None:
         super().__init__()
+
+        self.counter = 0
+        # safety
+        # how do i put a drive base watchdog in here?
 
         # Create SwerveModules
         self.frontLeft = SwerveModule(
@@ -53,16 +58,20 @@ class Swerve (SubsystemBase):
             dc.kDriveKinematics, Rotation2d.fromDegrees(self.get_angle()), self.get_module_positions())
 
     def periodic(self) -> None:
+
+        self.counter += 1
         # Update the odometry in the periodic block
         self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
 
-        angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
-        absolutes = [m.get_turn_encoder() for m in self.swerve_modules]
-        wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
-        wpilib.SmartDashboard.putNumberArray(f'_analog_radians', absolutes)
-        wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
-        ypr = [self.navx.getYaw(), self.navx.getPitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
-        wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
+        self.debug = False
+        if self.debug and self.counter % 5 == 0:  # this is just a bit much
+            angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
+            absolutes = [m.get_turn_encoder() for m in self.swerve_modules]
+            wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
+            wpilib.SmartDashboard.putNumberArray(f'_analog_radians', absolutes)
+            wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
+            ypr = [self.navx.getYaw(), self.navx.getPitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
+            wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
     def get_pose(self) -> Pose2d:
         # return the pose of the robot  TODO: update the dashboard here?
@@ -109,6 +118,9 @@ class Swerve (SubsystemBase):
         swerveModuleStates = SwerveDrive4Kinematics.desaturateWheelSpeeds(swerveModuleStates, dc.kMaxTotalSpeed)
         for state, module in zip(swerveModuleStates, self.swerve_modules):
             module.setDesiredState(state)
+
+        # safety
+        #self.drivebase.feed()
 
     def drive_forwards_vel(self, targetvel, pidSlot=0, l_feed_forward=0, r_feed_forward=0):
         feeds = [l_feed_forward, r_feed_forward, l_feed_forward, r_feed_forward]
