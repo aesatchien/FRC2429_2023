@@ -49,7 +49,8 @@ class Swerve (SubsystemBase):
         # Slew rate filter variables for controlling lateral acceleration
         self.currentRotation, self.currentTranslationDir, self.currentTranslationMag  = 0.0, 0.0, 0.0
 
-        self.magLimiter = SlewRateLimiter(dc.kMagnitudeSlewRate)
+        self.fwd_magLimiter = SlewRateLimiter(dc.kMagnitudeSlewRate)
+        self.strafe_magLimiter = SlewRateLimiter(dc.kMagnitudeSlewRate)
         self.rotLimiter = SlewRateLimiter(dc.kRotationalSlewRate)
         self.prevTime = wpilib.Timer.getFPGATimestamp()
 
@@ -94,8 +95,8 @@ class Swerve (SubsystemBase):
         """
 
         if rate_limited:
-            xSpeedCommanded = self.magLimiter.calculate(xSpeed)
-            ySpeedCommanded = self.magLimiter.calculate(ySpeed)
+            xSpeedCommanded = self.fwd_magLimiter.calculate(xSpeed)
+            ySpeedCommanded = self.strafe_magLimiter.calculate(ySpeed)
             rotation_commanded = self.rotLimiter.calculate(rot)
         else:
             xSpeedCommanded = xSpeed

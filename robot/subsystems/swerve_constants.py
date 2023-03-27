@@ -11,8 +11,8 @@ class DriveConstants:
     kMaxSpeedMetersPerSecond = 1.5  # 4.8
     kMaxAngularSpeed = 0.5 * math.tau  # radians per second
     kMaxTotalSpeed = math.sqrt(2) *  kMaxAngularSpeed  # sum of angular and rotational, should probably do hypotenuse
-    kMagnitudeSlewRate = 1.8  # percent per second (1 = 100%)
-    kRotationalSlewRate = 2.0  # percent per second (1 = 100%)
+    kMagnitudeSlewRate = 5  # percent per second (1 = 100%)
+    kRotationalSlewRate = 5  # percent per second (1 = 100%)
 
     # Chassis configuration - not sure it even matters if we're square
     kTrackWidth = units.inchesToMeters(24.0)  # Distance between centers of right and left wheels on robot

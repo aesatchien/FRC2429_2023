@@ -1,6 +1,7 @@
 import commands2
 from wpilib import SmartDashboard
 from subsystems.turret import Turret
+from subsystems.elevator import Elevator
 
 class TurretMove(commands2.CommandBase):
 
@@ -9,9 +10,11 @@ class TurretMove(commands2.CommandBase):
         self.setName('TurretMove')
         self.container = container
         self.turret = turret
+        self.elevator : Elevator = self.container.elevator
         self.setpoint = setpoint
         self.direction = direction
         self.relative = relative
+        self.elevator_safety_limit = 280  # don't swing if the elevator is lower than this
         self.tolerance = 3  # for stepping to the next preset location
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
 
@@ -21,9 +24,14 @@ class TurretMove(commands2.CommandBase):
         self.print_start_message()
         # tell the turret to go to position
         position = self.turret.get_angle()
-        # tell the elevator to go to position
+        # tell the turret to go to position
+
         if self.setpoint is None:  # step through the presets
-            if self.direction == 'up':
+            if self.elevator.get_height() < self.elevator_safety_limit:  # added 3/27/2023 for safety
+                # do nothing
+                print('Turret move called with elevator too low')
+                return
+            elif self.direction == 'up':
                 allowed_positions = [x for x in sorted(self.turret.positions.values()) if x > position + self.tolerance]
                 # print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position

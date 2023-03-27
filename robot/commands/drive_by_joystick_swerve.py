@@ -17,7 +17,7 @@ class DriveByJoystickSwerve(commands2.CommandBase):
         self.container = container
         self.swerve = swerve
         self.field_oriented = field_oriented
-        self.rate_limited=rate_limited
+        self.rate_limited = rate_limited
 
         self.addRequirements([self.swerve])
 
