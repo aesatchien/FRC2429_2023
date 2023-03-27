@@ -112,8 +112,8 @@ k_manipulator_closed_port = 1  #
 k_manipulator_timeofflight = 14
 
 # ------------------- LED -------------------
-k_led_pwm_port = 7
-k_led_count = 40
+k_led_pwm_port = 3
+k_led_count = 10
 
 # --------------  SIMULATION  ---------------
 k_start_x = 7.647

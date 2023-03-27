@@ -19,9 +19,10 @@ class Pneumatics(SubsystemBase):
         # rev version
         self.hub_type = 'rev'
         if self.hub_type == 'rev':
-            self.hub = wpilib.PneumaticHub(14)  # need to figure out the REV ecosystem  it was not allowing us to actuate 20130225
+            rev_can_id = 15
+            self.hub = wpilib.PneumaticHub(rev_can_id)  # need to figure out the REV ecosystem  it was not allowing us to actuate 20130225
             self.manipulator_piston = self.hub.makeDoubleSolenoid(constants.k_manipulator_open_port, constants.k_manipulator_closed_port)
-            self.compressor = Compressor(14, wpilib.PneumaticsModuleType.REVPH)
+            self.compressor = Compressor(rev_can_id, wpilib.PneumaticsModuleType.REVPH)
         # ctre version
         else:
             self.compressor = Compressor(0, wpilib.PneumaticsModuleType.CTREPCM)

@@ -101,7 +101,7 @@ class RobotContainer:
         self.arm = Arm()
         self.wrist = Wrist()
         self.elevator = Elevator()
-        # self.pneumatics = Pneumatics()  # can't enable unless there is a module there
+        self.pneumatics = Pneumatics()  # can't enable unless there is a module there
         self.vision = Vision()
         self.led = Led()
 
@@ -109,10 +109,10 @@ class RobotContainer:
 
 
         self.configure_joysticks()
-        #self.bind_buttons()
+        self.bind_buttons()
         self.configure_swerve_bindings()
 
-        #self.initialize_dashboard()
+        self.initialize_dashboard()
 
         # Set up default drive command
       #  if wpilib.RobotBase.isSimulation():
