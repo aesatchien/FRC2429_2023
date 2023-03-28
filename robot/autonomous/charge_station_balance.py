@@ -63,11 +63,11 @@ class ChargeStationBalance(commands2.CommandBase):
             feed_forward = min(self.max_feed_forward, feed_forward) if sign > 0 else max(-self.max_feed_forward, feed_forward)
             feed_forward *= speed_boost
                 
-            self.drive.drive_forwards_vel(sign * self.velocity * speed_boost, pidSlot=2, 
+            self.drive.drive_forwards_vel(sign * self.velocity * speed_boost, pidSlot=0,
                                           l_feed_forward=feed_forward, r_feed_forward=feed_forward)
 
         elif math.copysign(1, roc_angle_filtered) != self.initialDerivSign or roc_angle_filtered <= constants.k_deriv_tolerance:
-            self.drive.drive_forwards_vel(0, pidSlot=2)
+            self.drive.drive_forwards_vel(0, pidSlot=0)
             # stop condition: if the ROC of the pitch changes signs AND the ROC of the pitch is below some value, then STOP.
             #                AND, the the pitch of the robot is <= some value
             #              
