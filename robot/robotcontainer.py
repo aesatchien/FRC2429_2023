@@ -33,6 +33,7 @@ from commands.drive_by_joystick_swerve import DriveByJoystickSwerve
 from commands.swerve_x import SwerveX
 from commands.swerve_angle_test import SwerveAngleTest
 from commands.gyro_reset import GyroReset
+from commands.co_stow import CoStow
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
@@ -205,7 +206,9 @@ class RobotContainer:
         # self.co_buttonX.whileHeld(GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], axis=1, invert_axis=True))
 
         # self.co_buttonBack.whenPressed(SafeCarry(self))
-        self.co_buttonBack.whenPressed(TurretMove(self, self.turret, setpoint=0, wait_to_finish=False))
+        # self.co_buttonBack.whenPressed(TurretMove(self, self.turret, setpoint=0, wait_to_finish=False))
+
+        self.co_buttonBack.whenPressed(CoStow(container=self))
         self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision))
         self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
