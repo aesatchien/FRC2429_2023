@@ -20,6 +20,7 @@ class ArmMove(commands2.CommandBase):
         self.print_start_message()
         # tell the arm to go to position
         position = self.arm.get_extension()
+        slot = 0
         # tell the elevator to go to position
         if self.setpoint is None:
             if self.direction == 'up':
@@ -29,16 +30,19 @@ class ArmMove(commands2.CommandBase):
                 if self.arm.is_moving and len(allowed_positions) > 1:
                     temp_setpoint = sorted(allowed_positions)[1]
             else:
+                slot = 1
                 allowed_positions = [x for x in sorted(self.arm.positions.values()) if x < position - self.tolerance]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
                 if self.arm.is_moving and len(allowed_positions) > 1:
                     temp_setpoint = sorted(allowed_positions)[-2]
 
-            self.arm.set_arm_extension(distance=temp_setpoint, mode='smartmotion')
+            self.arm.set_arm_extension(distance=temp_setpoint, mode='smartmotion', slot=slot)
             print(f'Setting arm from {position:.0f} to {temp_setpoint} - is_moving = {self.arm.is_moving}')
         else:
-            self.arm.set_arm_extension(distance=self.setpoint, mode='smartmotion')
+            if self.setpoint < position:
+                slot = 1
+            self.arm.set_arm_extension(distance=self.setpoint, mode='smartmotion', slot=slot)
             print(f'Setting arm from {position:.0f} to {self.setpoint}')
         self.arm.is_moving = True
 

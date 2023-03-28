@@ -136,7 +136,7 @@ class Swerve (SubsystemBase):
 
     def setX(self) -> None:
         """Sets the wheels into an X formation to prevent movement."""
-        angles = [4, -45, -45, 45]
+        angles = [45, -45, -45, 45]
         for angle, swerve_module in zip(angles, self.swerve_modules):
             swerve_module.setDesiredState(SwerveModuleState(0, Rotation2d.fromDegrees(angle)))
 

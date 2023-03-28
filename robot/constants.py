@@ -25,7 +25,7 @@ k_arcade_thrust_scale = 0.7  # used in drive by joystick arcade mode
 k_arcade_twist_scale = 0.45  # used in drive by joystick arcade mode
 k_max_thrust_velocity = 210  # meters per MINUTE  for smartmotion was 150 at start of Hueneme
 k_max_twist_velocity = 150 # meters per MINUTE - for smartmotion
-k_slowmode_multiplier  = 0.3
+k_slowmode_multiplier  = 0.2
 
 #  co-driver++++
 
@@ -92,6 +92,9 @@ k_arm_encoder_conversion_factor = (1.9 * 3.14 / 60) * 25.4  # 2.52 mm per revolu
 k_PID_dict_vel_arm = {'kP': 1e-5, 'kI': 1e-5, 'kD': 0, 'kIz': 1e-5, 'kFF': 4.1e-5, 'kArbFF':0,
                          'kMaxOutput': 0.95, 'kMinOutput': -0.95, 'SM_MaxVel':25000,
                       'SM_MaxAccel':25000}
+k_PID_dict_vel_arm_retract = {'kP': 1e-5, 'kI': 1e-5, 'kD': 0, 'kIz': 1e-5, 'kFF': 4.1e-5, 'kArbFF':0,
+                         'kMaxOutput': 0.95, 'kMinOutput': -0.95, 'SM_MaxVel':40000,
+                      'SM_MaxAccel':40000}
 
 # --------------  WRIST  ---------------
 k_wrist_motor_port = 12  # sparkmax with a NEO

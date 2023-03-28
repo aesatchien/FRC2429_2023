@@ -24,11 +24,11 @@ class ToggleHighPickup(commands2.SequentialCommandGroup):
 
         #move elevator
         self.addCommands(WristMove(container=container, wrist=wrist, setpoint=wrist.positions['stow'], wait_to_finish=False))
-        self.addCommands(ElevatorMove(container=container, elevator=elevator, setpoint=850, wait_to_finish=True))
+        self.addCommands(ElevatorMove(container=container, elevator=elevator, setpoint=elevator.positions['upper_pickup'], wait_to_finish=True))
 
         #open wrist
         self.addCommands(ManipulatorToggle(container=container, pneumatics=pneumatics, force='open'))
-        self.addCommands(commands2.WaitCommand(0.25))
+        # self.addCommands(commands2.WaitCommand(0.25))
 
         # rotate turret
         # turret prioritizes green targets first, so turn off the ring light
