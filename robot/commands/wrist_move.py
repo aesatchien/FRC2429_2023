@@ -19,20 +19,25 @@ class WristMove(commands2.CommandBase):
     def initialize(self) -> None:
         self.print_start_message()
         position = self.wrist.get_angle()
+
+        wrist_positions = list(self.wrist.positions.values())
+        if self.container.elevator.get_height() > 200:
+            wrist_positions.remove(self.wrist.positions['floor'])
+
         # tell the elevator to go to position
         if self.setpoint is None:
             if self.direction == 'up':
-                allowed_positions = [x for x in sorted(self.wrist.positions.values()) if x > position + self.tolerance]
+                allowed_positions = [x for x in sorted(wrist_positions) if x > position + self.tolerance]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
-                if self.wrist.is_moving and len(allowed_positions) > 1:
-                    temp_setpoint = sorted(allowed_positions)[1]
+                # if self.wrist.is_moving and len(allowed_positions) > 1:
+                #     temp_setpoint = sorted(allowed_positions)[1]
             else:
-                allowed_positions = [x for x in sorted(self.wrist.positions.values()) if x < position - self.tolerance]
+                allowed_positions = [x for x in sorted(wrist_positions) if x < position - self.tolerance]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
-                if self.wrist.is_moving and len(allowed_positions) > 1:
-                    temp_setpoint = sorted(allowed_positions)[-2]
+                # if self.wrist.is_moving and len(allowed_p5ositions) > 1:
+                #     temp_setpoint = sorted(allowed_positions)[-2]
 
             self.wrist.set_wrist_angle(angle=temp_setpoint, mode='smartmotion')
             print(f'Setting wrist from {position:.0f} to {temp_setpoint} - is_moving={self.wrist.is_moving}')

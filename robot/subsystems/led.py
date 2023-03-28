@@ -31,6 +31,9 @@ class Led(commands2.SubsystemBase):
     def set_mode(self, mode: Mode) -> None:
         self.mode = mode
 
+    def get_mode(self) -> Mode:
+        return self.mode
+
     def periodic(self) -> None:
         # update LEDs
         if self.counter % 10 == 0:

@@ -37,23 +37,23 @@ class ScoreHiConeFromStow(commands2.SequentialCommandGroup):  # change the name 
 
         # Step 4
         # Drop the wrist to level
-        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['flat'], wait_to_finish=True).withTimeout(2))
+        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['flat'], wait_to_finish=True).withTimeout(1))
 
         # Step 5
         # Open the manipulator
         self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='open'))
 
         # wait a bit
-        self.addCommands(DriveWait(container=self.container, duration=0.5))
+        self.addCommands(DriveWait(container=self.container, duration=0.25)) # 0.5
 
         # Step 6 bring the wrist back up
         # Drop the wrist to level
         # self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['score'], wait_to_finish=False).withTimeout(2))
-        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['stow'], wait_to_finish=True))
+        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['stow'], wait_to_finish=True).withTimeout(0.5))
 
         # step 7 - arm goes back in
         self.addCommands(ArmMove(container=self.container, arm=self.container.arm,
-                                 setpoint=self.container.arm.min_extension, wait_to_finish=True).withTimeout(1.5))
+                                 setpoint=self.container.arm.min_extension, wait_to_finish=True).withTimeout(0.75))
 
         # Step 1.b
         # Get turret into position - this will take 1.25s to get there but we move to next step anyway

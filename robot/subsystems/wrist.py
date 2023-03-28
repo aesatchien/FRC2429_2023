@@ -13,7 +13,7 @@ from misc.configure_controllers import configure_sparkmax
 
 class Wrist(SubsystemBase):
     # wrist should probably have four positions that we need to map out
-    positions = {'stow': 94, 'score': 45, 'flat': 0, 'floor': -25}
+    positions = {'stow': 94, 'score': 55, 'flat': 0, 'floor': -25}
 
     def __init__(self):
         super().__init__()

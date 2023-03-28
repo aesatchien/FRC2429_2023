@@ -24,7 +24,7 @@ from misc.configure_controllers import configure_sparkmax
 
 class Elevator(SubsystemBase):
     # elevator should probably have positions that we need to map out
-    positions = {'top': 950, 'low': 600, 'bottom': 50, 'upper_pickup': 850, 'lower_pickup': 300}
+    positions = {'top': 950, 'low': 650, 'bottom': 50, 'upper_pickup': 850, 'lower_pickup': 300}
 
     def __init__(self):
         super().__init__()

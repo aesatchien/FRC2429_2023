@@ -26,11 +26,8 @@ class SwerveX(commands2.CommandBase):
         SmartDashboard.putString("alert",
                                  f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
 
-
-        self.swerve.setX()
-
     def execute(self) -> None:
-        pass
+        self.swerve.setX()  # can't put this in initialize anymore, has to be in execute
 
     def isFinished(self) -> bool:
         return not self.debouncer.calculate(self.container.driver_controller.getRawButton(1))

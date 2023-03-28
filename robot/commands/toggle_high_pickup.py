@@ -28,7 +28,7 @@ class ToggleHighPickup(commands2.SequentialCommandGroup):
 
         #open wrist
         self.addCommands(ManipulatorToggle(container=container, pneumatics=pneumatics, force='open'))
-        self.addCommands(commands2.WaitCommand(0.25))
+        # self.addCommands(commands2.WaitCommand(0.25))
 
         # rotate turret
         # turret prioritizes green targets first, so turn off the ring light
@@ -43,6 +43,7 @@ class ToggleHighPickup(commands2.SequentialCommandGroup):
 
         # ToDo: extend arm until within range using ToF?
 
+        """
         # clamp
         self.addCommands(commands2.WaitCommand(0.25))
         self.addCommands(ManipulatorToggle(container=container, pneumatics=pneumatics, force='close'))
@@ -53,3 +54,4 @@ class ToggleHighPickup(commands2.SequentialCommandGroup):
                          .withTimeout(2))
         self.addCommands(TurretMove(container=container, turret=turret, setpoint=0, wait_to_finish=False))
         self.addCommands(ElevatorMove(container=container, elevator=elevator, setpoint=elevator.positions['bottom'], wait_to_finish=True))
+        """

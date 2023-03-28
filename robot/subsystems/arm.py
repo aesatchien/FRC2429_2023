@@ -24,7 +24,7 @@ class Arm(SubsystemBase):
         self.max_extension = 566  # need to see what is max legal amount
         self.min_extension = 2  # mm for now
         # arm should probably have positions that we need to map out
-        self.positions = {'full': 565, 'middle': 275, 'stow': 3}
+        self.positions = {'full': 565, 'middle': 400, 'stow': 3}
 
         # initialize motors
         self.arm_controller = rev.CANSparkMax(constants.k_arm_motor_port, rev.CANSparkMax.MotorType.kBrushless)
@@ -39,10 +39,13 @@ class Arm(SubsystemBase):
         self.arm_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, True)
         self.arm_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, self.max_extension)
         self.arm_controller.setSoftLimit(rev.CANSparkMax.SoftLimitDirection.kReverse, self.min_extension)
+        # self.arm_controller.setSmartCurrentLimit()
         self.pid_controller.setSmartMotionAllowedClosedLoopError(1)
 
         configure_sparkmax(sparkmax=self.arm_controller, pid_controller=self.pid_controller, slot=0, can_id=constants.k_arm_motor_port,
                            pid_dict=constants.k_PID_dict_vel_arm, pid_only=True, burn_flash=constants.k_burn_flash)
+        configure_sparkmax(sparkmax=self.arm_controller, pid_controller=self.pid_controller, slot=1, can_id=constants.k_arm_motor_port,
+                           pid_dict=constants.k_PID_dict_vel_arm_retract, pid_only=True, burn_flash=constants.k_burn_flash)
         # where are we when we start?  how do we stay closed w/o power?  do we leave pin in at power on?
 
 
@@ -60,10 +63,10 @@ class Arm(SubsystemBase):
         else:
             return self.extension
 
-    def set_arm_extension(self, distance, mode='smartmotion'):
+    def set_arm_extension(self, distance, mode='smartmotion', slot=0):
         if mode == 'smartmotion':
             # use smartmotion to send you there quickly
-            self.pid_controller.setReference(distance, rev.CANSparkMax.ControlType.kSmartMotion)
+            self.pid_controller.setReference(distance, rev.CANSparkMax.ControlType.kSmartMotion, pidSlot=slot)
         elif mode == 'position':
             # just use the position PID
             self.pid_controller.setReference(distance, rev.CANSparkMax.ControlType.kPosition)
