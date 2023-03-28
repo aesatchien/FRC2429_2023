@@ -28,7 +28,7 @@ class UpperSubstationPickup(commands2.SequentialCommandGroup):  # change the nam
 
         # bring the elevator down to get a good view
         self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator,
-                                      setpoint=Elevator.positions['upper_pickup'], wait_to_finish=True))
+                                      setpoint=850, wait_to_finish=True))
 
         # center on cube or cone
         self.addCommands(TurretMoveByVision(container=self.container, turret=self.container.turret, vision=self.container.vision, wait_to_finish=False))
