@@ -23,50 +23,6 @@ class ChargeStationBalance(commands2.CommandBase):
         # will probably need adjustment of some kind
         self.container.drive.setModuleStates([SwerveModuleState(self.container.drive.navx.getPitch()/25, Rotation2d.fromDegrees(0))]*4)
         
-<<<<<<< HEAD
-=======
-        roc_angle = (self.pitch-self.prev_pitch) / 0.02  # angle / second; the derivative (roc='rate of change') of the angle
-        roc_angle_filtered = self.median_filter.calculate(roc_angle)
-        self.data_array[self.count % 5] = roc_angle_filtered
-
-        # not sure what the point of this is...because won't the PID controller speed up the robot in the beginning anyways?
-        # we're not using PID, only feed forward, and it's not enough to pull the robot up the slope
-        self.count += 1
-        if self.count <= 5:
-            self.initialDerivSign = math.copysign(1, roc_angle_filtered)
-
-        if (self.count < 100 and self.auto is True): # in the initial second, let us climb faster
-            speed_boost = 2
-        elif (self.count > 100 and self.count < 150 and self.auto is True):
-            speed_boost = 1.5  # in the initial second, let us climb faster
-        else:
-            speed_boost = 1
-
-        if abs(self.pitch) > self.tolerance:
-            # if robot is pitched downwards, drive backwards, or if robot is pitched upwards, drive forwards
-            # use the value of the angle as a feedback parameter for feed forward
-            sign = math.copysign(1, self.pitch)
-            feed_forward = sign * abs(self.pitch) * (self.max_feed_forward/10)  # assume max V for 10 degrees <--why are we assuming this...?
-            feed_forward = min(self.max_feed_forward, feed_forward) if sign > 0 else max(-self.max_feed_forward, feed_forward)
-            feed_forward *= speed_boost
-                
-            self.drive.drive_forwards_vel(sign * self.velocity * speed_boost, pidSlot=0,
-                                          l_feed_forward=feed_forward, r_feed_forward=feed_forward)
-
-        elif math.copysign(1, roc_angle_filtered) != self.initialDerivSign or roc_angle_filtered <= constants.k_deriv_tolerance:
-            self.drive.drive_forwards_vel(0, pidSlot=0)
-            # stop condition: if the ROC of the pitch changes signs AND the ROC of the pitch is below some value, then STOP.
-            #                AND, the the pitch of the robot is <= some value
-            #              
-
-        SmartDashboard.putNumberArray("dpitch", self.data_array)
-        SmartDashboard.putNumber("dpitch_filtered: ", roc_angle_filtered)
-        SmartDashboard.putNumber("pitch: ", self.pitch)
-
-        if isinstance(self.drive, Drivetrain):
-            self.drive.feed()
-
->>>>>>> a7ea26c64c6ce1fa3cc75e5cf302890517ab98f2
     def isFinished(self) -> bool:
         return False
 
