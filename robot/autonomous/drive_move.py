@@ -12,54 +12,54 @@ class DriveMove(commands2.SequentialCommandGroup):
     def __init__(self, container, drive: Swerve, setpoint=0) -> None:
         # Tank drive + smartmotion method
         super().__init__()
-        drive.setModuleStates([SwerveModuleState(0, Rotation2d.fromDegrees(0))]*4) # Turn the swerve into a tank drive
-        drive.set_drive_motor_references(setpoint)
-
         if False:
-            # Trajectory method
+            drive.setModuleStates([SwerveModuleState(0, Rotation2d.fromDegrees(0))]*4) # Turn the swerve into a tank drive
+            drive.set_drive_motor_references(setpoint)
 
-            self.setName("Drive Move")
-            self.container = container
+        # Trajectory method
 
-            # setup trajectory
-            config = TrajectoryConfig(
-                AutoConstants.kMaxSpeedMetersPerSecond,
-                AutoConstants.kMaxAccelerationMetersPerSecondSquared,
-            )
-            # Add kinematics to ensure max speed is actually obeyed
-            config.setKinematics(dc.kDriveKinematics)
+        self.setName("Drive Move")
+        self.container = container
 
-            # An example trajectory to follow. All units in meters.
-            trajectory = TrajectoryGenerator.generateTrajectory(
-                # Start at the origin facing the +X direction and end setpoint meters straight ahead of where we started, facing forward
-                [Pose2d(0, 0, Rotation2d(0)), Pose2d(setpoint, 0, Rotation2d(0))],
-                config,
-            )
+        # setup trajectory
+        config = TrajectoryConfig(
+            AutoConstants.kMaxSpeedMetersPerSecond,
+            AutoConstants.kMaxAccelerationMetersPerSecondSquared,
+        )
+        # Add kinematics to ensure max speed is actually obeyed
+        config.setKinematics(dc.kDriveKinematics)
 
-            thetaController = ProfiledPIDControllerRadians(
-                AutoConstants.kPThetaController,
-                0,
-                0,
-                AutoConstants.kThetaControllerConstraints,
-            )
-            thetaController.enableContinuousInput(-math.pi, math.pi)
+        # An example trajectory to follow. All units in meters.
+        trajectory = TrajectoryGenerator.generateTrajectory(
+            # Start at the origin facing the +X direction and end setpoint meters straight ahead of where we started, facing forward
+            [Pose2d(0, 0, Rotation2d(0)), Pose2d(setpoint, 0, Rotation2d(0))],
+            config,
+        )
 
-            swerveControllerCommand = commands2.Swerve4ControllerCommand(
-                trajectory,
-                drive.get_pose,  # Functional interface to feed supplier
-                dc.kDriveKinematics,
-                # Position controllers
-                PIDController(AutoConstants.kPXController, 0, 0),
-                PIDController(AutoConstants.kPYController, 0, 0),
-                thetaController,
-                drive.setModuleStates,
-                [drive],
-            )
+        thetaController = ProfiledPIDControllerRadians(
+            AutoConstants.kPThetaController,
+            0,
+            0,
+            AutoConstants.kThetaControllerConstraints,
+        )
+        thetaController.enableContinuousInput(-math.pi, math.pi)
 
-            # Reset odometry to the starting pose of the trajectory.
-            drive.resetOdometry(trajectory.initialPose())
+        swerveControllerCommand = commands2.Swerve4ControllerCommand(
+            trajectory,
+            drive.get_pose,  # Functional interface to feed supplier
+            dc.kDriveKinematics,
+            # Position controllers
+            PIDController(AutoConstants.kPXController, 0, 0),
+            PIDController(AutoConstants.kPYController, 0, 0),
+            thetaController,
+            drive.setModuleStates,
+            [drive],
+        )
 
-            # Run path following command, then stop at the end.
-            self.addCommands(swerveControllerCommand.andThen(
-                lambda: drive.drive(0, 0, 0, False, False)
-            ))
+        # Reset odometry to the starting pose of the trajectory.
+        drive.resetOdometry(trajectory.initialPose())
+
+        # Run path following command, then stop at the end.
+        self.addCommands(swerveControllerCommand.andThen(
+            lambda: drive.drive(0, 0, 0, False, False)
+        ))

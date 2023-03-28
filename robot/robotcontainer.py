@@ -315,13 +315,8 @@ class RobotContainer:
         self.autonomous_chooser.setDefaultOption('score hi and balance', ScoreDriveAndBalance(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
-<<<<<<< HEAD
-        # self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
-        #self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
-=======
         self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
         self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
->>>>>>> simpler_autos
         #self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         #self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
         #self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))
