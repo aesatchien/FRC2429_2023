@@ -16,12 +16,12 @@ class ChargeStationBalance(commands2.CommandBase):
         """Called just before this Command runs the first time."""
         self.print_start_message()
         # setting initial speed to angle so that when we hold button it doesn't rapidly switch between 0 and proper speed
-        self.drive.setModuleStates([SwerveModuleState(self.drive.navx.getPitch()/25, Rotation2d.fromDegrees(0))]*4)
+        self.container.drive.setModuleStates([SwerveModuleState(self.container.drive.navx.getPitch()/25, Rotation2d.fromDegrees(0))]*4)
 
     def execute(self) -> None:  # 50 loops per second. (0.02 seconds per loop)
         # should drive robot a max of ~1 m/s when climbing on fully tilted charge station
         # will probably need adjustment of some kind
-        self.container.drive.setModuleStates([[SwerveModuleState(self.drive.navx.getPitch()/25, Rotation2d.fromDegrees(0))]*4])
+        self.container.drive.setModuleStates([SwerveModuleState(self.container.drive.navx.getPitch()/25, Rotation2d.fromDegrees(0))]*4)
         
     def isFinished(self) -> bool:
         return False
