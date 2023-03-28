@@ -275,6 +275,7 @@ class RobotContainer:
     def initialize_dashboard(self):
 
         # lots of putdatas for testing on the dash
+        wpilib.SmartDashboard.putData(GyroReset(container=self, swerve=self.drive))
         wpilib.SmartDashboard.putData(TurretInitialize(container=self, turret=self.turret))
         wpilib.SmartDashboard.putData(ScoreHiConeFromStow(container=self))
         wpilib.SmartDashboard.putData(ScoreLowConeFromStow(container=self))
@@ -295,6 +296,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='TurretMoveByVision', data=TurretMoveByVision(container=self, turret=self.turret, vision=self.vision, color='green').withTimeout(5))
         wpilib.SmartDashboard.putData(key='UpperSubstationPickup', data=UpperSubstationPickup(container=self).withTimeout(6))
         wpilib.SmartDashboard.putData(key='ReleaseAndStow', data=ReleaseAndStow(container=self).withTimeout(5))
+
         #wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
         #wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
 

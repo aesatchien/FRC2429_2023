@@ -64,7 +64,7 @@ class Swerve (SubsystemBase):
         # Update the odometry in the periodic block
         self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
 
-        self.debug = False
+        self.debug = True
         if self.debug and self.counter % 5 == 0:  # this is just a bit much
             angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
             absolutes = [m.get_turn_encoder() for m in self.swerve_modules]

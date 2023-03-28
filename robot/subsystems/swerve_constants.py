@@ -8,11 +8,11 @@ from rev import CANSparkMax
 class DriveConstants:
     # Driving Parameters - Note that these are not the maximum capable speeds of
     # the robot, rather the allowed maximum speeds
-    kMaxSpeedMetersPerSecond = 2  # 4.8
+    kMaxSpeedMetersPerSecond = 2  # 4.8 is full out
     kMaxAngularSpeed = 0.75 * math.tau  # radians per second
     kMaxTotalSpeed = math.sqrt(2) *  kMaxAngularSpeed  # sum of angular and rotational, should probably do hypotenuse
-    kMagnitudeSlewRate = 5  # percent per second (1 = 100%)
-    kRotationalSlewRate = 5  # percent per second (1 = 100%)
+    kMagnitudeSlewRate = 5  # hundred percent per second (1 = 100%)
+    kRotationalSlewRate = 5  # hundred percent per second (1 = 100%)
 
     # Chassis configuration - not sure it even matters if we're square
     kTrackWidth = units.inchesToMeters(24.0)  # Distance between centers of right and left wheels on robot
@@ -26,7 +26,7 @@ class DriveConstants:
     # INVERSION OF THE TURN OR DRIVE MOTORS
 
     kModulePositions = [
-        Translation2d(-kWheelBase / 2, kTrackWidth / 2),  # i swapped L and R to get the diamond on rotation
+        Translation2d(-kWheelBase / 2, kTrackWidth / 2),  # i swapped F and B to get the diamond on rotation
         Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
         Translation2d(kWheelBase / 2, kTrackWidth / 2),
         Translation2d(kWheelBase / 2, -kTrackWidth / 2),
