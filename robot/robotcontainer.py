@@ -38,6 +38,7 @@ from commands.co_stow import CoStow
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
 from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
+from autonomous.drive_move import DriveMove
 from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
@@ -191,7 +192,7 @@ class RobotContainer:
     def bind_buttons(self):
         # All untested still
         # bind commands to driver
-        self.buttonY.whileHeld(ChargeStationBalance(self, self.drive, velocity=10, tolerance=10))
+        self.buttonY.whileHeld(ChargeStationBalance(self))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
@@ -314,8 +315,13 @@ class RobotContainer:
         self.autonomous_chooser.setDefaultOption('score hi and balance', ScoreDriveAndBalance(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
+<<<<<<< HEAD
         # self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
         #self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
+=======
+        self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
+        self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
+>>>>>>> simpler_autos
         #self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         #self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
         #self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))

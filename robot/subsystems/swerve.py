@@ -123,12 +123,11 @@ class Swerve (SubsystemBase):
         # safety
         #self.drivebase.feed()
 
-    def drive_forwards_vel(self, targetvel, pidSlot=0, l_feed_forward=0, r_feed_forward=0):
-        feeds = [l_feed_forward, r_feed_forward, l_feed_forward, r_feed_forward]
-        control_type = rev.CANSparkMax.ControlType.kSmartVelocity
-        self.setModuleStates([SwerveModuleState(0, Rotation2d.fromDegrees(0))]*4) # Turn the swerve into a tank drive
-        for feed, module in zip (feeds, self.swerve_modules):
-            module.drivingPIDController.setReference(targetvel, control_type, pidSlot=pidSlot, arbFeedforward=feed)
+    def set_drive_motor_references(self, setpoint, control_type = rev.CANSparkMax.ControlType.kSmartMotion,
+                                    pidSlot=0, arbFeedForward=0):
+        # Make sure you've turned the swerve into a tank drive before calling this
+        for module in self.swerve_modules:
+            module.drivingPIDController.setReference(setpoint, control_type, pidSlot=pidSlot, arbFeedforward=arbFeedForward)
 
     def set_brake_mode(self, mode='brake'):
         if mode == 'brake':
