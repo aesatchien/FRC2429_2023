@@ -59,6 +59,7 @@ class Vision(SubsystemBase):
         else:
             self.relay.set(wpilib.Relay.Value.kOff)
             self.relay_state = False
+        SmartDashboard.putBoolean('relay_state', self.relay_state)
 
     def periodic(self) -> None:
         self.counter += 1
