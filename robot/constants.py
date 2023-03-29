@@ -14,6 +14,7 @@ k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
 k_enable_soft_limits = True
 k_volt_compensation = 12.6
 k_rate_limited = True  # on swerve, use slew limiters to keep acceleration from being too abrupt
+k_debugging_messages = True  # turn these off for competition
 
 # --------------  OI  ---------------
 # ID for the driver's TANK joystick (template)
@@ -120,9 +121,9 @@ k_led_pwm_port = 3
 k_led_count = 36
 
 # --------------  SIMULATION  ---------------
-k_start_x = 7.647
-k_start_y = 1.935
-k_start_heading = -90  # looking at the drawing originally tried -109. TODO: Swerve uses 0, maybe change for compatibility
+k_start_x = 2.1
+k_start_y = 4.7
+k_start_heading = 0  # looking at the drawing originally tried -109. TODO: Swerve uses 0, maybe change for compatibility
 k_drivetrain_motor_count = 4
 k_wheel_diameter_m = 6 * 0.0254  # wheel diameter in meters
 robot_characterization = {'ks':0.291, 'kv':1.63, 'ka':0.293, 'track_width':0.89}  # 2022 climberbot
