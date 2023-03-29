@@ -317,7 +317,7 @@ class RobotContainer:
         print("Putting datas")
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
         self.autonomous_chooser.setDefaultOption('do nothing', DriveWait(self, duration=1))
-        self.autonomous_chooser.addOption('drive 1m', DriveSwerveAutoVelocity(self, self.drive, velocity=1.0).withTimeout(1))
+        self.autonomous_chooser.addOption('drive 1.5m', DriveSwerveAutoVelocity(self, self.drive, velocity=1.5).withTimeout(1))
         # self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
         self.autonomous_chooser.addOption('score hi and move', ScoreHiAndMove(self))
         # self.autonomous_chooser.setDefaultOption('score hi and balance', ScoreDriveAndBalance(self))

@@ -25,8 +25,8 @@ class ChargeStationBalance(commands2.CommandBase):
 
         # set up velocity transition, velocities in m/s
         self.climb_start_time = 0  # do not confuse with the start time status message
-        self.max_velocity = 1  # in m/s, so do not forget to normalize when sent to drive function
-        self.min_velocity = 0.25
+        self.max_velocity = 1.5  # in m/s, so do not forget to normalize when sent to drive function
+        self.min_velocity = 0.4
         self.decay_rate = 10 #  20 transitions in about 0.25s, 10 is about 0.5 s to transition from high to low
         self.transition_time_center = 1  # center time of our transition, in seconds
 
@@ -46,7 +46,7 @@ class ChargeStationBalance(commands2.CommandBase):
         target_vel = pid_output * max_allowed_velocity  # meters per second
         SmartDashboard.putNumber('_target_vel', target_vel)  # actual m/s target
 
-        debugging_speed_limit = 0.49   # allow us to set a temporary test limit in m/s
+        debugging_speed_limit = 1.49   # allow us to set a temporary test limit in m/s
         if math.fabs(target_vel) > debugging_speed_limit:
             target_vel = debugging_speed_limit * math.copysign(1, target_vel)
 
