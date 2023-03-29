@@ -34,6 +34,8 @@ from commands.swerve_x import SwerveX
 from commands.swerve_angle_test import SwerveAngleTest
 from commands.gyro_reset import GyroReset
 from commands.co_stow import CoStow
+from commands.manipulator_auto_grab import ManipulatorAutoGrab
+from commands.led_toggle import LedToggle
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
@@ -195,6 +197,9 @@ class RobotContainer:
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
 
+        self.buttonLeftAxis.whenPressed(LedToggle(container=self))
+        self.buttonRightAxis.whenPressed(LedToggle(container=self))
+
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
         # self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="open"))
@@ -213,7 +218,7 @@ class RobotContainer:
         self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
-        # self.co_buttonLB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
+        # self.co_buttonRB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
         # self.co_buttonA.whenPressed(ToggleGroundPickup(container=self, pneumatics=self.pneumatics, wrist=self.wrist, button=1))
 
         self.co_buttonLB.whenPressed(ToggleHighPickup(container=self, turret=self.turret, elevator=self.elevator, wrist=self.wrist, pneumatics=self.pneumatics, vision=self.vision))
@@ -325,6 +330,7 @@ class RobotContainer:
         self.led_modes.addOption('CUBE', Led.Mode.CUBE)
         self.led_modes.addOption('READY', Led.Mode.READY)
         self.led_modes.addOption('OFF', Led.Mode.OFF)
+        self.led_modes.addOption('RAINBOW', Led.Mode.RAINBOW)
 
     def get_autonomous_command(self):
         return self.autonomous_chooser.getSelected()
