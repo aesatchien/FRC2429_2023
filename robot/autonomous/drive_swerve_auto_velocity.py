@@ -4,16 +4,18 @@ from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModuleState
 from commands.drive_by_joystick_swerve import DriveByJoystickSwerve
 from subsystems.swerve import Swerve
+from subsystems.swerve_constants import DriveConstants as dc
 
 
-class DriveSwerveSmartmotion(commands2.CommandBase):  # change the name for your command
+class DriveSwerveAutoVelocity(commands2.CommandBase):  # change the name for your command
 
-    def __init__(self, container, drive: Swerve, setpoint) -> None:
+    def __init__(self, container, drive: Swerve, velocity) -> None:
         super().__init__()
-        self.setName('Drive Swerve Smartmotion')  # change this to something appropriate for this command
+        self.setName('DriveSwerveAutoVelocity')  # change this to something appropriate for this command
         self.container = container
         self.drive = drive
         self.addRequirements(self.drive)  # commandsv2 version of requirements
+        self.setpoint_velocity = velocity  # in m/s, gets normalized when sent to drive
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -28,7 +30,8 @@ class DriveSwerveSmartmotion(commands2.CommandBase):  # change the name for your
             self.drive.set_drive_motor_references(self.setpoint)
 
     def execute(self) -> None:
-        self.drive.drive(1/4, 0, 0, False, False)
+        # drive at the velocity passed to the function
+        self.drive.drive(self.setpoint_velocity / dc.kMaxSpeedMetersPerSecond, 0, 0, False, False)
         if False:
             for module in self.drive.swerve_modules:
                 module.turning_PID_controller.setSetpoint(0)

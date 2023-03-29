@@ -6,7 +6,7 @@ from wpimath.kinematics import SwerveModuleState
 from wpimath.trajectory import TrajectoryConfig, TrajectoryGenerator
 from wpimath.controller import PIDController, ProfiledPIDControllerRadians
 from subsystems.swerve import Swerve
-from .drive_swerve_smartmotion import DriveSwerveSmartmotion
+from autonomous.drive_swerve_auto_velocity import DriveSwerveAutoVelocity
 from subsystems.swerve_constants import DriveConstants as dc, AutoConstants
 
 class DriveMove(commands2.SequentialCommandGroup):
@@ -14,7 +14,7 @@ class DriveMove(commands2.SequentialCommandGroup):
         # Tank drive + smartmotion method
         super().__init__()
 
-        self.addCommands(DriveSwerveSmartmotion(container, drive, setpoint))
+        self.addCommands(DriveSwerveAutoVelocity(container, drive, setpoint))
 
         # Trajectory method
         if False:

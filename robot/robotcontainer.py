@@ -51,7 +51,7 @@ from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.release_and_stow import ReleaseAndStow
 from autonomous.score_hi_and_move import ScoreHiAndMove
 from autonomous.score_drive_and_balance import ScoreDriveAndBalance
-from autonomous.drive_swerve_smartmotion import DriveSwerveSmartmotion
+from autonomous.drive_swerve_auto_velocity import DriveSwerveAutoVelocity
 
 
 class RobotContainer:
@@ -195,7 +195,7 @@ class RobotContainer:
     def bind_buttons(self):
         # All untested still
         # bind commands to driver
-        self.buttonY.whileHeld(ChargeStationBalance(self))
+        self.buttonY.whileHeld(ChargeStationBalance(container=self, drive=self.drive, auto=False))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
@@ -317,16 +317,16 @@ class RobotContainer:
         print("Putting datas")
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
         # self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
-        # self.autonomous_chooser.setDefaultOption('score hi and move', ScoreHiAndMove(self))
+        self.autonomous_chooser.setDefaultOption('score hi and move', ScoreHiAndMove(self))
         # self.autonomous_chooser.setDefaultOption('score hi and balance', ScoreDriveAndBalance(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
-        self.autonomous_chooser.addOption('drive 1m', DriveSwerveSmartmotion(self, self.drive, 2.5).withTimeout(1))
-        self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(self).withTimeout(10))
+        self.autonomous_chooser.addOption('drive 1m', DriveSwerveAutoVelocity(self, self.drive, velocity=1.0).withTimeout(1))
+        self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
         self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self))
         #self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         #self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
-        #self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))
+        self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))
 
         self.led_modes = wpilib.SendableChooser()
         wpilib.SmartDashboard.putData('LED', self.led_modes)
