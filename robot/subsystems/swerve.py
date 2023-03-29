@@ -41,10 +41,11 @@ class Swerve (SubsystemBase):
 
         # The gyro sensor
         #self.gyro = wpilib.ADIS16470_IMU()
-        self.gyro = navx.AHRS.create_spi()
+        self.gyro = navx.AHRS.create_spi(update_rate_hz=50)
         self.navx = self.gyro
         self.navx.zeroYaw()  # we boot up at zero degrees  - note - you can't reset this while calibrating
         self.gyro_calibrated = False
+
 
         # Slew rate filter variables for controlling lateral acceleration
         self.currentRotation, self.currentTranslationDir, self.currentTranslationMag  = 0.0, 0.0, 0.0
@@ -65,7 +66,7 @@ class Swerve (SubsystemBase):
         self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
 
         self.debug = True
-        if self.debug and self.counter % 5 == 0:  # this is just a bit much
+        if self.debug and self.counter % 10 == 0:  # this is just a bit much
             angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
             absolutes = [m.get_turn_encoder() for m in self.swerve_modules]
             wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
@@ -108,6 +109,7 @@ class Swerve (SubsystemBase):
         ySpeedDelivered = ySpeedCommanded * dc.kMaxSpeedMetersPerSecond
         rotDelivered = rotation_commanded * dc.kMaxAngularSpeed
 
+        # probably can stop doing this now
         wpilib.SmartDashboard.putNumberArray('_xyr', [xSpeedDelivered, ySpeedDelivered, rotDelivered])
 
         # create the swerve state array depending on if we are field relative or not

@@ -40,16 +40,20 @@ class TurretInitialize(commands2.CommandBase):
 
         average_encoder_value = sum(self.data) / self.samples
         print(f"Average encoder value is {average_encoder_value}")
-        calibrated_angle = average_encoder_value - 83 # was 57, now 83  # our absolute encoder's offset from our zero is 57
-        if calibrated_angle > self.turret.max_angle:  # keep us within -90 to 270
+        zero_offset = 83
+        calibrated_angle = average_encoder_value - zero_offset # was 57, now 83  # our absolute encoder's offset from our zero is 57
+        if calibrated_angle > self.turret.max_angle:  # keep us within -90 to 270, but should never happen if used correctly
             calibrated_angle = calibrated_angle - 360
+            msg = f'average encoder value was {average_encoder_value} and is HIGHER than max of {self.turret.max_angle}'
         elif calibrated_angle < self.turret.min_angle:  # what if we then get greater than our max allowed?
             calibrated_angle = calibrated_angle + 360
+            msg = f'average encoder value was {average_encoder_value} and is LOWER than min of {self.turret.min_angle}'
         else:
-            pass
+            msg = f'average encoder value was {average_encoder_value} and is within allowed range'
 
         self.turret.sparkmax_encoder.setPosition(calibrated_angle)
-        print(f'set turret sparkmax encoder using {average_encoder_value} to {calibrated_angle}')
+        print(msg)
+        print(f'set turret sparkmax encoder using {average_encoder_value} - {zero_offset} to {calibrated_angle}')
 
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'

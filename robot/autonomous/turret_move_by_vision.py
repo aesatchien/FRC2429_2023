@@ -5,7 +5,7 @@ from subsystems.vision import Vision
 
 class TurretMoveByVision(commands2.CommandBase):
 
-    def __init__(self, container, turret: Turret, vision: Vision, color='green', wait_to_finish=True) -> None:
+    def __init__(self, container, turret: Turret, vision: Vision, color='green', find_alternate=True, wait_to_finish=True) -> None:
         super().__init__()
         self.setName('TurretMoveByVision')
         self.container = container
@@ -15,6 +15,7 @@ class TurretMoveByVision(commands2.CommandBase):
         self.setpoint = 0
         self.tolerance = 3  # for stepping to the next preset location
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
+        self.find_alternate = find_alternate
 
         self.addRequirements(self.turret)  # commandsv2 version of requirements
 
@@ -27,7 +28,7 @@ class TurretMoveByVision(commands2.CommandBase):
         self.setpoint = None
         if self.vision.camera_values[self.color]['targets'] > 0:
             self.setpoint = position + self.vision.camera_values[self.color]['rotation_entry']
-        else:  # try to find another target for loading zone
+        elif self.find_alternate:  # try to find another target for loading zone
             colors = ['green', 'yellow', 'purple']
             for color in colors:
                 if self.vision.camera_values[color]['targets'] > 0:

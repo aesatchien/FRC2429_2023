@@ -34,6 +34,8 @@ from commands.swerve_x import SwerveX
 from commands.swerve_angle_test import SwerveAngleTest
 from commands.gyro_reset import GyroReset
 from commands.co_stow import CoStow
+from commands.manipulator_auto_grab import ManipulatorAutoGrab
+from commands.led_toggle import LedToggle
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
@@ -49,7 +51,7 @@ from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.release_and_stow import ReleaseAndStow
 from autonomous.score_hi_and_move import ScoreHiAndMove
 from autonomous.score_drive_and_balance import ScoreDriveAndBalance
-from autonomous.drive_swerve_smartmotion import DriveSwerveSmartmotion
+from autonomous.drive_swerve_auto_velocity import DriveSwerveAutoVelocity
 
 
 class RobotContainer:
@@ -193,10 +195,13 @@ class RobotContainer:
     def bind_buttons(self):
         # All untested still
         # bind commands to driver
-        self.buttonY.whileHeld(ChargeStationBalance(self))
+        self.buttonY.whileHeld(ChargeStationBalance(container=self, drive=self.drive, auto=False))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
+
+        self.buttonLeftAxis.whenPressed(LedToggle(container=self))
+        self.buttonRightAxis.whenPressed(LedToggle(container=self))
 
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
@@ -212,11 +217,11 @@ class RobotContainer:
         # self.co_buttonBack.whenPressed(TurretMove(self, self.turret, setpoint=0, wait_to_finish=False))
 
         self.co_buttonBack.whenPressed(CoStow(container=self))
-        self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision))
+        self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision, find_alternate=False))
         self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
-        # self.co_buttonLB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
+        # self.co_buttonRB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
         # self.co_buttonA.whenPressed(ToggleGroundPickup(container=self, pneumatics=self.pneumatics, wrist=self.wrist, button=1))
 
         self.co_buttonLB.whenPressed(ToggleHighPickup(container=self, turret=self.turret, elevator=self.elevator, wrist=self.wrist, pneumatics=self.pneumatics, vision=self.vision))
@@ -311,17 +316,17 @@ class RobotContainer:
         self.autonomous_chooser = wpilib.SendableChooser()
         print("Putting datas")
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
+        self.autonomous_chooser.setDefaultOption('do nothing', DriveWait(self, duration=1))
+        self.autonomous_chooser.addOption('drive 1m', DriveSwerveAutoVelocity(self, self.drive, velocity=1.0).withTimeout(1))
         # self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
-        # self.autonomous_chooser.setDefaultOption('score hi and move', ScoreHiAndMove(self))
+        self.autonomous_chooser.addOption('score hi and move', ScoreHiAndMove(self))
         # self.autonomous_chooser.setDefaultOption('score hi and balance', ScoreDriveAndBalance(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
-        self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
-        self.autonomous_chooser.addOption('drive 1m', DriveSwerveSmartmotion(self, self.drive, 2.5).withTimeout(1))
-        self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(self).withTimeout(10))
-        self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self))
+        self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
+        self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         #self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         #self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
-        #self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))
+        self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self).withTimeout(15))
 
         self.led_modes = wpilib.SendableChooser()
         wpilib.SmartDashboard.putData('LED', self.led_modes)
@@ -330,6 +335,7 @@ class RobotContainer:
         self.led_modes.addOption('CUBE', Led.Mode.CUBE)
         self.led_modes.addOption('READY', Led.Mode.READY)
         self.led_modes.addOption('OFF', Led.Mode.OFF)
+        self.led_modes.addOption('RAINBOW', Led.Mode.RAINBOW)
 
     def get_autonomous_command(self):
         return self.autonomous_chooser.getSelected()

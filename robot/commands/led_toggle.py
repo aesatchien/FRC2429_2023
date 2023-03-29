@@ -11,8 +11,8 @@ class LedToggle(commands2.CommandBase):
         self.container = container
         self.addRequirements(container.led)
         self.modes = [
-            Led.Mode.CONE,
-            Led.Mode.CUBE,
+            'cone',
+            'cube',
         ]
         self.counter = 0
 
@@ -23,7 +23,9 @@ class LedToggle(commands2.CommandBase):
         SmartDashboard.putString("alert", f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
 
     def execute(self) -> None:
-        pass
+        active_mode = self.modes[self.counter % len(self.modes)]
+        self.container.game_piece_mode = active_mode
+        self.counter += 1
 
     def isFinished(self) -> bool:
         return True
