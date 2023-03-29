@@ -217,7 +217,7 @@ class RobotContainer:
         # self.co_buttonBack.whenPressed(TurretMove(self, self.turret, setpoint=0, wait_to_finish=False))
 
         self.co_buttonBack.whenPressed(CoStow(container=self))
-        self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision))
+        self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision, find_alternate=False))
         self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
