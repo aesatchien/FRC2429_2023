@@ -15,8 +15,10 @@ class ChargeStationBalance(commands2.CommandBase):
         self.container = container
         self.addRequirements(container.drive)
         self.roll_controller = PIDController(1/45, 0, 0)
-        self.roll_controller.enableContinuousInput(0, 360)
-        self.past_angles = [0]*50
+        self.roll_controller.enableContinuousInput(0, 360) 
+
+        self.past_angles = [-(math.copysign(180, -self.container.drive.navx.getRoll()) + self.container.drive.navx.gerRoll())/45]*5
+        self.angle_list_index = 0
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -27,6 +29,8 @@ class ChargeStationBalance(commands2.CommandBase):
     def execute(self) -> None:  # 50 loops per second. (0.02 seconds per loop)
         # should drive robot a max of ~1 m/s when climbing on fully tilted charge station
         # will probably need adjustment of some kind
+        self.angle_list_index %= 5
+        self.past_angles[self.angle_list_index] = -(math.copysign(180, -self.container.drive.navx.getRoll()) + self.container.drive.navx.gerRoll())/45
         target_vel = self.roll_controller.calculate(self.container.drive.navx.getRoll() + 180, setpoint=0)
         # target_vel = ((self.container.drive.navx.getRoll() + 180) % 360)/45
         SmartDashboard.putNumber('_target_vel', target_vel)
