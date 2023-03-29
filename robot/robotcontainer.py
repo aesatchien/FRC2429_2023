@@ -38,7 +38,7 @@ from commands.co_stow import CoStow
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
 from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
-from autonomous.drive_move import DriveMove
+from autonomous.drive_and_balance import DriveAndBalance
 from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
@@ -49,6 +49,7 @@ from autonomous.upper_substation_pickup import UpperSubstationPickup
 from autonomous.release_and_stow import ReleaseAndStow
 from autonomous.score_hi_and_move import ScoreHiAndMove
 from autonomous.score_drive_and_balance import ScoreDriveAndBalance
+from autonomous.drive_swerve_smartmotion import DriveSwerveSmartmotion
 
 
 class RobotContainer:
@@ -310,13 +311,14 @@ class RobotContainer:
         self.autonomous_chooser = wpilib.SendableChooser()
         print("Putting datas")
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
-        self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
-        self.autonomous_chooser.setDefaultOption('score hi and move', ScoreHiAndMove(self))
-        self.autonomous_chooser.setDefaultOption('score hi and balance', ScoreDriveAndBalance(self))
+        # self.autonomous_chooser.setDefaultOption('high cone from stow', ScoreHiConeFromStow(self))
+        # self.autonomous_chooser.setDefaultOption('score hi and move', ScoreHiAndMove(self))
+        # self.autonomous_chooser.setDefaultOption('score hi and balance', ScoreDriveAndBalance(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         self.autonomous_chooser.addOption('do nothing', DriveWait(self, duration=1))
-        self.autonomous_chooser.addOption('drive 1m', DriveMove(self, self.drive, setpoint=1).withTimeout(3))
-        self.autonomous_chooser.addOption('drive 2m', DriveMove(self, self.drive, setpoint=2).withTimeout(4))
+        self.autonomous_chooser.addOption('drive 1m', DriveSwerveSmartmotion(self, self.drive, 2.5).withTimeout(1))
+        self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(self).withTimeout(10))
+        self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self))
         #self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         #self.autonomous_chooser.addOption('station climb 2m', DriveClimber(self, self.drive, setpoint_distance=1.9).withTimeout(8))
         #self.autonomous_chooser.addOption('score hi drive and balance', ScoreDriveAndBalance(self))

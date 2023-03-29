@@ -130,6 +130,9 @@ class ModuleConstants:
     kTurningMinOutput = -1
     kTurningMaxOutput = 1
 
+    k_PID_dict_vel = {'kP': 0.0, 'kI': 0.000, 'kD': 0.00, 'kIz': 0.001, 'kFF': kDrivingFF, 'kArbFF':0, 'kMaxOutput': 0.95,
+                'kMinOutput': -0.95, 'SM_MaxVel':3, 'SM_MaxAccel':2}  # 180 is 3 m/s and 3m/s/s
+
     kDrivingMotorIdleMode = CANSparkMax.IdleMode.kBrake
     kTurningMotorIdleMode = CANSparkMax.IdleMode.kCoast  # for now it's easier to move by hand when testing
 
