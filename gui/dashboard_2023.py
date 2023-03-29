@@ -8,6 +8,7 @@ from pathlib import Path
 import urllib.request
 import cv2
 import numpy as np
+import setuptools
 
 from PyQt5 import QtCore, QtGui, QtWidgets, uic
 from PyQt5.QtCore import Qt, QTimer, QEvent, QThread, QObject, pyqtSignal
@@ -113,6 +114,8 @@ class Ui(QtWidgets.QMainWindow):
 
         self.qt_text_entry_filter.installEventFilter(self)
         self.qt_text_new_value.installEventFilter(self)
+
+        self.robot_pixmap = QtGui.QPixmap("png\\blockhead.png")  # for the field update
 
         # button connections
         self.qt_button_set_key.clicked.connect(self.update_key)
@@ -444,13 +447,19 @@ class Ui(QtWidgets.QMainWindow):
             if not self.qlabel_ball.isHidden():
                 self.qlabel_ball.hide()
 
-        # update the pose
+        # update the pose - some extra magic to rotate the pixmap and stretch it correctly due to the rotation
         width, height = self.qgroupbox_field.width(), self.qgroupbox_field.height()
-        bot_width, bot_height = self.qlabel_robot.width(), self.qlabel_robot.height()
+        bot_width, bot_height = 41, 41 # self.qlabel_robot.width(), self.qlabel_robot.height()
         x_lim, y_lim = 16.4, 8.2
-        drive_pose = self.widget_dict['drive_pose']['entry'].getDoubleArray([0,0,0])
-        self.qlabel_robot.move(int(-bot_width/2 + width * drive_pose[0] / x_lim ), int(-bot_height/2 + height * (1 - drive_pose[1] / y_lim)))
+        drive_pose = self.widget_dict['drive_pose']['entry'].getDoubleArray([0, 0, 0])
+        pixmap_rotated = self.robot_pixmap.transformed(QtGui.QTransform().rotate(90-drive_pose[2]), QtCore.Qt.SmoothTransformation)
+        new_size = int(41 * (1 + 0.41 * np.abs(np.sin(2 * drive_pose[2] * np.pi / 180.0))))
+        self.qlabel_robot.resize(new_size, new_size)  # take account of rotation shrinkage
+        self.qlabel_robot.setPixmap(pixmap_rotated)  # this does rotate successfully
+        # self.qlabel_robot.move(int(-bot_width / 2 + width * drive_pose[0] / x_lim), int(-bot_height / 2 + height * (1 - drive_pose[1] / y_lim)))
+        self.qlabel_robot.move(int(-new_size/2 + width * drive_pose[0] / x_lim ), int(-new_size/2 + height * (1 - drive_pose[1] / y_lim)))
         ## print(f'Pose X:{drive_pose[0]:2.2f} Pose Y:{drive_pose[1]:2.2f} Pose R:{drive_pose[2]:2.2f}', end='\r', flush=True)
+
 
         self.counter += 1
         if self.counter % 100 == 0:  # display an FPS
