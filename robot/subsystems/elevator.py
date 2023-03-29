@@ -63,6 +63,8 @@ class Elevator(SubsystemBase):
         SmartDashboard.putNumber('elevator_height', self.height)
         SmartDashboard.putNumber('elevator_setpoint', self.setpoint)
 
+        self.is_moving = False
+
     def get_height(self):  # getter for the relevant elevator parameter
         if wpilib.RobotBase.isReal():
             return self.sparkmax_encoder.getPosition()
@@ -99,4 +101,7 @@ class Elevator(SubsystemBase):
         self.counter += 1
         if self.counter % 25 == 0:
             self.height = self.get_height()
+
+            self.is_moving = abs(self.sparkmax_encoder.getVelocity()) > 1000  #
+
             SmartDashboard.putNumber('elevator_height', self.height)

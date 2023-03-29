@@ -25,10 +25,16 @@ class ElevatorMove(commands2.CommandBase):
                 allowed_positions = [x for x in sorted(self.elevator.positions.values()) if x > position + 10 ]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
+
+                if self.elevator.is_moving and len(allowed_positions) > 1:
+                    temp_setpoint = sorted(allowed_positions)[1]
             else:
                 allowed_positions = [x for x in sorted(self.elevator.positions.values()) if x < position -10]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
+
+                if self.elevator.is_moving and len(allowed_positions) > 1:
+                    temp_setpoint = sorted(allowed_positions)[-2]
 
             self.elevator.set_elevator_height(height=temp_setpoint, mode='smartmotion')
             print(f'Setting elevator from {position:.0f} to {temp_setpoint}')

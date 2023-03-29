@@ -200,13 +200,16 @@ class RobotContainer:
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
 
-        self.buttonLeftAxis.whenPressed(LedToggle(container=self))
-        self.buttonRightAxis.whenPressed(LedToggle(container=self))
+        self.buttonDown.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
+
+        led_toggle_cmd = LedToggle(container=self)
+        self.buttonLeftAxis.whenPressed(led_toggle_cmd)
+        self.buttonRightAxis.whenPressed(led_toggle_cmd)
 
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
         # self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="open"))
-        self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics))
+        # self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics))
 
         # self.co_buttonA.whileHeld(GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], axis=0, invert_axis=False))
         # self.co_buttonB.whileHeld(GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], axis=1, invert_axis=True))
@@ -221,7 +224,7 @@ class RobotContainer:
         self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
-        # self.co_buttonRB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
+        self.co_buttonRB.whileHeld(ManipulatorAutoGrab(container=self, pneumatics=self.pneumatics))
         # self.co_buttonA.whenPressed(ToggleGroundPickup(container=self, pneumatics=self.pneumatics, wrist=self.wrist, button=1))
 
         self.co_buttonLB.whenPressed(ToggleHighPickup(container=self, turret=self.turret, elevator=self.elevator, wrist=self.wrist, pneumatics=self.pneumatics, vision=self.vision))
@@ -256,12 +259,12 @@ class RobotContainer:
             preset_command_map,
         ))
 
-        self.co_buttonLeft.whenPressed(commands2.SelectCommand(
+        self.co_buttonLeft.debounce(debounceTime=0.1).onTrue(commands2.SelectCommand(
             lambda: self.select_preset("DOWN"),
             preset_command_map,
         ))
 
-        self.co_buttonRight.whenPressed(commands2.SelectCommand(
+        self.co_buttonRight.debounce(debounceTime=0.1).onTrue(commands2.SelectCommand(
             lambda: self.select_preset("UP"),
             preset_command_map,
         ))
