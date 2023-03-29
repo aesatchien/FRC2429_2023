@@ -1,10 +1,11 @@
 import commands2
 from wpilib import SmartDashboard
 from subsystems.elevator import Elevator
+from wpilib import DoubleSolenoid
 
 class ElevatorMove(commands2.CommandBase):
 
-    def __init__(self, container, elevator:Elevator, setpoint=None, direction=None, wait_to_finish=True) -> None:
+    def __init__(self, container, elevator:Elevator, setpoint=None, direction=None, wait_to_finish=True, drive_controls=False) -> None:
         super().__init__()
         self.setName('Elevator Move')
         self.container = container
@@ -13,23 +14,33 @@ class ElevatorMove(commands2.CommandBase):
         self.direction = direction
         self.tolerance = 10
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
+        self.drive_controls = drive_controls
 
         self.addRequirements(self.elevator)  # commandsv2 version of requirements
 
     def initialize(self) -> None:
         self.print_start_message()
         position = self.elevator.get_height()
+
+        positions = list(self.elevator.positions.values())
+
+        if self.drive_controls:
+            if self.container.pneumatics.get_manipulator_state() == DoubleSolenoid.Value.kForward:
+                positions = list(self.elevator.positions_open.values())
+            else:
+                positions = list(self.elevator.positions_close.values())
+
         # tell the elevator to go to position
         if self.setpoint is None:
             if self.direction == 'up':
-                allowed_positions = [x for x in sorted(self.elevator.positions.values()) if x > position + 10 ]
+                allowed_positions = [x for x in sorted(positions) if x > position + 10 ]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
 
                 if self.elevator.is_moving and len(allowed_positions) > 1:
                     temp_setpoint = sorted(allowed_positions)[1]
             else:
-                allowed_positions = [x for x in sorted(self.elevator.positions.values()) if x < position -10]
+                allowed_positions = [x for x in sorted(positions) if x < position -10]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
 

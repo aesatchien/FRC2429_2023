@@ -26,6 +26,9 @@ class Elevator(SubsystemBase):
     # elevator should probably have positions that we need to map out
     positions = {'top': 950, 'low': 650, 'bottom': 50, 'upper_pickup': 850, 'lower_pickup': 300}
 
+    positions_close = {'top': 950, 'low': 650}
+    positions_open = {'upper_pickup': 850, 'bottom': 50}
+
     def __init__(self):
         super().__init__()
         self.counter = 5  # offset the periodics

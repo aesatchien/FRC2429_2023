@@ -234,8 +234,8 @@ class RobotContainer:
             (self.CommandSelector.TURRET_DOWN, TurretMove(self, self.turret, direction="down", wait_to_finish=False)),
             (self.CommandSelector.TURRET_UP_DRIVE, GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=1)),
             (self.CommandSelector.TURRET_DOWN_DRIVE, GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=-1)),
-            (self.CommandSelector.ELEVATOR_UP, ElevatorMove(self, self.elevator, direction="up", wait_to_finish=False)),
-            (self.CommandSelector.ELEVATOR_DOWN, ElevatorMove(self, self.elevator, direction="down", wait_to_finish=False)),
+            (self.CommandSelector.ELEVATOR_UP, ElevatorMove(self, self.elevator, direction="up", wait_to_finish=False, drive_controls=True)),
+            (self.CommandSelector.ELEVATOR_DOWN, ElevatorMove(self, self.elevator, direction="down", wait_to_finish=False, drive_controls=True)),
             (self.CommandSelector.ELEVATOR_UP_DRIVE, GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=1)),
             (self.CommandSelector.ELEVATOR_DOWN_DRIVE, GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=-1)),
             (self.CommandSelector.ARM_UP, ArmMove(self, self.arm, direction="up", wait_to_finish=False)),
@@ -259,12 +259,12 @@ class RobotContainer:
             preset_command_map,
         ))
 
-        self.co_buttonLeft.debounce(debounceTime=0.1).onTrue(commands2.SelectCommand(
+        self.co_buttonLeft.whenPressed(commands2.SelectCommand(
             lambda: self.select_preset("DOWN"),
             preset_command_map,
         ))
 
-        self.co_buttonRight.debounce(debounceTime=0.1).onTrue(commands2.SelectCommand(
+        self.co_buttonRight.whenPressed(commands2.SelectCommand(
             lambda: self.select_preset("UP"),
             preset_command_map,
         ))
