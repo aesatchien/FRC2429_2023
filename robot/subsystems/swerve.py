@@ -41,10 +41,11 @@ class Swerve (SubsystemBase):
 
         # The gyro sensor
         #self.gyro = wpilib.ADIS16470_IMU()
-        self.gyro = navx.AHRS.create_spi()
+        self.gyro = navx.AHRS.create_spi(update_rate_hz=50)
         self.navx = self.gyro
         self.navx.zeroYaw()  # we boot up at zero degrees  - note - you can't reset this while calibrating
         self.gyro_calibrated = False
+
 
         # Slew rate filter variables for controlling lateral acceleration
         self.currentRotation, self.currentTranslationDir, self.currentTranslationMag  = 0.0, 0.0, 0.0
