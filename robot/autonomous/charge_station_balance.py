@@ -1,90 +1,43 @@
-import math
 import commands2
-import rev
 from wpilib import SmartDashboard
-from subsystems.drivetrain import Drivetrain
-from wpimath.filter import MedianFilter
-import constants
+from wpimath.controller import PIDController
+from wpimath.kinematics import SwerveModuleState
+from wpimath.geometry import Rotation2d
+from subsystems.swerve import Swerve
+
+import math
 
 class ChargeStationBalance(commands2.CommandBase):
 
-    def __init__(self, container, drive, velocity=60, tolerance=4, max_feed_forward=0.5, auto=False) -> None:
+    def __init__(self, container) -> None:
         super().__init__()
         self.setName('ChargeStationBalance')
         self.container = container
-        self.drive = drive
-        self.velocity = velocity  # meters per MINUTE
-        self.tolerance = tolerance  # degrees
-        self.max_feed_forward = max_feed_forward
-        self.multipliers = [1, 1]
-        self.count = 0
-        self.auto = auto # are we in autonomous or teleop?
-        self.prev_pitch = 0
-        self.pitch = 0
-
-        self.median_filter = MedianFilter(5)  # MedianFilters take in values and then "smooths" it
-        self.data_array = [0] * 5  # For displaying the ROC of the angle in the GUI
-
-        # SmartDashboard.putNumber("ChargeStationBalance_arbFF", 1)
-
-        self.addRequirements(drive)
+        self.addRequirements(container.drive)
+        self.roll_controller = PIDController(1/45, 0, 0)
+        self.roll_controller.enableContinuousInput(0, 360)
+        self.past_angles = [0]*50
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
         self.print_start_message()
-        self.count = 0
+        # setting initial speed to angle so that when we hold button it doesn't rapidly switch between 0 and proper speed
+        # self.container.drive.drive(self.container.drive.navx.getPitch()/45, 0, 0, False,False)
 
     def execute(self) -> None:  # 50 loops per second. (0.02 seconds per loop)
-        self.prev_pitch = self.pitch
-        self.pitch = self.drive.navx.getPitch()  # should we be using a median filter on the pitch as well?
+        # should drive robot a max of ~1 m/s when climbing on fully tilted charge station
+        # will probably need adjustment of some kind
+        target_vel = self.roll_controller.calculate(self.container.drive.navx.getRoll() + 180, setpoint=0)
+        # target_vel = ((self.container.drive.navx.getRoll() + 180) % 360)/45
+        SmartDashboard.putNumber('_target_vel', target_vel)
+        if math.fabs(target_vel) > 1/6: target_vel = 1/6*math.copysign(1, target_vel)
+        self.container.drive.drive(target_vel, 0, 0, False,False)
         
-        roc_angle = (self.pitch-self.prev_pitch) / 0.02  # angle / second; the derivative (roc='rate of change') of the angle
-        roc_angle_filtered = self.median_filter.calculate(roc_angle)
-        self.data_array[self.count % 5] = roc_angle_filtered
-
-        # not sure what the point of this is...because won't the PID controller speed up the robot in the beginning anyways?
-        # we're not using PID, only feed forward, and it's not enough to pull the robot up the slope
-        self.count += 1
-        if self.count <= 5:
-            self.initialDerivSign = math.copysign(1, roc_angle_filtered)
-
-        if (self.count < 100 and self.auto is True): # in the initial second, let us climb faster
-            speed_boost = 2
-        elif (self.count > 100 and self.count < 150 and self.auto is True):
-            speed_boost = 1.5  # in the initial second, let us climb faster
-        else:
-            speed_boost = 1
-
-        if abs(self.pitch) > self.tolerance:
-            # if robot is pitched downwards, drive backwards, or if robot is pitched upwards, drive forwards
-            # use the value of the angle as a feedback parameter for feed forward
-            sign = math.copysign(1, self.pitch)
-            feed_forward = sign * abs(self.pitch) * (self.max_feed_forward/10)  # assume max V for 10 degrees <--why are we assuming this...?
-            feed_forward = min(self.max_feed_forward, feed_forward) if sign > 0 else max(-self.max_feed_forward, feed_forward)
-            feed_forward *= speed_boost
-                
-            self.drive.drive_forwards_vel(sign * self.velocity * speed_boost, pidSlot=0,
-                                          l_feed_forward=feed_forward, r_feed_forward=feed_forward)
-
-        elif math.copysign(1, roc_angle_filtered) != self.initialDerivSign or roc_angle_filtered <= constants.k_deriv_tolerance:
-            self.drive.drive_forwards_vel(0, pidSlot=0)
-            # stop condition: if the ROC of the pitch changes signs AND the ROC of the pitch is below some value, then STOP.
-            #                AND, the the pitch of the robot is <= some value
-            #              
-
-        SmartDashboard.putNumberArray("dpitch", self.data_array)
-        SmartDashboard.putNumber("dpitch_filtered: ", roc_angle_filtered)
-        SmartDashboard.putNumber("pitch: ", self.pitch)
-
-        if isinstance(self.drive, Drivetrain):
-            self.drive.feed()
-
     def isFinished(self) -> bool:
         return False
 
     def end(self, interrupted: bool) -> None:
-        self.drive.drive_forwards_vel(0, pidSlot=1)
-        self.drive.set_brake_mode(mode='brake')
+        self.container.drive.setX()
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'
         print(f"** {message} {self.getName()} at {end_time:.1f} s after {end_time - self.start_time:.1f} s **")

@@ -4,6 +4,7 @@ from wpimath.geometry import Rotation2d
 from wpimath.kinematics import SwerveModuleState, SwerveModulePosition
 from wpilib import AnalogEncoder, AnalogPotentiometer
 from wpimath.controller import PIDController
+from misc.configure_controllers import configure_sparkmax
 import math
 
 import constants
@@ -60,6 +61,8 @@ class SwerveModule:
         self.turningEncoder.setPositionConversionFactor(ModuleConstants.kTurningEncoderPositionFactor)
         self.turningEncoder.setVelocityConversionFactor(ModuleConstants.kTurningEncoderVelocityFactor)
 
+        configure_sparkmax(sparkmax=self.drivingSparkMax, pid_controller=self.drivingPIDController, can_id=drivingCANId, slot=1,
+                               burn_flash=constants.k_burn_flash, pid_dict=ModuleConstants.k_PID_dict_vel, pid_only=False)
         # Save the SPARK MAX configurations. If a SPARK MAX browns out during
         # operation, it will maintain the above configurations.
         if constants.k_burn_flash:
