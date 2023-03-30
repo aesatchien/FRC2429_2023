@@ -38,6 +38,7 @@ class ElevatorMove(commands2.CommandBase):
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
 
                 if self.elevator.is_moving and len(allowed_positions) > 1:
+                    print('E SKIPPING UP', flush=True)
                     temp_setpoint = sorted(allowed_positions)[1]
             else:
                 allowed_positions = [x for x in sorted(positions) if x < position -10]
@@ -45,6 +46,7 @@ class ElevatorMove(commands2.CommandBase):
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
 
                 if self.elevator.is_moving and len(allowed_positions) > 1:
+                    print('E SKIPPING DOWN', flush=True)
                     temp_setpoint = sorted(allowed_positions)[-2]
 
             self.elevator.set_elevator_height(height=temp_setpoint, mode='smartmotion')
