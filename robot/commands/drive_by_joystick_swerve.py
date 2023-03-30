@@ -6,6 +6,7 @@ import commands2
 from subsystems.swerve import Swerve  # allows us to access the definitions
 from wpilib import SmartDashboard
 from wpimath.geometry import Translation2d
+from wpimath.filter import Debouncer
 import constants
 
 class DriveByJoystickSwerve(commands2.CommandBase):
@@ -20,8 +21,7 @@ class DriveByJoystickSwerve(commands2.CommandBase):
         self.rate_limited = rate_limited
         # probably some better way to do this
         # chose 5 because that'll cause it to return true after 0.1 seconds like in robotcontainer
-        self.prev_slow_buttons = [False] * 5
-        self.prev_buttons_index = 0
+        self.debouncer = Debouncer(0.1, Debouncer.DebounceType.kBoth)
 
         self.addRequirements([self.swerve])
 
@@ -35,8 +35,10 @@ class DriveByJoystickSwerve(commands2.CommandBase):
 
         # setting a slow mode here - not sure if it's the best way - may want a debouncer on it
         # put debouncer in a weird and probably improvable way
-        self.prev_buttons_index = (self.prev_buttons_index + 1) % 5
-        slowmode_multiplier = constants.k_slowmode_multiplier if True not in self.prev_slow_buttons else 1.0
+        if self.debouncer.calculate(self.container.driver_controller.getRawButton(5)):
+            slowmode_multiplier = constants.k_slowmode_multiplier
+        else: slowmode_multiplier = 1.0
+
         # slowmode_multiplier = constants.k_slowmode_multiplier if self.container.driver_controller.getRawButton(5) else 1.0
         max_linear = 1 * slowmode_multiplier  # stick values  - actual rates are in the constants files
         max_angular = 1 * slowmode_multiplier
