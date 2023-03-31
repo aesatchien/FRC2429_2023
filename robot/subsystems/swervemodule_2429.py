@@ -136,12 +136,13 @@ class SwerveModule:
             self.dummy_motor_driving.set(optimizedDesiredState.speed / 10)
             self.dummy_motor_turning.set(optimizedDesiredState.angle.radians()/10)
 
-        wpilib.SmartDashboard.putNumberArray(f'{self.label}_target_vel_angle',
-                                             [optimizedDesiredState.speed, optimizedDesiredState.angle.radians()])
-        wpilib.SmartDashboard.putNumberArray(f'{self.label}_volts',
-                                               [self.drivingSparkMax.getAppliedOutput(), self.turningSparkMax.getAppliedOutput()])
-        wpilib.SmartDashboard.putNumberArray(f'{self.label}_actual_vel_angle',
-                                             [self.drivingEncoder.getVelocity(), self.turningEncoder.getPosition()])
+        if constants.k_debugging_messages:  # only do this when debugging - it's pretty intensive
+            wpilib.SmartDashboard.putNumberArray(f'{self.label}_target_vel_angle',
+                                [optimizedDesiredState.speed, optimizedDesiredState.angle.radians()])
+            wpilib.SmartDashboard.putNumberArray(f'{self.label}_volts',
+                                [self.drivingSparkMax.getAppliedOutput(), self.turningSparkMax.getAppliedOutput()])
+            wpilib.SmartDashboard.putNumberArray(f'{self.label}_actual_vel_angle',
+                                [self.drivingEncoder.getVelocity(), self.turningEncoder.getPosition()])
 
 
 

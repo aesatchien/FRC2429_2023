@@ -64,9 +64,8 @@ class Vision(SubsystemBase):
     def periodic(self) -> None:
         self.counter += 1
 
-        # update five times a second
+        # update x times a second
         if self.counter % 20 == 0:
-
             if wpilib.RobotBase.isSimulation():
                 SmartDashboard.putNumber('match_time', wpilib.Timer.getFPGATimestamp())
             else:

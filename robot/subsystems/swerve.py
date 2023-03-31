@@ -66,18 +66,19 @@ class Swerve (SubsystemBase):
 
         self.counter += 1
         # Update the odometry in the periodic block
-        self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
+        if self.counter % 2 == 0:  # need to figure out how often we can do this w/o causing slowdowns
+            self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
 
         if self.counter % 10 == 0:
             pose = self.odometry.getPose()
             wpilib.SmartDashboard.putNumberArray('drive_pose', [pose.X(), pose.Y(), pose.rotation().degrees()])
+            wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
 
-            if constants.k_debugging_messages:  # this is just a bit much
+            if constants.k_debugging_messages:  # this is just a bit much, so
                 angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
                 absolutes = [m.get_turn_encoder() for m in self.swerve_modules]
                 wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
                 wpilib.SmartDashboard.putNumberArray(f'_analog_radians', absolutes)
-                wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
                 ypr = [self.navx.getYaw(), self.get_pitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
                 wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
@@ -116,7 +117,8 @@ class Swerve (SubsystemBase):
         rotDelivered = rotation_commanded * dc.kMaxAngularSpeed
 
         # probably can stop doing this now
-        wpilib.SmartDashboard.putNumberArray('_xyr', [xSpeedDelivered, ySpeedDelivered, rotDelivered])
+        if constants.k_debugging_messages:
+            wpilib.SmartDashboard.putNumberArray('_xyr', [xSpeedDelivered, ySpeedDelivered, rotDelivered])
 
         # create the swerve state array depending on if we are field relative or not
         swerveModuleStates = dc.kDriveKinematics.toSwerveModuleStates(

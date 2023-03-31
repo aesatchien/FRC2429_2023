@@ -35,9 +35,10 @@ class Wrist(SubsystemBase):
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_wrist_encoder_conversion_factor)  # necessary for smartmotion to behave
         self.pid_controller = self.wrist_controller.getPIDController()
 
-        self.forward_limit_switch = self.wrist_controller.getForwardLimitSwitch(switchType=rev.SparkMaxLimitSwitch.Type.kNormallyOpen)
-        self.at_fwd_limit = self.forward_limit_switch.get()
-        SmartDashboard.putBoolean('wrist_limit', self.at_fwd_limit)
+        # no longer necessary after adding the absolute encoder
+        # self.forward_limit_switch = self.wrist_controller.getForwardLimitSwitch(switchType=rev.SparkMaxLimitSwitch.Type.kNormallyOpen)
+        # self.at_fwd_limit = self.forward_limit_switch.get()
+        # SmartDashboard.putBoolean('wrist_limit', self.at_fwd_limit)
 
         # set soft limits - do not let spark max put out power above/below a certain value
         self.wrist_controller.enableSoftLimit(rev.CANSparkMax.SoftLimitDirection.kForward, constants.k_enable_soft_limits)
@@ -100,10 +101,3 @@ class Wrist(SubsystemBase):
             SmartDashboard.putNumber('wrist_abs_encoder', self.abs_encoder.getPosition())
 
             self.is_moving = abs(self.sparkmax_encoder.getVelocity()) > 100  #
-
-            previous_limit_value = self.at_fwd_limit  # get the previous limit value
-            self.at_fwd_limit = self.forward_limit_switch.get()
-            if self.at_fwd_limit and not previous_limit_value:
-                #  we just hit the limit - set the encoder to the max value if we want to
-                pass
-                # self.sparkmax_encoder.setPosition(self.max_angle)
