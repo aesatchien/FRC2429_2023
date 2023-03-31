@@ -15,7 +15,7 @@ class DriveAndBalance(commands2.SequentialCommandGroup):
         # drive onto the charge station
         # self.addCommands(DriveMove(container=self.container, drive=self.container.drive,
         #                               setpoint=1, wait_to_finish=True).withTimeout(5))
-        self.addCommands(DriveSwerveAutoVelocity(self.container, self.container.drive, velocity=1.5).withTimeout(1))
+        self.addCommands(DriveSwerveAutoVelocity(self.container, self.container.drive, velocity=1.75).withTimeout(1))
 
         # maintain balance
         self.addCommands(ChargeStationBalance(self.container, self.container.drive).withTimeout(10))

@@ -60,7 +60,7 @@ class MyRobot(commands2.TimedCommandRobot):
         if self.autonomousCommand:
             self.autonomousCommand.cancel()
 
-        self.container.drive.navx.reset()  # need to not do this in competition
+        # self.container.drive.navx.reset()  # need to not do this in competition
 
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""

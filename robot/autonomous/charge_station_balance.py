@@ -18,8 +18,8 @@ class ChargeStationBalance(commands2.CommandBase):
         self.addRequirements(container.drive)
 
         # Set PID controller so that 15 degrees will cause maximum output of 1.  Max speeds will be handled by time.
-        self.roll_controller = PIDController(1/15, 0, 0)  # note this does not clamp to ±1 unless you do it yourself
-        self.roll_controller.enableContinuousInput(0, 360)  # allow us to wrap around at 360
+        self.pitch_controller = PIDController(1 / 15, 0, 0)  # note this does not clamp to ±1 unless you do it yourself
+        self.pitch_controller.enableContinuousInput(0, 360)  # allow us to wrap around at 360
         self.past_angles = [0] * 50  # not implemented yet
         self.auto = auto  # allows for operator to use with minimum velocity
 
@@ -42,7 +42,7 @@ class ChargeStationBalance(commands2.CommandBase):
 
         current_time = wpilib.Timer.getFPGATimestamp() - self.climb_start_time
         max_allowed_velocity = self.calculate_maximum_velocity(current_time) if self.auto else self.min_velocity
-        pid_output = self.roll_controller.calculate(self.drive.navx.getRoll() + 180, setpoint=0)
+        pid_output = self.pitch_controller.calculate(self.drive.get_pitch(), setpoint=0)
         target_vel = pid_output * max_allowed_velocity  # meters per second
         SmartDashboard.putNumber('_target_vel', target_vel)  # actual m/s target
 

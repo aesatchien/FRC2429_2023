@@ -5,7 +5,7 @@ from wpilib import DoubleSolenoid
 
 class ElevatorMove(commands2.CommandBase):
 
-    def __init__(self, container, elevator:Elevator, setpoint=None, direction=None, wait_to_finish=True, drive_controls=False) -> None:
+    def __init__(self, container, elevator:Elevator, setpoint=None, direction=None, wait_to_finish=True, drive_controls=False, enable_skip=False) -> None:
         super().__init__()
         self.setName('Elevator Move')
         self.container = container
@@ -15,6 +15,7 @@ class ElevatorMove(commands2.CommandBase):
         self.tolerance = 10
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
         self.drive_controls = drive_controls
+        self.enable_skip = enable_skip
 
         self.addRequirements(self.elevator)  # commandsv2 version of requirements
 
@@ -37,16 +38,14 @@ class ElevatorMove(commands2.CommandBase):
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[0] if len(allowed_positions) > 0 else position
 
-                if self.elevator.is_moving and len(allowed_positions) > 1:
-                    print('E SKIPPING UP', flush=True)
+                if self.enable_skip and self.elevator.is_moving and len(allowed_positions) > 1:
                     temp_setpoint = sorted(allowed_positions)[1]
             else:
                 allowed_positions = [x for x in sorted(positions) if x < position -10]
                 print(allowed_positions)
                 temp_setpoint = sorted(allowed_positions)[-1] if len(allowed_positions) > 0 else position
 
-                if self.elevator.is_moving and len(allowed_positions) > 1:
-                    print('E SKIPPING DOWN', flush=True)
+                if self.enable_skip and self.elevator.is_moving and len(allowed_positions) > 1:
                     temp_setpoint = sorted(allowed_positions)[-2]
 
             self.elevator.set_elevator_height(height=temp_setpoint, mode='smartmotion')

@@ -78,7 +78,7 @@ class Swerve (SubsystemBase):
                 wpilib.SmartDashboard.putNumberArray(f'_angles', angles)
                 wpilib.SmartDashboard.putNumberArray(f'_analog_radians', absolutes)
                 wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
-                ypr = [self.navx.getYaw(), self.navx.getPitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
+                ypr = [self.navx.getYaw(), self.get_pitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
                 wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
     def get_pose(self) -> Pose2d:
@@ -184,4 +184,7 @@ class Swerve (SubsystemBase):
 
     def get_angle(self):
         return -self.gyro.getAngle() if dc.kGyroReversed else self.gyro.getAngle()
+
+    def get_pitch(self):
+        return self.gyro.getPitch() - 4.75
 

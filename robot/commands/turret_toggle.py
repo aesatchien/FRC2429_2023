@@ -14,6 +14,7 @@ class TurretToggle(commands2.CommandBase):
         self.relative = relative
         self.tolerance = 4  # for stepping to the next preset location
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
+        self.elevator_safety_limit = 200  # don't swing if the elevator is lower than this
 
         self.addRequirements(self.turret)  # commandsv2 version of requirements
 
@@ -22,10 +23,13 @@ class TurretToggle(commands2.CommandBase):
         # tell the turret to go to position
         position = self.turret.get_angle()
         # tell the elevator to go to position
-        if position > 90:  # swing to 0
-            self.setpoint = 0
-        else:  # swing to 180
-            self.setpoint = 180
+        if self.container.elevator.get_height() > self.elevator_safety_limit:
+            if position > 90:  # swing to 0
+                self.setpoint = 0
+            else:  # swing to 180
+                self.setpoint = 180
+        else:
+            print('Aborting swing, safety limit not met')
 
         self.turret.set_turret_angle(angle=self.setpoint, mode='smartmotion')
         print(f'Setting turret from {position:.0f} to {self.setpoint}')
