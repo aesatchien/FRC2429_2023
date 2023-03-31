@@ -8,7 +8,7 @@ import constants
 
 class Led(commands2.SubsystemBase):
     class Mode(enum.Enum):
-        CONE = Color(255, 255, 0)
+        CONE = Color(255, 220, 0)  # 255 255 0 is too green
         CUBE = Color(255, 0, 255)
         READY = Color(0, 255, 0)
         OFF = Color(0, 0, 0)
