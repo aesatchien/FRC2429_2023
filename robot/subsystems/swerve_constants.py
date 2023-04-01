@@ -8,7 +8,7 @@ from rev import CANSparkMax
 class DriveConstants:
     # Driving Parameters - Note that these are not the maximum capable speeds of
     # the robot, rather the allowed maximum speeds
-    kMaxSpeedMetersPerSecond = 4  # 4.8 is full out
+    kMaxSpeedMetersPerSecond = 4.25 # 4.8 is full out
     kMaxAngularSpeed = 0.75 * math.tau  # radians per second
     kMaxTotalSpeed = math.sqrt(2) *  kMaxAngularSpeed  # sum of angular and rotational, should probably do hypotenuse
     kMagnitudeSlewRate = 5  # hundred percent per second (1 = 100%)

@@ -23,7 +23,7 @@ class ReleaseAndStow(commands2.SequentialCommandGroup):  # change the name for y
         self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='open'))
 
         # wait a bit for the paddles to let go
-        self.addCommands(DriveWait(container=self.container, duration=0.75))
+        self.addCommands(DriveWait(container=self.container, duration=0.5))
 
         # raise wrist to driving position
         self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['stow'], wait_to_finish=False))

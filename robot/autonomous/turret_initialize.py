@@ -40,7 +40,7 @@ class TurretInitialize(commands2.CommandBase):
 
         average_encoder_value = sum(self.data) / self.samples
         print(f"Average encoder value is {average_encoder_value}")
-        zero_offset = 83  # 83, 23 at 180
+        zero_offset = 84  # 83, 23 at 180
         calibrated_angle = average_encoder_value - zero_offset # was 57, now 83  # our absolute encoder's offset from our zero is 57
         if calibrated_angle > self.turret.max_angle:  # keep us within -90 to 270, but should never happen if used correctly
             calibrated_angle = calibrated_angle - 360

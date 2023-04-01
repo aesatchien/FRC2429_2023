@@ -22,6 +22,8 @@ class Wrist(SubsystemBase):
         self.max_angle = 96  # call all the way up 125 degrees  todo: remeasure
         self.min_angle = -26
 
+        self.in_use_by_driver = False
+
         # initialize motors
         self.wrist_controller = rev.CANSparkMax(constants.k_wrist_motor_port, rev.CANSparkMax.MotorType.kBrushless)
 
@@ -91,6 +93,13 @@ class Wrist(SubsystemBase):
         self.sparkmax_encoder.setPosition(angle)
         if wpilib.RobotBase.isSimulation():
             self.angle = angle
+
+    def set_driver_flag(self, state=False):
+        self.in_use_by_driver = state
+        SmartDashboard.putBoolean('wrist_in_use', state)
+
+    def get_driver_flag(self):
+        return self.in_use_by_driver
 
     def periodic(self) -> None:
         self.counter += 1

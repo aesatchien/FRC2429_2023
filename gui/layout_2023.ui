@@ -803,6 +803,42 @@ background-color:rgb(0, 20, 250);</string>
         <set>Qt::AlignCenter</set>
        </property>
       </widget>
+      <widget class="QLabel2" name="qlabel_green_target_indicator">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>100</y>
+         <width>161</width>
+         <height>71</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+background-color:rgb(80, 235, 0);</string>
+       </property>
+       <property name="text">
+        <string>Green Target
+  Detected</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_3">
       <property name="geometry">

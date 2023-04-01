@@ -94,21 +94,20 @@ class Arm(SubsystemBase):
 
     def periodic(self) -> None:
         self.counter += 1
-        if self.counter % 25 == 0:
+        if self.counter % 25 == 0:  # generic periodic updates twice a second
             self.extension = self.get_extension()
             SmartDashboard.putNumber('arm_extension', self.extension)
-            self.is_moving = abs(self.sparkmax_encoder.getVelocity()) > 100  #
+            self.is_moving = abs(self.sparkmax_encoder.getVelocity()) > 100  # for skipping through arm setpoints
 
-            # TODO - see if arm motor is oscillating trying to maintain a setpoint and quiet it.
+            # TODO - see if arm motor is oscillating while trying to maintain a setpoint and quiet it.
+            # seems to quiet down if you set the setpoint to the current location
             self.motion_log_counter += 1
             self.motion_log[self.motion_log_counter % len(self.motion_log)] = self.is_moving
-            if any(self.motion_log):  # we've been moving at some point in the past second
+            if any(self.motion_log):  # we've been moving at some point in the past few seconds
+                pass  # nothing to check
+            else:  # maybe we want to quiet the arm
                 pass
-            else:  # we've been sitting still for a while
-                pass
-                # if self.movement_commanded:
+                # if self.movement_commanded:  # we've been sitting still for a while and we've moved recently
                 #     self.movement_commanded = False
                 #     self.quiet_arm()
-
-        # seems to quiet down if you set the setpoint to the current location
 

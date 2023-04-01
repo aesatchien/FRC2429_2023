@@ -31,7 +31,7 @@ class ScoreHiConeFromStow(commands2.SequentialCommandGroup):  # change the name 
 
         # Step 1.b
         # Get turret into position - this will take 1.25s to get there but we move to next step anyway
-        self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=180, wait_to_finish=True))
+        self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=182, wait_to_finish=True))
 
         # Optional - center turret on post
 

@@ -3,6 +3,7 @@
 import time, enum
 import wpilib
 import commands2
+import commands2.cmd as cmd
 from commands2.button import JoystickButton, POVButton
 
 import constants  # all of the constants except for swerve
@@ -198,7 +199,10 @@ class RobotContainer:
         self.buttonY.whileHeld(ChargeStationBalance(container=self, drive=self.drive, auto=False))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
-        self.buttonRB.whenPressed(ReleaseAndStow(container=self).withTimeout(4))
+        self.buttonRB.whenPressed(
+            cmd.runOnce(action=lambda: self.wrist.set_driver_flag(state=True)).andThen(
+            ReleaseAndStow(container=self).withTimeout(4)).andThen(
+            cmd.runOnce(action=lambda: self.wrist.set_driver_flag(state=False))))
 
         self.buttonDown.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
 
@@ -244,9 +248,18 @@ class RobotContainer:
             (self.CommandSelector.ARM_DOWN_DRIVE, GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=-1)),
             (self.CommandSelector.WRIST_UP, WristMove(self, self.wrist, direction="down", wait_to_finish=False)),
             (self.CommandSelector.WRIST_DOWN, WristMove(self, self.wrist, direction="up", wait_to_finish=False)),
+            # (
+            #     self.CommandSelector.WRIST_UP,
+            #     commands2.ConditionalCommand(commands2.PrintCommand('Aborted wrist up'), WristMove(self, self.wrist, direction="down", wait_to_finish=False), lambda: self.wrist.get_driver_flag()),
+            # ),
+            # (
+            #     self.CommandSelector.WRIST_DOWN,
+            #     commands2.ConditionalCommand(commands2.PrintCommand('Aborted wrist down'), WristMove(self, self.wrist, direction="up", wait_to_finish=False), lambda: self.wrist.get_driver_flag()),
+            # ),
             (self.CommandSelector.WRIST_UP_DRIVE, GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=1, invert_axis=True)),
             (self.CommandSelector.WRIST_DOWN_DRIVE, GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=-1, invert_axis=True)),
-            (self.CommandSelector.NONE, commands2.WaitCommand(0)),
+            (self.CommandSelector.NONE, cmd.nothing()),
+            # (self.CommandSelector.NONE, commands2.PrintCommand('Doing nothing'))
         ]
 
         self.co_buttonUp.debounce(debounceTime=0.1).whileTrue(commands2.SelectCommand(
@@ -323,7 +336,7 @@ class RobotContainer:
         self.autonomous_chooser.addOption('drive 2m', DriveSwerveAutoVelocity(self, self.drive, velocity=1).withTimeout(2))
         self.autonomous_chooser.setDefaultOption('score hi and chill', ScoreHiConeFromStow(self))
         self.autonomous_chooser.addOption('score hi and move near', ScoreHiAndMove(self, distance=2))
-        self.autonomous_chooser.addOption('score hi and move far', ScoreHiAndMove(self, distance=3.5))
+        self.autonomous_chooser.addOption('score hi and move far', ScoreHiAndMove(self, distance=4))
         self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         self.autonomous_chooser.addOption('score hi, drive and balance', ScoreDriveAndBalance(self).withTimeout(15))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))

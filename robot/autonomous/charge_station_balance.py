@@ -28,7 +28,7 @@ class ChargeStationBalance(commands2.CommandBase):
         self.max_velocity = 1.5  # in m/s, so do not forget to normalize when sent to drive function
         self.min_velocity = 0.4
         self.decay_rate = 10 #  20 transitions in about 0.25s, 10 is about 0.5 s to transition from high to low
-        self.transition_time_center = 1  # center time of our transition, in seconds
+        self.transition_time_center = 0.9  # center time of our transition, in seconds
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""

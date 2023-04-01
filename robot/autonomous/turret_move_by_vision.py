@@ -25,9 +25,10 @@ class TurretMoveByVision(commands2.CommandBase):
         position = self.turret.get_angle()
 
         # smarter to just grab this from networktables directly... less lag
+        camera_angle_adjustment = 0.5  # the camera is not at the center of the turret - this is a hack for green
         self.setpoint = None
         if self.vision.camera_values[self.color]['targets'] > 0:
-            self.setpoint = position + self.vision.camera_values[self.color]['rotation_entry']
+            self.setpoint = position + self.vision.camera_values[self.color]['rotation_entry'] * camera_angle_adjustment
         elif self.find_alternate:  # try to find another target for loading zone
             colors = ['green', 'yellow', 'purple']
             for color in colors:

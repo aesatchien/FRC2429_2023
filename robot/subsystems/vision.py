@@ -29,6 +29,9 @@ class Vision(SubsystemBase):
         self.camera_values = {}
 
         self.armcam_table = self.ntinst.getTable('ArmCam')
+
+        wpilib.SmartDashboard.putBoolean('green_targets_exist', False)
+
         #self.armcam_table.putBoolean('training', False)
         #self.armcam_table.putString('training_color', 'yellow')
         #self.training_chooser = wpilib.SendableChooser()
@@ -75,6 +78,8 @@ class Vision(SubsystemBase):
                 self.camera_values[key]['targets'] = self.camera_dict[key]['targets_entry'].getDouble(0)
                 self.camera_values[key]['distance_entry'] = self.camera_dict[key]['distance_entry'].getDouble(0)
                 self.camera_values[key]['rotation_entry'] = self.camera_dict[key]['rotation_entry'].getDouble(0)
+
+            wpilib.SmartDashboard.putBoolean('green_targets_exist', self.camera_values['green']['targets'] >= 1)
 
             # update pole values separately
             #self.pole_targets = self.camera_dict['green']['targets_entry'].getDouble(0)
