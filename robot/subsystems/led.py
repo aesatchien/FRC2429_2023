@@ -29,7 +29,7 @@ class Led(commands2.SubsystemBase):
         self.led_strip.setLength(self.led_count)
         self.led_strip.setData(self.led_data)
         self.led_strip.start()
-        self.mode = Led.Mode.RAINBOW
+        self.mode = Led.Mode.CONE
 
     def set_mode(self, mode: Mode) -> None:
         self.mode = mode

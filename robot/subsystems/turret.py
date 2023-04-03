@@ -38,6 +38,7 @@ class Turret(SubsystemBase):
         self.sparkmax_encoder = self.turret_controller.getEncoder()
         self.sparkmax_encoder.setPositionConversionFactor(constants.k_turret_encoder_conversion_factor)
         self.sparkmax_encoder.setVelocityConversionFactor(constants.k_turret_encoder_conversion_factor)  # needed for smartmotion
+        self.sparkmax_encoder.setPosition(0)
         self.pid_controller = self.turret_controller.getPIDController()
 
         # set soft limits - do not let spark max put out power above/below a certain value
@@ -95,4 +96,5 @@ class Turret(SubsystemBase):
         self.counter += 1
         if self.counter % 25 == 0:
             self.angle = self.get_angle()
+            SmartDashboard.putNumber('turret_abs_encoder', self.analog_abs_encoder.getDistance())
             SmartDashboard.putNumber('turret_angle', self.angle)

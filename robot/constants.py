@@ -10,7 +10,7 @@ changes.
 k_use_swerve = True
 k_field_centric = True
 k_competition_mode = True  # use for compressor and some joystick settings
-k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
+k_burn_flash = False # if we want to burn the settings to the sparkmaxes
 k_enable_soft_limits = True
 k_volt_compensation = 12.6
 k_rate_limited = True  # on swerve, use slew limiters to keep acceleration from being too abrupt

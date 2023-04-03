@@ -113,7 +113,7 @@ class RobotContainer:
         self.vision = Vision()
         self.led = Led()
 
-        self.game_piece_mode = 'cube'
+        self.game_piece_mode = 'cone'
 
         self.configure_joysticks()
         self.bind_buttons()
@@ -134,10 +134,8 @@ class RobotContainer:
             self.drive.setDefaultCommand(
                 DriveByJoystickVelocity(container=self, drive=self.drive, control_type='velocity', scaling=1))
 
-
-
         # initialize the turret
-        commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
+        # commands2.ScheduleCommand(TurretInitialize(container=self, turret=self.turret, samples=50)).initialize()
 
     def set_start_time(self):  # call in teleopInit and autonomousInit in the robot
         self.start_time = time.time()
@@ -335,7 +333,7 @@ class RobotContainer:
         self.autonomous_chooser.setDefaultOption('_ do nothing', DriveWait(self, duration=1))
         self.autonomous_chooser.addOption('drive 2m', DriveSwerveAutoVelocity(self, self.drive, velocity=1).withTimeout(2))
         self.autonomous_chooser.setDefaultOption('score hi and chill', ScoreHiConeFromStow(self))
-        self.autonomous_chooser.addOption('score hi and move near', ScoreHiAndMove(self, distance=2))
+        self.autonomous_chooser.addOption('score hi and move near', ScoreHiAndMove(self, distance=2.5))
         self.autonomous_chooser.addOption('score hi and move far', ScoreHiAndMove(self, distance=4))
         self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         self.autonomous_chooser.addOption('score hi, drive and balance', ScoreDriveAndBalance(self).withTimeout(15))

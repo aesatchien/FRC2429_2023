@@ -818,7 +818,7 @@ background-color:rgb(0, 20, 250);</string>
        <property name="font">
         <font>
          <family>MS Shell Dlg 2</family>
-         <pointsize>11</pointsize>
+         <pointsize>12</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -829,8 +829,8 @@ border-radius: 7px;
 background-color:rgb(80, 235, 0);</string>
        </property>
        <property name="text">
-        <string>Green Target
-  Detected</string>
+        <string>GREEN TARGET
+ DETECTED</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>
