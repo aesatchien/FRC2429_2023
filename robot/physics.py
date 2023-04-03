@@ -54,11 +54,13 @@ import math
 import typing
 
 import wpilib
+from wpimath import units
 import wpilib.simulation as simlib
 from pyfrc.physics.core import PhysicsEngine, Pose2d
 from pyfrc.physics.drivetrains import DeadzoneCallable, linear_deadzone
 from wpimath.kinematics import ChassisSpeeds
 import wpimath.geometry as geo
+import ntcore as nt
 
 import constants
 
@@ -84,11 +86,28 @@ class PhysicsEngine(PhysicsEngine):
         self.navx = simlib.SimDeviceSim("navX-Sensor[4]")
         self.navx_yaw = self.navx.getDouble("Yaw")
 
+
         self.x, self.y = constants.k_start_x, constants.k_start_y
         initial_pose = geo.Pose2d(0, 0, geo.Rotation2d())
         self.physics_controller.move_robot(geo.Transform2d(self.x, self.y, 0))
 
         # self.drivetrain = drivetrains.four_motor_swerve_drivetrain(deadzone=drivetrains.linear_deadzone(0.1))
+        # make a pretend Armcam that reports an apriltag and a green reflective target
+        self.camera_dict = {'tags': {}, 'green': {}}
+        self.armcam_table = nt.NetworkTableInstance.getDefault().getTable('Armcam')
+        self.tag_keys = ['targets', 'green']
+        # for key in self.camera_dict.keys():
+        #     self.camera_dict[key].update({'targets_entry': self.armcam_table.getEntry(f"/{key}/targets")})
+        #     self.camera_dict[key].update({'distance_entry': self.armcam_table.getEntry(f"/{key}/distance")})
+        #     self.camera_dict[key].update({'rotation_entry': self.armcam_table.getEntry(f"/{key}/rotation")})
+        #     self.camera_dict[key].update({'strafe_entry': self.armcam_table.getEntry(f"/{key}/strafe")})
+        for key in self.camera_dict.keys():
+            self.camera_dict[key].update({'targets_entry': self.armcam_table.getDoubleTopic(f"/{key}/targets").publish()})
+            self.camera_dict[key].update({'distance_entry': self.armcam_table.getDoubleTopic(f"/{key}/distance").publish()})
+            self.camera_dict[key].update({'rotation_entry': self.armcam_table.getDoubleTopic(f"/{key}/rotation").publish()})
+            self.camera_dict[key].update({'strafe_entry': self.armcam_table.getDoubleTopic(f"/{key}/strafe").publish()})
+
+
 
     def update_sim(self, now, tm_diff):
         velocity_scale, angular_scale = 10, 10  # faking PWM signals in from -1 to 1, multiply by to x get velocities,
@@ -102,24 +121,46 @@ class PhysicsEngine(PhysicsEngine):
         lf_angle = self.lf_angle.getSpeed() * angular_scale
         rf_angle = self.rf_angle.getSpeed() * angular_scale
 
+        motors_and_angles = [lr_motor, rr_motor, lf_motor, rf_motor, lr_angle, rr_angle, lf_angle, rf_angle]
+
         # had to mess with the orders and the vx, vy to get things to sim properly
-        speeds = four_motor_swerve_drivetrain(lr_motor, rr_motor, lf_motor, rf_motor,
-        lr_angle, rr_angle, lf_angle, rf_angle, x_wheelbase = 2, y_wheelbase = 2,
+        speeds = four_motor_swerve_drivetrain(*motors_and_angles, x_wheelbase = 2, y_wheelbase = 2,
         speed=5, deadzone=None,)
 
         self.physics_controller.drive(speeds, tm_diff)
         self.field.setRobotPose(self.physics_controller.get_pose())
-        x = self.field.getRobotPose().X()
-        y = self.field.getRobotPose().Y()
-        theta = self.field.getRobotPose().rotation().degrees()
-        wpilib.SmartDashboard.putNumberArray('sim_pose', [x,y,theta])
-        wpilib.SmartDashboard.putNumberArray('drive_pose', [x, y, theta])
+        self.x = self.field.getRobotPose().X()
+        self.y = self.field.getRobotPose().Y()
+        self.theta = self.field.getRobotPose().rotation().degrees()
+        wpilib.SmartDashboard.putNumberArray('sim_pose', [self.x,self.y,self.theta])
+        wpilib.SmartDashboard.putNumberArray('drive_pose', [self.x,self.y,self.theta])
         # optional: compute encoder
         # l_encoder = self.drivetrain.wheelSpeeds.left * tm_diff
 
         # Update the navx gyro simulation
         # -> FRC gyros like NavX are positive clockwise, but the returned pose is positive counter-clockwise
-        self.navx_yaw.set((theta % 360) -180)
+        self.navx_yaw.set((self.theta % 360))  # although we should be able to get this from a drivesim
+
+        # update the vision simulation with tags and greens
+        self.update_vision()
+
+    def update_vision(self):  # TODO: update these to poses and pose math, and add camera offset from robot center
+        locations = {'tags': {'id': 7, 'x': units.inchesToMeters(40.45), 'y': units.inchesToMeters(108.19)},
+                     'green': {'id': '7h+', 'x': 0.34, 'y': 3.294}}
+        # tag_x, tag_y = units.inchesToMeters(40.45), units.inchesToMeters(108.19)  # 1.02, 2.74 tag 7 is the one in front of blue center
+        # green_x, green_y = units.inchesToMeters(0.34), 3.294  # high on right of tag 7
+
+        for key in locations.keys():
+            dx = self.x - locations[key]['x']
+            dy = self.y - locations[key]['y']
+            distance = (dx**2 + dy**2)**0.5
+            rotation = (self.theta % 360)   # math.atan2(dy, dx) * 180/math.pi  # figure out what to do about this number,
+            strafe = self.y - locations[key]['y']
+
+            self.camera_dict[key]['targets_entry'].set(1)
+            self.camera_dict[key]['distance_entry'].set(distance)
+            self.camera_dict[key]['rotation_entry'].set(rotation)
+            self.camera_dict[key]['strafe_entry'].set(strafe)
 
 def four_motor_swerve_drivetrain(
     lr_motor: float,
@@ -215,7 +256,7 @@ def four_motor_swerve_drivetrain(
     )
 
     Vx *= 0.25
-    Vy *= -0.25  # I cheated on this to swap left and right.  Hmm.
+    Vy *= -0.25  # I cheated on this to swap left and right.  Where is the right place to do this?
     Vw *= 0.25
 
     wpilib.SmartDashboard.putNumberArray('sim_chassis', [Vx, Vy, Vw])

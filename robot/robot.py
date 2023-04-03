@@ -39,7 +39,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
         self.container.set_start_time()  # putting this after the scheduler is bad
 
-        self.container.drive.navx.reset()  # need to not do this in competition
+        self.container.drive.navx.reset()  # need to do this in competition
 
         self.autonomousCommand = self.container.get_autonomous_command()
 
