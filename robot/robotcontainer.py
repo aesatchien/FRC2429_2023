@@ -186,17 +186,15 @@ class RobotContainer:
         self.co_buttonRightAxis = AxisButton(self.co_driver_controller, 3)
 
     def configure_swerve_bindings(self):
-        #self.buttonA.whileHeld(SwerveX(container=self, swerve=self.drive))
         self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
-        # self.buttonX.whenPressed(ChargeStationBalance(self, self.drive))
         self.buttonX.debounce(0.1).onTrue(SwerveAngleTest(self, swerve=self.drive))
         self.buttonB.debounce(0.1).onTrue(GyroReset(self, swerve=self.drive))
-
+        self.buttonY.debounce(0.1).onTrue(AutoRotateSwerve(container=self, drive=self.drive,))
 
     def bind_buttons(self):
         # All untested still
         # bind commands to driver
-        self.buttonY.whileHeld(ChargeStationBalance(container=self, drive=self.drive, auto=False))
+        # self.buttonY.whileHeld(ChargeStationBalance(container=self, drive=self.drive, auto=False))
         self.buttonBack.whenPressed(CompressorToggle(self, self.pneumatics, force="stop"))
         self.buttonStart.whenPressed(CompressorToggle(self, self.pneumatics, force="start"))
         self.buttonRB.whenPressed(
