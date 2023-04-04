@@ -25,7 +25,7 @@ class Vision(SubsystemBase):
         self.cube_distance = 0
         self.cube_rotation = 0
 
-        self.camera_dict = {'yellow': {}, 'purple': {}, 'green': {}}
+        self.camera_dict = {'yellow': {}, 'purple': {}, 'green': {}, 'tags':{}}
         self.camera_values = {}
 
         self.armcam_table = self.ntinst.getTable('ArmCam')
@@ -48,6 +48,7 @@ class Vision(SubsystemBase):
         for key in self.camera_dict.keys():
             self.camera_dict[key].update({'targets_entry': self.armcam_table.getEntry(f"/{key}/targets")})
             self.camera_dict[key].update({'distance_entry': self.armcam_table.getEntry(f"/{key}/distance")})
+            self.camera_dict[key].update({'strafe_entry': self.armcam_table.getEntry(f"/{key}/strafe")})
             self.camera_dict[key].update({'rotation_entry': self.armcam_table.getEntry(f"/{key}/rotation")})
 
             self.camera_values[key] = {}
@@ -63,6 +64,21 @@ class Vision(SubsystemBase):
             self.relay.set(wpilib.Relay.Value.kOff)
             self.relay_state = False
         SmartDashboard.putBoolean('relay_state', self.relay_state)
+
+    def get_tag_strafe(self):
+        tag_available = self.camera_dict['tags']['targets_entry'].getDouble(0) > 0
+        if tag_available > 0:
+            return self.camera_dict['tags']['strafe_entry'].getDouble(0)
+        else:
+            return 0  # it would do this anyway because it defaults to zero
+
+    def get_green_strafe(self):
+        green_available = self.camera_dict['green']['targets'].getDouble(0) > 0
+        if green_available > 0:
+            return self.camera_dict['green']['strafe'].getDouble(0)
+        else:
+            return 0  # it would do this anyway because it defaults to zero
+
 
     def periodic(self) -> None:
         self.counter += 1

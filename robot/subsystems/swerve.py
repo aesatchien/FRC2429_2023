@@ -66,13 +66,14 @@ class Swerve (SubsystemBase):
 
         self.counter += 1
         # Update the odometry in the periodic block
-        if self.counter % 2 == 0:  # need to figure out how often we can do this w/o causing slowdowns
+        if self.counter % 1 == 0:  # need to figure out how often we can do this w/o causing slowdowns
             self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
 
         if self.counter % 10 == 0:
             pose = self.odometry.getPose()
             wpilib.SmartDashboard.putNumberArray('drive_pose', [pose.X(), pose.Y(), pose.rotation().degrees()])
             wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
+            wpilib.SmartDashboard.putNumber('_navx_yaw', self.navx.getYaw())
 
             if constants.k_debugging_messages:  # this is just a bit much, so
                 angles = [m.turningEncoder.getPosition() for m in self.swerve_modules]
@@ -184,9 +185,15 @@ class Swerve (SubsystemBase):
         # note lots of the calls want tuples, so _could_ convert if we really want to
         return [m.getPosition() for m in self.swerve_modules]
 
-    def get_angle(self):
+    def get_angle(self):  # if necessary reverse the heading for swerve math
         return -self.gyro.getAngle() if dc.kGyroReversed else self.gyro.getAngle()
 
-    def get_pitch(self):
+    def get_raw_angle(self):  # never reversed value for using PIDs on the heading
+        return self.gyro.getAngle()
+
+    def get_yaw(self):  # helpful for determining nearest heading parallel to the wall
+        return self.gyro.getYaw()
+
+    def get_pitch(self):  # need to calibrate the navx, apparently
         return self.gyro.getPitch() - 4.75
 
