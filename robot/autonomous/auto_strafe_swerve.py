@@ -23,7 +23,7 @@ class AutoStrafeSwerve(commands2.CommandBase):
 
         # Set PID controller so that 0.5m degrees will cause maximum output of 1.  Max speeds will be handled by time.
         self.strafe_controller = PIDController(0.5, 0, 0)  # note this does not clamp to ±1 unless you do it yourself
-        self.strafe_controller.setTolerance(0.01)  # one centimeter
+        self.strafe_controller.setTolerance(0.1)  # ten centimeters
 
         self.auto = auto  # allows for operator to use with minimum velocity
 
@@ -56,11 +56,11 @@ class AutoStrafeSwerve(commands2.CommandBase):
 
         current_time = wpilib.Timer.getFPGATimestamp() - self.strafe_start_time
         max_allowed_velocity = self.calculate_maximum_velocity(current_time) if self.auto else self.min_velocity
-        current_strafe = self.start_pose.Y() - self.drive.get_pose().Y()
+        current_strafe = self.start_pose.Y() # - self.drive.get_pose().Y()
         pid_output = self.strafe_controller.calculate(current_strafe, setpoint=self.target_distance)
         pid_output = pid_output if abs(pid_output) <= 1 else 1 * math.copysign(1, pid_output)  # clamp at +/- 1
         target_vel = pid_output * max_allowed_velocity  # meters per second
-        SmartDashboard.putNumber('_target_vel', target_vel)  # actual m/s target
+        SmartDashboard.putNumber('_target_error', current_strafe)
 
         debugging_speed_limit = self.max_velocity   # allow us to set a temporary test limit in m/s to override the max
         if math.fabs(target_vel) > debugging_speed_limit:
@@ -70,10 +70,11 @@ class AutoStrafeSwerve(commands2.CommandBase):
         self.drive.drive(xSpeed=0, ySpeed=target_vel/dc.kMaxSpeedMetersPerSecond, rot=0, fieldRelative=False, rate_limited=False)
         
     def isFinished(self) -> bool:
-        return False  # self.strafe_controller.atSetpoint()
+        self.strafe_controller.atSetpoint()
 
     def end(self, interrupted: bool) -> None:
         # self.container.drive.setX()  # will not stay this way unless we are in autonomous
+        self.drive.drive(xSpeed=0, ySpeed=0, rot=0, fieldRelative=False, rate_limited=False)
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'
         print(f"** {message} {self.getName()} at {end_time:.1f} s after {end_time - self.start_time:.1f} s **")
