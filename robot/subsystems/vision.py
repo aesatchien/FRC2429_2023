@@ -99,8 +99,8 @@ class Vision(SubsystemBase):
                 self.camera_values[key]['rotation'] = self.camera_dict[key]['rotation_entry'].get()
                 self.camera_values[key]['strafe'] = self.camera_dict[key]['strafe_entry'].get()
 
-            wpilib.SmartDashboard.putNumber('vision_green_targets_strafe', self.get_green_strafe())
-            wpilib.SmartDashboard.putNumber('vision_tag_targets_strafe', self.get_tag_strafe())
+            wpilib.SmartDashboard.putBoolean('green_targets_exist', self.camera_dict['green']['targets_entry'].get() > 0)
+            wpilib.SmartDashboard.putBoolean('tag_targets_exist', self.camera_dict['tags']['targets_entry'].get() > 0)
 
             # update pole values separately
             #self.pole_targets = self.camera_dict['green']['targets_entry'].getDouble(0)
