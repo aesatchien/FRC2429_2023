@@ -73,9 +73,9 @@ class Vision(SubsystemBase):
             return 0  # it would do this anyway because it defaults to zero
 
     def get_green_strafe(self):
-        green_available = self.camera_dict['green']['targets'].getDouble(0) > 0
+        green_available = self.camera_dict['green']['targets_entry'].getDouble(0) > 0
         if green_available > 0:
-            return self.camera_dict['green']['strafe'].getDouble(0)
+            return self.camera_dict['green']['strafe_entry'].getDouble(0)
         else:
             return 0  # it would do this anyway because it defaults to zero
 

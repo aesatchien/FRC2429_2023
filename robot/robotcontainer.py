@@ -46,6 +46,7 @@ from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
 from autonomous.score_by_vision import ScoreByVision
+from autonomous.swerve_score_by_vision import SwerveScoreByVision
 from autonomous.drive_wait import DriveWait
 from autonomous.turret_initialize import TurretInitialize
 from autonomous.upper_substation_pickup import UpperSubstationPickup
@@ -338,6 +339,7 @@ class RobotContainer:
         self.autonomous_chooser.addOption('score hi and move far', ScoreHiAndMove(self, distance=4))
         self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         self.autonomous_chooser.addOption('score hi, drive and balance', ScoreDriveAndBalance(self).withTimeout(15))
+        self.autonomous_chooser.addOption('score swerve by vision', SwerveScoreByVision(self, self.drive, self.elevator, self.turret, self.arm, self.vision, self.wrist, self.pneumatics))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
 
