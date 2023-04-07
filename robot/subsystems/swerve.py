@@ -66,11 +66,15 @@ class Swerve (SubsystemBase):
 
         self.counter += 1
         # Update the odometry in the periodic block
-        if self.counter % 1 == 0:  # need to figure out how often we can do this w/o causing slowdowns
+        if wpilib.RobotBase.isReal():
             self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
+        else:
+            # get pose from simulation's post to NT
+            pose = wpilib.SmartDashboard.getNumberArray('drive_pose', [0,0,0])
+            # self.odometry.resetPosition(Rotation2d.fromDegrees(self.get_angle()), Pose2d(pose[0], pose[1], pose[2]))
 
         if self.counter % 10 == 0:
-            pose = self.odometry.getPose()
+            pose = self.get_pose()  # self.odometry.getPose()
             wpilib.SmartDashboard.putNumberArray('drive_pose', [pose.X(), pose.Y(), pose.rotation().degrees()])
             wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
             wpilib.SmartDashboard.putNumber('_navx_yaw', self.navx.getYaw())
@@ -83,8 +87,11 @@ class Swerve (SubsystemBase):
                 ypr = [self.navx.getYaw(), self.get_pitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
                 wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
-    def get_pose(self) -> Pose2d:
+    def get_pose(self, report=False) -> Pose2d:
         # return the pose of the robot  TODO: update the dashboard here?
+        if report:
+            pass
+            # print(f'attempting to get pose: {self.odometry.getPose()}')
         return self.odometry.getPose()
 
     def resetOdometry(self, pose: Pose2d) -> None:

@@ -29,7 +29,7 @@ class Vision(SubsystemBase):
         self.camera_values = {}
 
         self.armcam_table = NetworkTableInstance.getDefault().getTable('Armcam')
-        print(f'Armcam keys: {self.armcam_table.getKeys()}')
+        # print(f'Armcam keys: {self.armcam_table.getKeys()}')
 
         #self.armcam_table.putBoolean('training', False)
         #self.armcam_table.putString('training_color', 'yellow')
@@ -56,8 +56,8 @@ class Vision(SubsystemBase):
             self.camera_values[key].update({'rotation': 0})
             self.camera_values[key].update({'strafe': 0})
 
-        print(self.camera_dict)
-        print(self.camera_values)
+        # print(self.camera_dict)
+        # print(self.camera_values)
 
     def set_relay(self, state):
         if state:

@@ -8,7 +8,7 @@ from commands2.button import JoystickButton, POVButton
 
 import constants  # all of the constants except for swerve
 
-from subsystems.drivetrain import Drivetrain
+# from subsystems.drivetrain import Drivetrain
 from subsystems.vision import Vision
 from subsystems.led import Led
 from subsystems.swerve import Swerve
@@ -19,7 +19,7 @@ from subsystems.wrist import Wrist
 from subsystems.pneumatics import Pneumatics
 
 from misc.axis_button import AxisButton
-from commands.drive_velocity_stick import DriveByJoystickVelocity
+from commands_unused.drive_velocity_stick import DriveByJoystickVelocity
 from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
 from commands.turret_toggle import TurretToggle
@@ -42,7 +42,6 @@ from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
 from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
 from autonomous.drive_and_balance import DriveAndBalance
-from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
 from autonomous.score_by_vision import ScoreByVision
@@ -106,7 +105,8 @@ class RobotContainer:
         if constants.k_use_swerve:
             self.drive = Swerve()
         else:
-            self.drive = Drivetrain()
+            pass
+            #  self.drive = Drivetrain()
         self.turret = Turret()
         self.arm = Arm()
         self.wrist = Wrist()

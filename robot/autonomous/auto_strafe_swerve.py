@@ -39,7 +39,9 @@ class AutoStrafeSwerve(commands2.CommandBase):
         """Called just before this Command runs the first time."""
         self.strafe_start_time = wpilib.Timer.getFPGATimestamp()
         self.print_start_message()
-        self.start_pose = self.drive.get_pose()
+        self.start_pose = self.drive.get_pose(report=True)
+        pose = self.drive.get_pose(report=True)
+        wpilib.SmartDashboard.putNumberArray('strafe_drive_pose', [pose.X(), pose.Y(), pose.rotation().degrees()])
 
         if self.target_type == 'tag':
             self.target_distance = self.vision.get_tag_strafe()
@@ -49,7 +51,7 @@ class AutoStrafeSwerve(commands2.CommandBase):
             print(f'Invalid target_type: {self.target_type}')
             pass  # will use the initialized number
 
-        print(f'Attempting to strafe to {self.target_type} {self.target_distance:.1f}m from starting position {self.start_pose.Y():.1f}m')
+        print(f'Attempting to strafe to {self.target_type} located {self.target_distance:.1f}m from starting position at {self.start_pose.Y():.1f}m')
 
     def execute(self) -> None:  # 50 loops per second. (0.02 seconds per loop)
         # should drive robot a max of ~1 m/s when climbing on fully tilted charge station
