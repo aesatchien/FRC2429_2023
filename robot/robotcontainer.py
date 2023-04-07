@@ -56,7 +56,7 @@ from autonomous.score_drive_and_balance import ScoreDriveAndBalance
 from autonomous.drive_swerve_auto_velocity import DriveSwerveAutoVelocity
 from autonomous.auto_rotate_swerve import AutoRotateSwerve
 from autonomous.auto_strafe_swerve import AutoStrafeSwerve
-from autonomous.auto_aim_swerve import AutoAimSwerve
+from autonomous.swerve_score_by_vision import SwerveScoreByVision
 
 
 class RobotContainer:
@@ -326,7 +326,6 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='ReleaseAndStow', data=ReleaseAndStow(container=self).withTimeout(5))
         wpilib.SmartDashboard.putData(key='AutoRotate', data=AutoRotateSwerve(container=self, drive=self.drive, find_closest_heading=True, auto=True).withTimeout(5))
         wpilib.SmartDashboard.putData(key='AutoStrafe', data=AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision, target_type='tag', auto=True).withTimeout(5))
-        wpilib.SmartDashboard.putData(key='AutoAimSwerve', data=AutoAimSwerve(self, self.drive, self.vision, target_type='tag', auto=True))
         #wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
         #wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
 
@@ -341,7 +340,7 @@ class RobotContainer:
         self.autonomous_chooser.addOption('score hi and move far', ScoreHiAndMove(self, distance=4))
         self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         self.autonomous_chooser.addOption('score hi, drive and balance', ScoreDriveAndBalance(self).withTimeout(15))
-        self.autonomous_chooser.addOption('score swerve by vision', SwerveScoreByVision(self, self.drive, self.elevator, self.turret, self.arm, self.vision, self.wrist, self.pneumatics))
+        self.autonomous_chooser.addOption('score with swerve', SwerveScoreByVision(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
 

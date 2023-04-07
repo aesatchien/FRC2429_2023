@@ -60,7 +60,7 @@ class AutoAimSwerve(commands2.CommandBase):
     def execute(self) -> None:  # 50 loops per second. (0.02 seconds per loop)
         # should drive robot a max of ~1 m/s when climbing on fully tilted charge station
 
-        current_time = wpilib.Timer.getFPGATimestamp() - self.strafe_start_time
+        current_time = wpilib.Timer.getFPGATimestamp() - self.aim_start_time
         max_allowed_velocity = self.calculate_maximum_velocity(current_time) if self.auto else self.min_velocity
         current_strafe = self.start_pose.Y() # - self.drive.get_pose().Y()
         current_forback = self.start_pose.X()
