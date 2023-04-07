@@ -69,13 +69,15 @@ class Swerve (SubsystemBase):
         if wpilib.RobotBase.isReal():
             self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
         else:
+            pass
             # get pose from simulation's post to NT
-            pose = wpilib.SmartDashboard.getNumberArray('drive_pose', [0,0,0])
+            # pose = wpilib.SmartDashboard.getNumberArray('drive_pose', [0,0,0])
             # self.odometry.resetPosition(Rotation2d.fromDegrees(self.get_angle()), Pose2d(pose[0], pose[1], pose[2]))
 
         if self.counter % 10 == 0:
             pose = self.get_pose()  # self.odometry.getPose()
-            wpilib.SmartDashboard.putNumberArray('drive_pose', [pose.X(), pose.Y(), pose.rotation().degrees()])
+            if wpilib.RobotBase.isReal():
+                wpilib.SmartDashboard.putNumberArray('drive_pose', [pose.X(), pose.Y(), pose.rotation().degrees()])
             wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
             wpilib.SmartDashboard.putNumber('_navx_yaw', self.navx.getYaw())
 
