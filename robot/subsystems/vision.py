@@ -81,6 +81,20 @@ class Vision(SubsystemBase):
             return self.camera_dict['green']['strafe_entry'].get()
         else:
             return 0  # it would do this anyway because it defaults to zero
+        
+    def get_tag_dist(self):
+        tag_available = self.camera_dict['tags']['targets_entry'].get() > 0
+        if tag_available > 0:
+            return self.camera_dict['tags']['distance_entry'].get()
+        else:
+            return 0
+        
+    def get_green_dist(self):
+        green_available = self.camera_dict['green']['targets_entry'].get > 0
+        if green_available > 0:
+            return self.camera_dict['tags']['distance_entry'].get()
+        else:
+            return 0
 
 
     def periodic(self) -> None:
