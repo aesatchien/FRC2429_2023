@@ -79,8 +79,9 @@ k_PID_dict_vel_turret = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 1e-5, 'kFF': 1.4e-4, 
 k_elevator_motor_port = 10  # sparkmax with a NEO
 k_elevator_timeoflight = 13  # time of flight CAN ID
 # 4.11mm/rev - comes from 25x reduction motor to shaft, one sprocket rot is 4.05in, so 0.162in / rot * 25.4 mm/in
-k_elevator_encoder_conversion_factor = 0.162 * 25.4   # 4.11
+k_elevator_encoder_conversion_factor = 4.05 / 16  * 25.4   # 6.43
 # TODO: verify elevator velocity PID values  - # 25000V and 35000A worked well in practice  20230121
+# TODO: fix kff for the 16x reduction
 k_PID_dict_vel_elevator = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 2e-4, 'kFF': 4.1e-5, 'kArbFF':0,
                          'kMaxOutput': 0.9, 'kMinOutput': -0.9, 'SM_MaxVel':30000,
                          'SM_MaxAccel':30000}
@@ -88,8 +89,9 @@ k_PID_dict_vel_elevator = {'kP': 0, 'kI': 0, 'kD': 0, 'kIz': 2e-4, 'kFF': 4.1e-5
 # --------------  ARM  ---------------
 k_arm_motor_port = 11  # sparkmax with a NEO550 - full speed is 11k
 # 60x reduction motor to shaft, one drum rot is 1.9*pi inch, then x 25.4 so we are measuring in mm
-k_arm_encoder_conversion_factor = (1.9 * 3.14 / 60) * 25.4  # 2.52 mm per revolution
+k_arm_encoder_conversion_factor = (1.9 * 3.14 / 45) * 25.4  # 2.52 mm per revolution
 # TODO: verify arm velocity PID values
+# ToDo: update the kff for the new gear ratio
 k_PID_dict_vel_arm = {'kP': 1e-5, 'kI': 1e-5, 'kD': 0, 'kIz': 1e-5, 'kFF': 4.1e-5, 'kArbFF':0,
                          'kMaxOutput': 0.95, 'kMinOutput': -0.95, 'SM_MaxVel':25000,
                       'SM_MaxAccel':25000}
