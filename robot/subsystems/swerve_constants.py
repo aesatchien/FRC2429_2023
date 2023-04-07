@@ -13,6 +13,9 @@ class DriveConstants:
     kMaxTotalSpeed = math.sqrt(2) *  kMaxAngularSpeed  # sum of angular and rotational, should probably do hypotenuse
     kMagnitudeSlewRate = 5  # hundred percent per second (1 = 100%)
     kRotationalSlewRate = 5  # hundred percent per second (1 = 100%)
+    k_inner_deadband = 0.08  # use deadbands for joystick transformations and keepangle calculations
+    k_outer_deadband = 0.95
+    k_minimum_rotation = kMaxAngularSpeed * k_inner_deadband
 
     # Chassis configuration - not sure it even matters if we're square
     kTrackWidth = units.inchesToMeters(24.0)  # Distance between centers of right and left wheels on robot

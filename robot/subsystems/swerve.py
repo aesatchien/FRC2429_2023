@@ -6,7 +6,7 @@ from commands2 import SubsystemBase
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Pose2d, Rotation2d
 from wpimath.kinematics import (ChassisSpeeds, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry,)
-from wpilib.drive import RobotDriveBase
+from wpimath.controller import PIDController
 import navx
 import rev
 
@@ -48,6 +48,15 @@ class Swerve (SubsystemBase):
         self.navx.zeroYaw()  # we boot up at zero degrees  - note - you can't reset this while calibrating
         self.gyro_calibrated = False
 
+        # timer and variables for checking if we should be using pid on rotation
+        self.keep_angle = 0  # the heading we try to maintain when not rotating
+        self.keep_angle_timer = wpilib.Timer()
+        self.keep_angle_pid = PIDController(0.01, 0, 0)  # todo: put these in constants.  allow 1% stick per degree
+        self.keep_angle_pid.enableContinuousInput(-180, 180)  # using the gyro's yaw is b/w -180 and 180
+        self.last_rotation_time = 0
+        self.time_since_rotation = 0
+        self.last_drive_time = 0
+        self.time_since_drive = 0
 
         # Slew rate filter variables for controlling lateral acceleration
         self.currentRotation, self.currentTranslationDir, self.currentTranslationMag  = 0.0, 0.0, 0.0
@@ -103,7 +112,7 @@ class Swerve (SubsystemBase):
         self.odometry.resetPosition(
             Rotation2d.fromDegrees(self.get_angle()), pose, *self.get_module_positions())
 
-    def drive(self, xSpeed: float, ySpeed: float, rot: float, fieldRelative: bool, rate_limited: bool,) -> None:
+    def drive(self, xSpeed: float, ySpeed: float, rot: float, fieldRelative: bool, rate_limited: bool, keep_angle:bool=False) -> None:
         """Method to drive the robot using joystick info.
         :param xSpeed:        Speed of the robot in the x direction (forward).
         :param ySpeed:        Speed of the robot in the y direction (sideways).
@@ -120,6 +129,9 @@ class Swerve (SubsystemBase):
             xSpeedCommanded = xSpeed
             ySpeedCommanded = ySpeed
             rotation_commanded = rot
+
+        if keep_angle:
+            rotation_commanded = self.perform_keep_angle(xSpeed, ySpeed, rot)  # call the 1706 keep angle routine to maintain rotation
 
         # Convert the commanded speeds into the correct units for the drivetrain
         xSpeedDelivered = xSpeedCommanded * dc.kMaxSpeedMetersPerSecond
@@ -142,6 +154,24 @@ class Swerve (SubsystemBase):
 
         # safety
         #self.drivebase.feed()
+
+    def perform_keep_angle(self, xSpeed, ySpeed, rot):  # update rotation if we are drifting when trying to drive straight
+        output = rot  # by default we will return rot unless it needs to be changed
+        if math.fabs(rot) > dc.k_inner_deadband:  # we are actually intending to rotate
+            self.last_rotation_time = self.keep_angle_timer.get()
+        if math.fabs(xSpeed) > dc.k_inner_deadband or math.fabs(ySpeed) > dc.k_inner_deadband:
+            self.last_drive_time = self.keep_angle_timer.get()
+
+        self.time_since_rotation = self.keep_angle_timer.get() - self.last_rotation_time
+        self.time_since_drive = self.keep_angle_timer.get() - self.last_drive_time
+
+        if self.time_since_rotation < 0.5:  # (update keep_angle until 0.5s after rotate command stops to allow rotate to finish)
+            self.keep_angle = self.get_yaw()  # todo: double check SIGN (and units are in degrees)
+        elif math.fabs(rot) < dc.k_inner_deadband and self.time_since_drive < 0.25:  # stop keep_angle .25s after you stop driving
+            output = self.keep_angle_pid.calculate(self.get_angle(), self.keep_angle)
+            output = output if math.fabs(output) < 0.2 else 0.2 * math.copysign(1, output)  # clamp at 0.2
+
+        return output
 
     def set_drive_motor_references(self, setpoint, control_type = rev.CANSparkMax.ControlType.kVoltage,
                                     pidSlot=1, arbFeedForward=0):
