@@ -43,6 +43,7 @@ from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
 from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
 from autonomous.drive_and_balance import DriveAndBalance
 from autonomous.score_exit_comm_and_balance import ScoreExitCommAndBalance
+from autonomous.score_twice import ScoreTwice
 from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
@@ -58,7 +59,6 @@ from autonomous.drive_swerve_auto_velocity import DriveSwerveAutoVelocity
 from autonomous.auto_rotate_swerve import AutoRotateSwerve
 from autonomous.auto_strafe_swerve import AutoStrafeSwerve
 from autonomous.swerve_score_by_vision import SwerveScoreByVision
-
 
 class RobotContainer:
     """
@@ -344,6 +344,7 @@ class RobotContainer:
         self.autonomous_chooser.addOption('score hi, drive and balance', ScoreDriveAndBalance(self).withTimeout(15))
         self.autonomous_chooser.addOption('score with swerve', SwerveScoreByVision(self))
         self.autonomous_chooser.addOption('score hi exit community and balance', ScoreExitCommAndBalance(self))
+        self.autonomous_chooser.addOption('score twice', ScoreTwice(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
 
