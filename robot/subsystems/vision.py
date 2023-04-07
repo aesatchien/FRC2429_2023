@@ -81,6 +81,20 @@ class Vision(SubsystemBase):
             return self.camera_dict['green']['strafe_entry'].get()
         else:
             return 0  # it would do this anyway because it defaults to zero
+        
+    def get_tag_dist(self):
+        tag_available = self.camera_dict['tags']['targets_entry'].get() > 0
+        if tag_available > 0:
+            return self.camera_dict['tags']['distance_entry'].get()
+        else:
+            return 0
+        
+    def get_green_dist(self):
+        green_available = self.camera_dict['green']['targets_entry'].get > 0
+        if green_available > 0:
+            return self.camera_dict['tags']['distance_entry'].get()
+        else:
+            return 0
 
 
     def periodic(self) -> None:
@@ -99,8 +113,8 @@ class Vision(SubsystemBase):
                 self.camera_values[key]['rotation'] = self.camera_dict[key]['rotation_entry'].get()
                 self.camera_values[key]['strafe'] = self.camera_dict[key]['strafe_entry'].get()
 
-            wpilib.SmartDashboard.putNumber('vision_green_targets_strafe', self.get_green_strafe())
-            wpilib.SmartDashboard.putNumber('vision_tag_targets_strafe', self.get_tag_strafe())
+            wpilib.SmartDashboard.putBoolean('green_targets_exist', self.camera_dict['green']['targets_entry'].get() > 0)
+            wpilib.SmartDashboard.putBoolean('tag_targets_exist', self.camera_dict['tags']['targets_entry'].get() > 0)
 
             # update pole values separately
             #self.pole_targets = self.camera_dict['green']['targets_entry'].getDouble(0)
