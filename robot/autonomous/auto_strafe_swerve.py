@@ -23,7 +23,7 @@ class AutoStrafeSwerve(commands2.CommandBase):
 
         # Set PID controller so that 0.5m degrees will cause maximum output of 1.  Max speeds will be handled by time.
         self.strafe_controller = PIDController(1, 0, 0)  # note this does not clamp to ±1 unless you do it yourself
-        self.strafe_controller.setTolerance(0.05)  # a few centimeters
+        self.strafe_controller.setTolerance(0.03)  # a few centimeters
 
         self.auto = auto  # allows for operator to use with minimum velocity
 
@@ -71,12 +71,15 @@ class AutoStrafeSwerve(commands2.CommandBase):
 
         pid_output = self.strafe_controller.calculate(current_strafe, setpoint=self.target_distance)
 
+        # todo - P may not be enough to move if the distance is too low - so maybe make a minimum velocity
+        minimum_velocity = 0.2  # m/s, like a static feed forward
+        minimum_pid_output = 0.1  # make sure it can always push
         pid_output = pid_output if abs(pid_output) <= 1 else 1 * math.copysign(1, pid_output)  # clamp at max +/- 1
-        pid_output = pid_output if abs(pid_output) > 0.2 else 0.2 * math.copysign(1, pid_output)  # clamp at min +/- 0.11
-        target_vel = pid_output * max_allowed_velocity  # meters per second
+        pid_output = pid_output if abs(pid_output) > minimum_pid_output else minimum_pid_output * math.copysign(1, pid_output)  # clamp at min +/- 0.3
+        target_vel = pid_output * max_allowed_velocity + math.copysign(1, pid_output) * minimum_velocity # meters per second
         # SmartDashboard.putNumber('_s_dist_travelled', self.start_pose.Y() - sim_pose[1])
-        # SmartDashboard.putNumber('_s_setpoint', self.target_distance)
-        # SmartDashboard.putNumber('_s_pid', pid_output)
+        SmartDashboard.putNumber('_s_target_vel', target_vel)
+        SmartDashboard.putNumber('_s_pid', pid_output)
         # SmartDashboard.putNumber('_s_sim_y', sim_pose[1])
         # SmartDashboard.putNumber('_s_error', self.strafe_controller.getPositionError())
         # SmartDashboard.putBoolean('_s_atsp', self.strafe_controller.atSetpoint())

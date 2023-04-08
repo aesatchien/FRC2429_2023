@@ -132,7 +132,7 @@ class PhysicsEngine(PhysicsEngine):
         # self.drivetrain = drivetrains.four_motor_swerve_drivetrain(deadzone=drivetrains.linear_deadzone(0.1))
         # make a pretend Armcam that reports an apriltag and a green reflective target
         self.camera_dict = {'tags': {}, 'green': {}}
-        self.armcam_table = nt.NetworkTableInstance.getDefault().getTable('Armcam')
+        self.armcam_table = nt.NetworkTableInstance.getDefault().getTable('ArmCam')
         self.tag_keys = ['targets', 'green']
         # for key in self.camera_dict.keys():
         #     self.camera_dict[key].update({'targets_entry': self.armcam_table.getEntry(f"/{key}/targets")})
@@ -140,10 +140,10 @@ class PhysicsEngine(PhysicsEngine):
         #     self.camera_dict[key].update({'rotation_entry': self.armcam_table.getEntry(f"/{key}/rotation")})
         #     self.camera_dict[key].update({'strafe_entry': self.armcam_table.getEntry(f"/{key}/strafe")})
         for key in self.camera_dict.keys():
-            self.camera_dict[key].update({'targets_entry': self.armcam_table.getDoubleTopic(f"/{key}/targets").publish()})
-            self.camera_dict[key].update({'distance_entry': self.armcam_table.getDoubleTopic(f"/{key}/distance").publish()})
-            self.camera_dict[key].update({'rotation_entry': self.armcam_table.getDoubleTopic(f"/{key}/rotation").publish()})
-            self.camera_dict[key].update({'strafe_entry': self.armcam_table.getDoubleTopic(f"/{key}/strafe").publish()})
+            self.camera_dict[key].update({'targets_entry': self.armcam_table.getDoubleTopic(f"{key}/targets").publish()})
+            self.camera_dict[key].update({'distance_entry': self.armcam_table.getDoubleTopic(f"{key}/distance").publish()})
+            self.camera_dict[key].update({'rotation_entry': self.armcam_table.getDoubleTopic(f"{key}/rotation").publish()})
+            self.camera_dict[key].update({'strafe_entry': self.armcam_table.getDoubleTopic(f"{key}/strafe").publish()})
 
 
 

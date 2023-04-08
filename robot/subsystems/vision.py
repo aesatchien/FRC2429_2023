@@ -28,7 +28,7 @@ class Vision(SubsystemBase):
         self.camera_dict = {'green': {}, 'tags': {}, 'yellow': {}, 'purple': {}}
         self.camera_values = {}
 
-        self.armcam_table = NetworkTableInstance.getDefault().getTable('Armcam')
+        self.armcam_table = NetworkTableInstance.getDefault().getTable('ArmCam')
         # print(f'Armcam keys: {self.armcam_table.getKeys()}')
 
         #self.armcam_table.putBoolean('training', False)
@@ -45,10 +45,10 @@ class Vision(SubsystemBase):
         SmartDashboard.putBoolean('relay_state', self.relay_state)
 
         for key in self.camera_dict.keys():
-            self.camera_dict[key].update({'targets_entry': self.armcam_table.getDoubleTopic(f"/{key}/targets").subscribe(0)})
-            self.camera_dict[key].update({'distance_entry': self.armcam_table.getDoubleTopic(f"/{key}/distance").subscribe(0)})
-            self.camera_dict[key].update({'strafe_entry': self.armcam_table.getDoubleTopic(f"/{key}/strafe").subscribe(0)})
-            self.camera_dict[key].update({'rotation_entry': self.armcam_table.getDoubleTopic(f"/{key}/rotation").subscribe(0)})
+            self.camera_dict[key].update({'targets_entry': self.armcam_table.getDoubleTopic(f"{key}/targets").subscribe(0)})
+            self.camera_dict[key].update({'distance_entry': self.armcam_table.getDoubleTopic(f"{key}/distance").subscribe(0)})
+            self.camera_dict[key].update({'strafe_entry': self.armcam_table.getDoubleTopic(f"{key}/strafe").subscribe(0)})
+            self.camera_dict[key].update({'rotation_entry': self.armcam_table.getDoubleTopic(f"{key}/rotation").subscribe(0)})
 
             self.camera_values[key] = {}
             self.camera_values[key].update({'targets': 0})
@@ -115,6 +115,7 @@ class Vision(SubsystemBase):
 
             wpilib.SmartDashboard.putBoolean('green_targets_exist', self.camera_dict['green']['targets_entry'].get() > 0)
             wpilib.SmartDashboard.putBoolean('tag_targets_exist', self.camera_dict['tags']['targets_entry'].get() > 0)
+            wpilib.SmartDashboard.putNumber('tag_strafe', self.camera_dict['tags']['strafe_entry'].get())
 
             # update pole values separately
             #self.pole_targets = self.camera_dict['green']['targets_entry'].getDouble(0)
