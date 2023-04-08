@@ -208,6 +208,11 @@ class RobotContainer:
         # self.buttonLeftAxis.whenPressed(led_toggle_cmd)
         self.buttonRightAxis.whenPressed(led_toggle_cmd)
 
+        self.buttonA.whenPressed(commands2.StartEndCommand(
+            lambda: self.led.set_mode(Led.Mode.VISION_TARGET_SUCCESS),
+            lambda: self.led.set_mode(self.led.get_prev_mode()),
+        ).withTimeout(2))
+
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
         # self.co_buttonRB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="open"))
@@ -340,15 +345,6 @@ class RobotContainer:
         self.autonomous_chooser.addOption('score hi, drive and balance', ScoreDriveAndBalance(self).withTimeout(15))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
-
-        self.led_modes = wpilib.SendableChooser()
-        wpilib.SmartDashboard.putData('LED', self.led_modes)
-        self.led_modes.setDefaultOption('NONE', 'NONE')
-        self.led_modes.addOption('CONE', Led.Mode.CONE)
-        self.led_modes.addOption('CUBE', Led.Mode.CUBE)
-        self.led_modes.addOption('READY', Led.Mode.READY)
-        self.led_modes.addOption('OFF', Led.Mode.OFF)
-        self.led_modes.addOption('RAINBOW', Led.Mode.RAINBOW)
 
     def get_autonomous_command(self):
         return self.autonomous_chooser.getSelected()
