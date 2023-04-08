@@ -12,11 +12,11 @@ from commands.elevator_move import ElevatorMove
 from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
 
-class ScoreTwice(commands2.SequentialCommandGroup): # Unfinished as of 4/6
+class ScoreTwice(commands2.SequentialCommandGroup):
 
     def __init__(self, container) -> None:
         super().__init__()
-        self.setName('Score Twice')  # change this to something appropriate for this command
+        self.setName('Score Twice')
         self.container = container
 
         # Drop first cone
@@ -37,35 +37,37 @@ class ScoreTwice(commands2.SequentialCommandGroup): # Unfinished as of 4/6
         # drive backwards a bit before starting superstructure stuff
         self.addCommands(DriveSwerveAutoVelocity(container=self.container, drive=self.container.drive, velocity=2).withTimeout(0.25))
 
-        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['floor'], wait_to_finish=False))
+        if False: # Stopping here to make sure we've cleared the pole
 
-        self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, setpoint=self.container.elevator.positions['bottom'], wait_to_finish=False))
+            self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['floor'], wait_to_finish=False))
 
-        self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=2, wait_to_finish=False))
+            self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, setpoint=self.container.elevator.positions['bottom'], wait_to_finish=False))
 
-        # Drive to cone
-        self.addCommands(DriveSwerveAutoVelocity(container=self.container, drive=self.container.drive, velocity=2).withTimeout(1.75))
+            self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=2, wait_to_finish=False))
 
-        # Grab it
-        self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='close'))
+            # Drive to cone
+            self.addCommands(DriveSwerveAutoVelocity(container=self.container, drive=self.container.drive, velocity=2).withTimeout(1.75))
 
-        # Drive back and score on mid
+            # Grab it
+            self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='close'))
 
-        # Start moving superstructure
-        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['stow'], wait_to_finish=False))
+            # Drive back and score on mid
 
-        self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, setpoint=self.container.elevator.positions['low'], wait_to_finish=False))
+            # Start moving superstructure
+            self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['stow'], wait_to_finish=False))
 
-        self.addCommands(ArmMove(container=self.container, arm=self.container.arm,
-                                 setpoint=self.container.arm.positions['middle'], wait_to_finish=False).withTimeout(5))
+            self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, setpoint=self.container.elevator.positions['low'], wait_to_finish=False))
 
-        self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=182, wait_to_finish=False))
+            self.addCommands(ArmMove(container=self.container, arm=self.container.arm,
+                                    setpoint=self.container.arm.positions['middle'], wait_to_finish=False).withTimeout(5))
 
-        # Drive to grid
-        self.addCommands(DriveSwerveAutoVelocity(container=self.container, drive=self.container.drive, velocity=-2).withTimeout(2))
+            self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=182, wait_to_finish=False))
 
-        # Drop
-        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['flat'], wait_to_finish=True).withTimeout(1))
+            # Drive to grid
+            self.addCommands(DriveSwerveAutoVelocity(container=self.container, drive=self.container.drive, velocity=-2).withTimeout(2))
 
-        self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='open'))
+            # Drop
+            self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['flat'], wait_to_finish=True).withTimeout(1))
+
+            self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='open'))
 

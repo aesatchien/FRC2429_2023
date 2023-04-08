@@ -24,7 +24,7 @@ class SwerveScoreByVision(commands2.SequentialCommandGroup):
 
         self.addCommands(ArmMoveByTurret(container, container.arm, container.turret, wait_to_finish=False))
 
-        self.addCommands(AutoAimSwerve(container, container.drive, container.vision, auto=True).withTimeout(2)) # timeout is for testing
+        self.addCommands(AutoAimSwerve(container, container.drive, container.vision, auto=False).withTimeout(2)) # timeout is for testing in sim
 
         self.addCommands(WristMove(container, container.wrist, setpoint=container.wrist.positions['flat'], wait_to_finish=True))
 
