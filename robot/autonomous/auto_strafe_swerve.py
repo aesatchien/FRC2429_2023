@@ -22,7 +22,7 @@ class AutoStrafeSwerve(commands2.CommandBase):
         self.addRequirements(container.drive)
 
         # Set PID controller so that 0.5m degrees will cause maximum output of 1.  Max speeds will be handled by time.
-        self.strafe_controller = PIDController(0.5, 0, 0)  # note this does not clamp to ±1 unless you do it yourself
+        self.strafe_controller = PIDController(1, 0, 0)  # note this does not clamp to ±1 unless you do it yourself
         self.strafe_controller.setTolerance(0.05)  # a few centimeters
 
         self.auto = auto  # allows for operator to use with minimum velocity

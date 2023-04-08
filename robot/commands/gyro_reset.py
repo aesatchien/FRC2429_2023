@@ -27,7 +27,8 @@ class GyroReset(commands2.CommandBase):
                                  f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
 
         # All this command does for now is reset the gyro, although we may need to add more
-        self.swerve.gyro.reset()
+        # self.swerve.gyro.reset()
+        self.swerve.reset_gyro()  # also update the keep_angle
 
     def execute(self) -> None:
         pass

@@ -13,13 +13,13 @@ from misc.configure_controllers import configure_sparkmax
 
 class Wrist(SubsystemBase):
     # wrist should probably have four positions that we need to map out
-    positions = {'stow': 94, 'score': 55, 'flat': 0, 'floor': -25}
+    positions = {'stow': 93, 'score': 55, 'flat': 0, 'floor': -25}
 
     def __init__(self):
         super().__init__()
         self. counter = 20  # offset the periodics
         # defining angles so 0 is horizontal
-        self.max_angle = 96  # call all the way up 125 degrees  todo: remeasure
+        self.max_angle = 94  # call all the way up 125 degrees  todo: remeasure
         self.min_angle = -26
 
         self.in_use_by_driver = False

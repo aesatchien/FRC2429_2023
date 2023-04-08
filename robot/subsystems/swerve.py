@@ -45,6 +45,13 @@ class Swerve (SubsystemBase):
         #self.gyro = wpilib.ADIS16470_IMU()
         self.gyro = navx.AHRS.create_spi(update_rate_hz=50)
         self.navx = self.gyro
+        if self.navx.isCalibrating():
+            # schedule a command to reset the navx
+            print('unable to reset navx: Calibration in progress')
+        else:
+            pass
+
+        #  stupid gyro never resets on boot
         self.navx.zeroYaw()  # we boot up at zero degrees  - note - you can't reset this while calibrating
         self.gyro_calibrated = False
 
@@ -114,7 +121,7 @@ class Swerve (SubsystemBase):
         self.odometry.resetPosition(
             Rotation2d.fromDegrees(self.get_angle()), pose, *self.get_module_positions())
 
-    def drive(self, xSpeed: float, ySpeed: float, rot: float, fieldRelative: bool, rate_limited: bool, keep_angle:bool=False) -> None:
+    def drive(self, xSpeed: float, ySpeed: float, rot: float, fieldRelative: bool, rate_limited: bool, keep_angle:bool=True) -> None:
         """Method to drive the robot using joystick info.
         :param xSpeed:        Speed of the robot in the x direction (forward).
         :param ySpeed:        Speed of the robot in the y direction (sideways).
@@ -170,7 +177,7 @@ class Swerve (SubsystemBase):
         if self.time_since_rotation < 0.5:  # (update keep_angle until 0.5s after rotate command stops to allow rotate to finish)
             self.keep_angle = self.get_yaw()  # todo: double check SIGN (and units are in degrees)
         elif math.fabs(rot) < dc.k_inner_deadband and self.time_since_drive < 0.25:  # stop keep_angle .25s after you stop driving
-            output = self.keep_angle_pid.calculate(self.get_angle(), self.keep_angle)
+            output = self.keep_angle_pid.calculate(-self.get_angle(), self.keep_angle)
             output = output if math.fabs(output) < 0.2 else 0.2 * math.copysign(1, output)  # clamp at 0.2
 
         return output
@@ -237,4 +244,8 @@ class Swerve (SubsystemBase):
 
     def get_pitch(self):  # need to calibrate the navx, apparently
         return self.gyro.getPitch() - 4.75
+
+    def reset_gyro(self):  # use this from now on whenever we reset the gyro
+        self.gyro.reset()
+        self.keep_angle = 0
 
