@@ -6,7 +6,7 @@ from commands2 import SubsystemBase
 from wpimath.filter import SlewRateLimiter
 from wpimath.geometry import Pose2d, Rotation2d
 from wpimath.kinematics import (ChassisSpeeds, SwerveModuleState, SwerveDrive4Kinematics, SwerveDrive4Odometry,)
-from wpilib.drive import RobotDriveBase
+from wpimath.controller import PIDController
 import navx
 import rev
 
@@ -45,9 +45,27 @@ class Swerve (SubsystemBase):
         #self.gyro = wpilib.ADIS16470_IMU()
         self.gyro = navx.AHRS.create_spi(update_rate_hz=50)
         self.navx = self.gyro
+        if self.navx.isCalibrating():
+            # schedule a command to reset the navx
+            print('unable to reset navx: Calibration in progress')
+        else:
+            pass
+
+        #  stupid gyro never resets on boot
         self.navx.zeroYaw()  # we boot up at zero degrees  - note - you can't reset this while calibrating
         self.gyro_calibrated = False
 
+        # timer and variables for checking if we should be using pid on rotation
+        self.keep_angle = 0  # the heading we try to maintain when not rotating
+        self.keep_angle_timer = wpilib.Timer()
+        self.keep_angle_timer.start()
+        self.keep_angle_timer.reset()
+        self.keep_angle_pid = PIDController(0.01, 0, 0)  # todo: put these in constants.  allow 1% stick per degree
+        self.keep_angle_pid.enableContinuousInput(-180, 180)  # using the gyro's yaw is b/w -180 and 180
+        self.last_rotation_time = 0
+        self.time_since_rotation = 0
+        self.last_drive_time = 0
+        self.time_since_drive = 0
 
         # Slew rate filter variables for controlling lateral acceleration
         self.currentRotation, self.currentTranslationDir, self.currentTranslationMag  = 0.0, 0.0, 0.0
@@ -66,12 +84,18 @@ class Swerve (SubsystemBase):
 
         self.counter += 1
         # Update the odometry in the periodic block
-        if self.counter % 1 == 0:  # need to figure out how often we can do this w/o causing slowdowns
+        if wpilib.RobotBase.isReal():
             self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
+        else:
+            pass
+            # get pose from simulation's post to NT
+            # pose = wpilib.SmartDashboard.getNumberArray('drive_pose', [0,0,0])
+            # self.odometry.resetPosition(Rotation2d.fromDegrees(self.get_angle()), Pose2d(pose[0], pose[1], pose[2]))
 
         if self.counter % 10 == 0:
-            pose = self.odometry.getPose()
-            wpilib.SmartDashboard.putNumberArray('drive_pose', [pose.X(), pose.Y(), pose.rotation().degrees()])
+            pose = self.get_pose()  # self.odometry.getPose()
+            if wpilib.RobotBase.isReal():
+                wpilib.SmartDashboard.putNumberArray('drive_pose', [pose.X(), pose.Y(), pose.rotation().degrees()])
             wpilib.SmartDashboard.putNumber('_navx', self.get_angle())
             wpilib.SmartDashboard.putNumber('_navx_yaw', self.navx.getYaw())
 
@@ -83,8 +107,11 @@ class Swerve (SubsystemBase):
                 ypr = [self.navx.getYaw(), self.get_pitch(), self.navx.getRoll(), self.navx.getRotation2d().degrees()]
                 wpilib.SmartDashboard.putNumberArray('_navx_YPR', ypr)
 
-    def get_pose(self) -> Pose2d:
+    def get_pose(self, report=False) -> Pose2d:
         # return the pose of the robot  TODO: update the dashboard here?
+        if report:
+            pass
+            # print(f'attempting to get pose: {self.odometry.getPose()}')
         return self.odometry.getPose()
 
     def resetOdometry(self, pose: Pose2d) -> None:
@@ -94,7 +121,7 @@ class Swerve (SubsystemBase):
         self.odometry.resetPosition(
             Rotation2d.fromDegrees(self.get_angle()), pose, *self.get_module_positions())
 
-    def drive(self, xSpeed: float, ySpeed: float, rot: float, fieldRelative: bool, rate_limited: bool,) -> None:
+    def drive(self, xSpeed: float, ySpeed: float, rot: float, fieldRelative: bool, rate_limited: bool, keep_angle:bool=True) -> None:
         """Method to drive the robot using joystick info.
         :param xSpeed:        Speed of the robot in the x direction (forward).
         :param ySpeed:        Speed of the robot in the y direction (sideways).
@@ -111,6 +138,9 @@ class Swerve (SubsystemBase):
             xSpeedCommanded = xSpeed
             ySpeedCommanded = ySpeed
             rotation_commanded = rot
+
+        if keep_angle:
+            rotation_commanded = self.perform_keep_angle(xSpeed, ySpeed, rot)  # call the 1706 keep angle routine to maintain rotation
 
         # Convert the commanded speeds into the correct units for the drivetrain
         xSpeedDelivered = xSpeedCommanded * dc.kMaxSpeedMetersPerSecond
@@ -133,6 +163,24 @@ class Swerve (SubsystemBase):
 
         # safety
         #self.drivebase.feed()
+
+    def perform_keep_angle(self, xSpeed, ySpeed, rot):  # update rotation if we are drifting when trying to drive straight
+        output = rot  # by default we will return rot unless it needs to be changed
+        if math.fabs(rot) > dc.k_inner_deadband:  # we are actually intending to rotate
+            self.last_rotation_time = self.keep_angle_timer.get()
+        if math.fabs(xSpeed) > dc.k_inner_deadband or math.fabs(ySpeed) > dc.k_inner_deadband:
+            self.last_drive_time = self.keep_angle_timer.get()
+
+        self.time_since_rotation = self.keep_angle_timer.get() - self.last_rotation_time
+        self.time_since_drive = self.keep_angle_timer.get() - self.last_drive_time
+
+        if self.time_since_rotation < 0.5:  # (update keep_angle until 0.5s after rotate command stops to allow rotate to finish)
+            self.keep_angle = self.get_yaw()  # todo: double check SIGN (and units are in degrees)
+        elif math.fabs(rot) < dc.k_inner_deadband and self.time_since_drive < 0.25:  # stop keep_angle .25s after you stop driving
+            output = self.keep_angle_pid.calculate(-self.get_angle(), self.keep_angle)
+            output = output if math.fabs(output) < 0.2 else 0.2 * math.copysign(1, output)  # clamp at 0.2
+
+        return output
 
     def set_drive_motor_references(self, setpoint, control_type = rev.CANSparkMax.ControlType.kVoltage,
                                     pidSlot=1, arbFeedForward=0):
@@ -196,4 +244,8 @@ class Swerve (SubsystemBase):
 
     def get_pitch(self):  # need to calibrate the navx, apparently
         return self.gyro.getPitch() - 4.75
+
+    def reset_gyro(self):  # use this from now on whenever we reset the gyro
+        self.gyro.reset()
+        self.keep_angle = 0
 

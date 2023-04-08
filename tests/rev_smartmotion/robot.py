@@ -15,8 +15,8 @@ import wpilib
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
-        can_id = 21  # change as needed
-        drivetrain = True
+        can_id = 5  # change as needed
+        drivetrain = False
         self.use_absolute_encoder = False
         self.use_alternate_encoder = False
         self.use_smartmotion = False
@@ -25,7 +25,7 @@ class Robot(wpilib.TimedRobot):
         # smart motion does weird things on the decel if you don't.
         # also note that if you do change these, the PIDs will have to change as well
         # the default values below are good for conversion factors of 1.
-        position_conversion_factor = 3.14 * 4 * 0.0254 / 6.75  # swerve drive motors
+        position_conversion_factor = 120 #3.14 * 4 * 0.0254 / 6.75  # swerve drive motors
         #position_conversion_factor = 2 * 3.14 / 21.428  # radians for swerve turning (gear ratio is 150/7)
         velocity_conversion_factor = position_conversion_factor / 60  # 60 if per sec, otherwise 1
 

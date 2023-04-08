@@ -8,6 +8,7 @@ from wpilib import SmartDashboard
 from wpimath.geometry import Translation2d
 from wpimath.filter import Debouncer
 import constants
+from subsystems.swerve_constants import DriveConstants as dc
 
 class DriveByJoystickSwerve(commands2.CommandBase):
     def __init__(
@@ -65,7 +66,7 @@ class DriveByJoystickSwerve(commands2.CommandBase):
                           fieldRelative=self.field_oriented, rate_limited=self.rate_limited)
         else:
             self.swerve.drive(xSpeed=desired_fwd,ySpeed=desired_strafe, rot=desired_rot,
-                              fieldRelative=self.field_oriented, rate_limited=self.rate_limited)
+                              fieldRelative=self.field_oriented, rate_limited=self.rate_limited, keep_angle=True)
 
     def end(self, interrupted: bool) -> None:
         # probably should leave the wheels where they are?
@@ -76,7 +77,7 @@ class DriveByJoystickSwerve(commands2.CommandBase):
         print(f"** {message} {self.getName()} at {end_time:.1f} s after {end_time - self.start_time:.1f} s **", flush=True)
         SmartDashboard.putString(f"alert", f"** {message} {self.getName()} at {end_time:.1f} s after {end_time - self.start_time:.1f} s **")
 
-    def apply_deadband(self, value, db_low=0.1, db_high=0.98):
+    def apply_deadband(self, value, db_low=dc.k_inner_deadband, db_high=dc.k_outer_deadband):
         if abs(value) < db_low:
             return 0
         elif abs(value) > db_high:
