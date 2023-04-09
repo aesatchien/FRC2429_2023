@@ -75,13 +75,13 @@ class Led(commands2.SubsystemBase):
                 if self.indicator != Led.Indicator.NONE:
                     if self.indicator == Led.Indicator.PICKUP_COMPLETE:
                         # flashing green
-                        freq = 5  # 10 /s > 2x /s
+                        freq = 1  # 10 /s > 2x /s
                         cycle = math.floor(self.animation_counter / freq)
 
                         if cycle % 2 == 0:
                             led.setRGB(0, 0, 0)
                         else:
-                            led.setRGB(0, 255, 0)
+                            led.setRGB(255, 255, 255)
 
                     elif self.indicator == Led.Indicator.VISION_TARGET_FAILURE:
                         # solid red
@@ -89,13 +89,13 @@ class Led(commands2.SubsystemBase):
 
                     elif self.indicator == Led.Indicator.VISION_TARGET_SUCCESS:
                         # flashing blue
-                        freq = 5  # 10 /s > 2x /s
+                        freq = 1  # 10 /s > 2x /s
                         cycle = math.floor(self.animation_counter / freq)
 
                         if cycle % 2 == 0:
                             led.setRGB(0, 0, 0)
                         else:
-                            led.setRGB(255, 0, 0)
+                            led.setRGB(0, 0, 255)
 
                     elif self.indicator == Led.Indicator.AUTO_STRAFE_COMPLETE:
                         # solid blue
@@ -112,7 +112,7 @@ class Led(commands2.SubsystemBase):
                 else:
                     if self.mode == Led.Mode.CONE:
                         # solid yellow
-                        led.setRGB(255, 220, 0)
+                        led.setRGB(255, 96, 0)
 
                     elif self.mode == Led.Mode.CUBE:
                         # solid purple

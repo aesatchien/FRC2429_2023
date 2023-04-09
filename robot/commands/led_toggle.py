@@ -17,6 +17,9 @@ class LedToggle(commands2.CommandBase):
             'cube',
         ]
 
+    def runsWhenDisabled(self) -> bool:
+        return True
+
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
         self.start_time = round(self.container.get_enabled_time(), 2)

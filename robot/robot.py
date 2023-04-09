@@ -6,6 +6,7 @@ import commands2
 
 import robotcontainer
 from robotcontainer import RobotContainer
+from subsystems.led import Led
 
 
 class MyRobot(commands2.TimedCommandRobot):
@@ -30,6 +31,7 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
+        self.container.led.set_indicator(Led.Indicator.RAINBOW)
 
     def disabledPeriodic(self) -> None:
         """This function is called periodically when disabled"""
@@ -50,6 +52,7 @@ class MyRobot(commands2.TimedCommandRobot):
         """This function is called periodically during autonomous"""
 
     def teleopInit(self) -> None:
+        self.container.led.set_indicator(Led.Indicator.NONE)
 
         self.container.set_start_time()  # putting this after the scheduler is bad
 

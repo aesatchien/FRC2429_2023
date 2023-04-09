@@ -12,10 +12,14 @@ class ManipulatorAutoGrab(commands2.CommandBase):
         self.container = container
         self.pneumatics = pneumatics
         self.has_game_piece = False
+        self.counter = 0
+        self.timeout = 0.5
         self.addRequirements(pneumatics)
 
     def initialize(self) -> None:
         # ensure manipulator is open during initialization
+        self.has_game_piece = False
+        self.counter = 0
         self.pneumatics.set_manipulator_piston(position='open')
 
         self.start_time = round(self.container.get_enabled_time(), 2)
@@ -31,8 +35,12 @@ class ManipulatorAutoGrab(commands2.CommandBase):
             self.pneumatics.set_manipulator_piston(position='close')
             self.has_game_piece = True
 
-            # start flashing so driver knows to leave
-            self.container.led.set_indicator(Led.Indicator.PICKUP_COMPLETE)
+        if self.has_game_piece:
+            self.counter += 1
+
+            if self.counter / 50 >= self.timeout:
+                # start flashing so driver knows to leave
+                self.container.led.set_indicator(Led.Indicator.PICKUP_COMPLETE)
 
     def isFinished(self) -> bool:
         # whileHeld
