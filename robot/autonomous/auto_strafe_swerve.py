@@ -23,14 +23,14 @@ class AutoStrafeSwerve(commands2.CommandBase):
 
         # Set PID controller so that 0.5m degrees will cause maximum output of 1.  Max speeds will be handled by time.
         self.strafe_controller = PIDController(1, 0, 0)  # note this does not clamp to ±1 unless you do it yourself
-        self.strafe_controller.setTolerance(0.03)  # a few centimeters
+        self.strafe_controller.setTolerance(0.01)  # a few centimeters
 
         self.auto = auto  # allows for operator to use with minimum velocity
 
         # should we set up a velocity transition, velocities in m/s
         self.strafe_start_time = 0  # do not confuse with the start time status message
-        self.max_velocity = 2  # in m/s, so do not forget to normalize when sent to drive function
-        self.min_velocity = 1
+        self.max_velocity = 1.5  # in m/s, so do not forget to normalize when sent to drive function
+        self.min_velocity = 0.5
         self.decay_rate = 10 #  20 transitions in about 0.25s, 10 is about 0.5 s to transition from high to low
         self.transition_time_center = 0.8  # center time of our transition, in seconds
 
