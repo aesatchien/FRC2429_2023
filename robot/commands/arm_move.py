@@ -4,7 +4,7 @@ from subsystems.arm import Arm
 
 class ArmMove(commands2.CommandBase):
 
-    def __init__(self, container, arm:Arm, setpoint=None, direction=None, wait_to_finish=True) -> None:
+    def __init__(self, container, arm:Arm, setpoint=None, direction=None, wait_to_finish=True, decide_by_turret=False) -> None:
         super().__init__()
         self.setName('Arm Move')
         self.container = container
@@ -12,6 +12,7 @@ class ArmMove(commands2.CommandBase):
         self.setpoint = setpoint
         self.direction = direction
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
+        self.decide_by_turret = decide_by_turret
         self.tolerance = 10  # mm tolerance in choosing next cycle position
 
         self.addRequirements(self.arm)  # commandsv2 version of requirements
@@ -21,6 +22,15 @@ class ArmMove(commands2.CommandBase):
         # tell the arm to go to position
         position = self.arm.get_extension()
         slot = 0
+
+        # allow us to autonomously decide on how high to go based on turret position
+        if self.decide_by_turret:
+            turret_angle = self.container.turret.get_angle()
+            if turret_angle > -20 and turret_angle < 120: # we are scoring mid or low
+                self.setpoint = self.arm.positions['middle']  # {'full': 568, 'middle': 450, 'stow': 3}
+            else:  # we are scoring high
+                self.setpoint = self.arm.positions['full']
+
         # tell the elevator to go to position
         if self.setpoint is None:
             if self.direction == 'up':

@@ -13,6 +13,7 @@ class Led(commands2.SubsystemBase):
         READY = Color(0, 255, 0)
         OFF = Color(0, 0, 0)
         RAINBOW = Color(0, 0, 0)
+        AUTO = Color(0, 0, 255)  # added for letting drivers know auto is in progress
 
     def __init__(self):
         super().__init__()

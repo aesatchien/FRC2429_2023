@@ -48,7 +48,6 @@ from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
 from autonomous.score_by_vision import ScoreByVision
-from autonomous.swerve_score_by_vision import SwerveScoreByVision
 from autonomous.drive_wait import DriveWait
 from autonomous.turret_initialize import TurretInitialize
 from autonomous.upper_substation_pickup import UpperSubstationPickup
@@ -59,6 +58,7 @@ from autonomous.drive_swerve_auto_velocity import DriveSwerveAutoVelocity
 from autonomous.auto_rotate_swerve import AutoRotateSwerve
 from autonomous.auto_strafe_swerve import AutoStrafeSwerve
 from autonomous.swerve_score_by_vision import SwerveScoreByVision
+from autonomous.auto_setup_score import AutoSetupScore
 
 class RobotContainer:
     """
@@ -329,6 +329,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='AutoRotate', data=AutoRotateSwerve(container=self, drive=self.drive, find_closest_heading=True, auto=True).withTimeout(5))
         wpilib.SmartDashboard.putData(key='AutoStrafeTag', data=AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision, target_type='tag', auto=True).withTimeout(5))
         wpilib.SmartDashboard.putData(key='AutoStrafeGreen', data=AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision, target_type='green', auto=True).withTimeout(5))
+        wpilib.SmartDashboard.putData(key='AutoSetupScore', data=AutoSetupScore(container=self))
         #wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
         #wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
 
