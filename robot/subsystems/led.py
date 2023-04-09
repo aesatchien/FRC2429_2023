@@ -2,7 +2,8 @@ import enum
 import math
 import commands2
 from wpilib import AddressableLED
-from wpilib import Color
+from wpilib import Color, SmartDashboard
+
 import constants
 
 
@@ -42,7 +43,8 @@ class Led(commands2.SubsystemBase):
         # update LEDs
         if self.counter % 5 == 0:
             self.animation_counter += 1
-
+            # advertise our state to the dash
+            SmartDashboard.putBoolean('cone_selected', self.mode == self.Mode.CONE)
             if self.mode == Led.Mode.RAINBOW:
                 for i in range(constants.k_led_count):
                     hue = (i + self.animation_counter) % constants.k_led_count

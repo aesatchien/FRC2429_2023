@@ -330,6 +330,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='AutoStrafeTag', data=AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision, target_type='tag', auto=True).withTimeout(5))
         wpilib.SmartDashboard.putData(key='AutoStrafeGreen', data=AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision, target_type='green', auto=True).withTimeout(5))
         wpilib.SmartDashboard.putData(key='AutoSetupScore', data=AutoSetupScore(container=self))
+        wpilib.SmartDashboard.putData(key='LedToggle', data=LedToggle(container=self))
         #wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
         #wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
 
