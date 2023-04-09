@@ -28,6 +28,10 @@ class LedToggle(commands2.CommandBase):
         active_mode = self.modes[self.counter % len(self.modes)]
         self.container.game_piece_mode = active_mode
 
+        if active_mode == 'cone':
+            self.container.led.set_mode(Led.Mode.CONE)
+        elif active_mode == 'cube':
+            self.container.led.set_mode(Led.Mode.CUBE)
 
     def isFinished(self) -> bool:
         return True

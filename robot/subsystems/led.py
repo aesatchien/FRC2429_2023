@@ -10,13 +10,17 @@ import constants
 
 class Led(commands2.SubsystemBase):
     class Mode(enum.Enum):
-        CONE = 'CONE' # yellow
-        CUBE = 'CUBE' # purple
-        PICKUP_COMPLETE = 'PICKUP_COMPLETE' # flashing green
-        VISION_TARGET_FAILURE = 'VISION_TARGET_FAILURE' # red
-        VISION_TARGET_SUCCESS = 'VISION_TARGET_SUCCESS' # flashing blue
-        AUTO_STRAFE_COMPLETE = 'AUTO_STRAFE_COMPLETE' # solid blue
-        RAINBOW = 'RAINBOW' # Haochen really wanted it
+        CONE = 'CONE'  # yellow
+        CUBE = 'CUBE'  # purple
+
+    # temporary indicators (flashing for pickup, strafing, etc)
+    class Indicator(enum.Enum):
+        PICKUP_COMPLETE = 'PICKUP_COMPLETE'  # flashing green
+        VISION_TARGET_FAILURE = 'VISION_TARGET_FAILURE'  # red
+        VISION_TARGET_SUCCESS = 'VISION_TARGET_SUCCESS'  # flashing blue
+        AUTO_STRAFE_COMPLETE = 'AUTO_STRAFE_COMPLETE'  # solid blue
+        RAINBOW = 'RAINBOW'
+        NONE = 'NONE'
 
     def __init__(self):
         super().__init__()
@@ -33,8 +37,9 @@ class Led(commands2.SubsystemBase):
         self.led_strip.setLength(self.led_count)
         self.led_strip.setData(self.led_data)
         self.led_strip.start()
+
         self.mode = Led.Mode.CONE
-        self.prev_mode = self.mode
+        self.indicator = Led.Indicator.NONE
 
     def set_mode(self, mode: Mode) -> None:
         self.prev_mode = self.mode
@@ -43,13 +48,20 @@ class Led(commands2.SubsystemBase):
     def get_mode(self) -> Mode:
         return self.mode
 
-    def get_prev_mode(self) -> Mode:
-        return self.prev_mode
+    def set_indicator(self, indicator) -> None:
+        self.indicator = indicator
+
+    def set_indicator_with_timeout(self, indicator: Indicator, timeout: float) -> commands2.StartEndCommand:
+        return commands2.StartEndCommand(
+            lambda: self.set_indicator(indicator),
+            lambda: self.set_indicator(Led.Indicator.NONE),
+        ).withTimeout(timeout)
 
     def periodic(self) -> None:
         # update LEDs
         if self.counter % 5 == 0:
             SmartDashboard.putString('led_mode', self.mode.value)
+            SmartDashboard.putString('led_indicator', self.indicator.value)
 
             # advertise our state to the dash
             SmartDashboard.putBoolean('cone_selected', self.mode == self.Mode.CONE)
@@ -59,49 +71,52 @@ class Led(commands2.SubsystemBase):
             for i in range(constants.k_led_count):
                 led = self.led_data[i]
 
-                if self.mode == Led.Mode.CONE:
-                    # solid yellow
-                    led.setRGB(255, 220, 0)
+                # check if there is an indicator, and override
+                if self.indicator != Led.Indicator.NONE:
+                    if self.indicator == Led.Indicator.PICKUP_COMPLETE:
+                        # flashing green
+                        freq = 5  # 10 /s > 2x /s
+                        cycle = math.floor(self.animation_counter / freq)
 
-                elif self.mode == Led.Mode.CUBE:
-                    # solid purple
-                    led.setRGB(255, 0, 255)
+                        if cycle % 2 == 0:
+                            led.setRGB(0, 0, 0)
+                        else:
+                            led.setRGB(0, 255, 0)
 
-                elif self.mode == Led.Mode.PICKUP_COMPLETE:
-                    # flashing green
-                    freq = 5 # 10 /s > 2x /s
-                    cycle = math.floor(self.animation_counter / freq)
-
-                    if cycle % 2 == 0:
-                        led.setRGB(0, 0, 0)
-                    else:
-                        led.setRGB(0, 255, 0)
-
-                elif self.mode == Led.Mode.VISION_TARGET_FAILURE:
-                    # solid red
-                    led.setRGB(255, 0, 0)
-
-                elif self.mode == Led.Mode.VISION_TARGET_SUCCESS:
-                    # flashing blue
-                    freq = 5  # 10 /s > 2x /s
-                    cycle = math.floor(self.animation_counter / freq)
-
-                    if cycle % 2 == 0:
-                        led.setRGB(0, 0, 0)
-                    else:
+                    elif self.indicator == Led.Indicator.VISION_TARGET_FAILURE:
+                        # solid red
                         led.setRGB(255, 0, 0)
 
-                elif self.mode == Led.Mode.AUTO_STRAFE_COMPLETE:
-                    # solid blue
-                    led.setRGB(0, 0, 255)
+                    elif self.indicator == Led.Indicator.VISION_TARGET_SUCCESS:
+                        # flashing blue
+                        freq = 5  # 10 /s > 2x /s
+                        cycle = math.floor(self.animation_counter / freq)
 
-                elif self.mode == Led.Mode.RAINBOW:
-                    # rainbow
-                    hue = (i + self.animation_counter) % constants.k_led_count
-                    hue /= constants.k_led_count
-                    hue *= 255
+                        if cycle % 2 == 0:
+                            led.setRGB(0, 0, 0)
+                        else:
+                            led.setRGB(255, 0, 0)
 
-                    led.setHSV(math.floor(hue), 255, 255)
+                    elif self.indicator == Led.Indicator.AUTO_STRAFE_COMPLETE:
+                        # solid blue
+                        led.setRGB(0, 0, 255)
+
+                    elif self.indicator == Led.Indicator.RAINBOW:
+                        # rainbow
+                        hue = (i + self.animation_counter) % constants.k_led_count
+                        hue /= constants.k_led_count
+                        hue *= 255
+
+                        led.setHSV(math.floor(hue), 255, 255)
+
+                else:
+                    if self.mode == Led.Mode.CONE:
+                        # solid yellow
+                        led.setRGB(255, 220, 0)
+
+                    elif self.mode == Led.Mode.CUBE:
+                        # solid purple
+                        led.setRGB(255, 0, 255)
 
             self.led_strip.setData(self.led_data)
 

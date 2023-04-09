@@ -1,6 +1,7 @@
 import commands2
 from wpilib import SmartDashboard
 from subsystems.pneumatics import Pneumatics
+from subsystems.led import Led
 
 
 class ManipulatorAutoGrab(commands2.CommandBase):
@@ -26,15 +27,20 @@ class ManipulatorAutoGrab(commands2.CommandBase):
         target_distance = self.pneumatics.get_target_distance()
         grab_distance = 200 # mm
 
-        if target_distance <= grab_distance and target_distance >= 50:
+        if not self.has_game_piece and target_distance <= grab_distance and target_distance >= 50:
             self.pneumatics.set_manipulator_piston(position='close')
             self.has_game_piece = True
+
+            # start flashing so driver knows to leave
+            self.container.led.set_indicator(Led.Indicator.PICKUP_COMPLETE)
 
     def isFinished(self) -> bool:
         # whileHeld
         return False
 
     def end(self, interrupted: bool) -> None:
+        self.container.led.set_indicator(Led.Indicator.NONE)
+
         end_time = self.container.get_enabled_time()
         message = 'Interrupted' if interrupted else 'Ended'
         print(f"** {message} {self.getName()} at {end_time:.1f} s after {end_time - self.start_time:.1f} s **")

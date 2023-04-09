@@ -210,14 +210,8 @@ class RobotContainer:
 
         self.buttonDown.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
 
-        led_toggle_cmd = LedToggle(container=self)
-        # self.buttonLeftAxis.whenPressed(led_toggle_cmd)
-        self.buttonRightAxis.whenPressed(led_toggle_cmd)
-
-        self.buttonA.whenPressed(commands2.StartEndCommand(
-            lambda: self.led.set_mode(Led.Mode.VISION_TARGET_SUCCESS),
-            lambda: self.led.set_mode(self.led.get_prev_mode()),
-        ).withTimeout(2))
+        self.buttonRightAxis.whenPressed(LedToggle(container=self))
+        self.buttonLeftAxis.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.VISION_TARGET_FAILURE, 2))
 
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
