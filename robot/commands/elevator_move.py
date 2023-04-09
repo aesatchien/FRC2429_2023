@@ -5,7 +5,8 @@ from wpilib import DoubleSolenoid
 
 class ElevatorMove(commands2.CommandBase):
 
-    def __init__(self, container, elevator:Elevator, setpoint=None, direction=None, wait_to_finish=True, drive_controls=False, enable_skip=False) -> None:
+    def __init__(self, container, elevator:Elevator, setpoint=None, direction=None, wait_to_finish=True,
+                 drive_controls=False, enable_skip=False, decide_by_turret=False) -> None:
         super().__init__()
         self.setName('Elevator Move')
         self.container = container
@@ -16,6 +17,7 @@ class ElevatorMove(commands2.CommandBase):
         self.wait_to_finish = wait_to_finish  # determine how long we wait to end
         self.drive_controls = drive_controls
         self.enable_skip = enable_skip
+        self.decide_by_turret = decide_by_turret
 
         self.addRequirements(self.elevator)  # commandsv2 version of requirements
 
@@ -23,13 +25,22 @@ class ElevatorMove(commands2.CommandBase):
         self.print_start_message()
         position = self.elevator.get_height()
 
-        positions = list(self.elevator.positions.values())
+        positions = list(self.elevator.positions.values())  # default list of setpoints
 
+        # only allow certain setpoints depending on if we have a game piece
         if self.drive_controls:
             if self.container.pneumatics.get_manipulator_state() == DoubleSolenoid.Value.kForward:
                 positions = list(self.elevator.positions_open.values())
             else:
                 positions = list(self.elevator.positions_close.values())
+
+        # allow us to autonomously decide on how high to go based on turret position
+        if self.decide_by_turret:
+            turret_angle = self.container.turret.get_angle()
+            if turret_angle > -20 and turret_angle < 120: # we are scoring mid or low
+                self.setpoint = self.elevator.positions_close['low']  #  {'top': 950, 'low': 650}
+            else:  # we are scoring high
+                self.setpoint = self.elevator.positions_close['top']
 
         # tell the elevator to go to position
         if self.setpoint is None:

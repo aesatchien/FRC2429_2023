@@ -3,7 +3,8 @@ import math
 import commands2
 import wpilib
 from wpilib import AddressableLED
-from wpilib import Color
+from wpilib import Color, SmartDashboard
+
 import constants
 
 
@@ -48,7 +49,10 @@ class Led(commands2.SubsystemBase):
     def periodic(self) -> None:
         # update LEDs
         if self.counter % 5 == 0:
-            wpilib.SmartDashboard.putString('led_mode', self.mode.value)
+            SmartDashboard.putString('led_mode', self.mode.value)
+
+            # advertise our state to the dash
+            SmartDashboard.putBoolean('cone_selected', self.mode == self.Mode.CONE)
 
             self.animation_counter += 1
 

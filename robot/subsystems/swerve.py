@@ -60,7 +60,7 @@ class Swerve (SubsystemBase):
         self.keep_angle_timer = wpilib.Timer()
         self.keep_angle_timer.start()
         self.keep_angle_timer.reset()
-        self.keep_angle_pid = PIDController(0.01, 0, 0)  # todo: put these in constants.  allow 1% stick per degree
+        self.keep_angle_pid = PIDController(0.015, 0, 0)  # todo: put these in constants.  allow 1% stick per degree
         self.keep_angle_pid.enableContinuousInput(-180, 180)  # using the gyro's yaw is b/w -180 and 180
         self.last_rotation_time = 0
         self.time_since_rotation = 0
@@ -83,7 +83,9 @@ class Swerve (SubsystemBase):
     def periodic(self) -> None:
 
         self.counter += 1
-        # Update the odometry in the periodic block
+        # Update the odometry in the periodic block -
+        # TODO - figure out if the odometry and the swerve use the same angle conventions - seems backwards
+        # or I faked it incorrectly in the sim
         if wpilib.RobotBase.isReal():
             self.odometry.update(Rotation2d.fromDegrees(self.get_angle()), *self.get_module_positions(),)
         else:

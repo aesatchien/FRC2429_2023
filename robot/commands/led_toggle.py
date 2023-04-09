@@ -5,6 +5,8 @@ from subsystems.led import Led
 
 class LedToggle(commands2.CommandBase):
 
+    counter = 0
+
     def __init__(self, container) -> None:
         super().__init__()
         self.setName('LedToggle')
@@ -14,7 +16,6 @@ class LedToggle(commands2.CommandBase):
             'cone',
             'cube',
         ]
-        self.counter = 0
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
