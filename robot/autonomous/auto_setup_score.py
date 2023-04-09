@@ -7,6 +7,7 @@ from autonomous.auto_strafe_swerve import AutoStrafeSwerve
 from autonomous.drive_swerve_auto_velocity import DriveSwerveAutoVelocity
 from commands.elevator_move import ElevatorMove
 from commands.arm_move import ArmMove
+from commands.wrist_move import WristMove
 from commands2 import WaitCommand
 
 class AutoSetupScore(commands2.SequentialCommandGroup):  # change the name for your command
@@ -33,6 +34,9 @@ class AutoSetupScore(commands2.SequentialCommandGroup):  # change the name for y
         # extend arm - decide on distance based on turret position - but what if strafe failed?
         self.addCommands(ArmMove(container=self.container, arm=self.container.arm, wait_to_finish=False,
                                       decide_by_turret=True))
+        # send the wrist to whatever
+        self.addCommands(WristMove(container=self.container, wrist=self.container.wrist,
+                                   setpoint=self.container.wrist.positions['score'], wait_to_finish=False))
 
         # drive forward - should get this from the tag if we can / make it optional
         # added a get direction from turret to velocity as well
