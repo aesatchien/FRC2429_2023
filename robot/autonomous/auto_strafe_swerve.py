@@ -33,6 +33,7 @@ class AutoStrafeSwerve(commands2.CommandBase):
         self.min_velocity = 0.5
         self.decay_rate = 10 #  20 transitions in about 0.25s, 10 is about 0.5 s to transition from high to low
         self.transition_time_center = 0.5  # center time of our transition, in seconds  # 0.8 is good
+        self.target_detected = False
 
         self.start_pose = Pose2d()
 
@@ -48,8 +49,10 @@ class AutoStrafeSwerve(commands2.CommandBase):
             self.start_pose = Pose2d(sim_pose[0], sim_pose[1], Rotation2d(sim_pose[2]) )
 
         if self.target_type == 'tag':
+            self.target_detected = self.vision.target_available(target='tags')
             self.target_distance = self.vision.get_tag_strafe()
         elif self.target_type == 'green':
+            self.target_detected = self.vision.target_available(target='green')
             self.target_distance = self.vision.get_green_strafe()
         else:
             print(f'Invalid target_type: {self.target_type}')
@@ -107,7 +110,7 @@ class AutoStrafeSwerve(commands2.CommandBase):
                          rate_limited=False, keep_angle=True)
         
     def isFinished(self) -> bool:
-        return self.strafe_controller.atSetpoint()  # WTF is this not returning True?
+        return self.strafe_controller.atSetpoint() or not self.target_detected
 
     def end(self, interrupted: bool) -> None:
         # self.container.drive.setX()  # will not stay this way unless we are in autonomous

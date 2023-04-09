@@ -80,6 +80,12 @@ class Vision(SubsystemBase):
             self.relay_state = False
         SmartDashboard.putBoolean('relay_state', self.relay_state)
 
+    def target_available(self, target):
+        if target == 'tags':
+            return self.camera_dict['tags']['targets_entry'].get() > 0
+        elif target == 'green':
+            self.camera_dict['green']['targets_entry'].get() > 0
+
     def get_tag_strafe(self):
         tag_available = self.camera_dict['tags']['targets_entry'].get() > 0
         if tag_available > 0:

@@ -18,7 +18,7 @@ class AutoSetupScore(commands2.SequentialCommandGroup):  # change the name for y
         self.container = container
 
         # align robot with wall
-        self.addCommands(AutoRotateSwerve(container=self.container, drive=self.container.drive))
+        self.addCommands(AutoRotateSwerve(container=self.container, drive=self.container.drive).withTimeout(1))
 
         # pause to give time for an april tag detection
         self.addCommands(WaitCommand(0.25))
