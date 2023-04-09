@@ -55,7 +55,14 @@ class AutoStrafeSwerve(commands2.CommandBase):
             print(f'Invalid target_type: {self.target_type}')
             pass  # will use the initialized number
 
-        print(f'Attempting to strafe to {self.target_type} located {self.target_distance:.1f}m from starting position at {self.start_pose.Y():.1f}m')
+        # check to see if we are holding a cone
+        cone_mode = self.container.led.get_mode() == self.container.led.Mode.CONE  # check to see if cone or cube
+        # print(f'Holding cone: {cone_mode}')
+        if self.target_type=='tag' and cone_mode:  # offset by the cone offset - 0.56m but depending on if you are on the right or left
+            cone_offset = 0.56  # lateral distance from cone station center to cone poles
+            self.target_distance = self.target_distance - cone_offset * math.copysign(1, self.target_distance)
+
+        print(f'Attempting to strafe to cone={cone_mode} using {self.target_type} located {self.target_distance:.1f}m from starting position at {self.start_pose.Y():.1f}m')
 
     def execute(self) -> None:  # 50 loops per second. (0.02 seconds per loop)
         # should drive robot a max of ~1 m/s when climbing on fully tilted charge station
@@ -85,7 +92,8 @@ class AutoStrafeSwerve(commands2.CommandBase):
         # SmartDashboard.putBoolean('_s_atsp', self.strafe_controller.atSetpoint())
 
         # remember to scale the velocity for the drive function - divide input by max
-        self.drive.drive(xSpeed=0, ySpeed=target_vel/dc.kMaxSpeedMetersPerSecond, rot=0, fieldRelative=False, rate_limited=False)
+        self.drive.drive(xSpeed=0, ySpeed=target_vel/dc.kMaxSpeedMetersPerSecond, rot=0, fieldRelative=True,
+                         rate_limited=False, keep_angle=True)
         
     def isFinished(self) -> bool:
         return self.strafe_controller.atSetpoint()  # WTF is this not returning True?
