@@ -18,7 +18,15 @@ class LedLoop(commands2.CommandBase):
         SmartDashboard.putString("alert", f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
 
     def execute(self) -> None:
-        pass
+        selected = self.container.led_modes.getSelected()
+
+        if selected != 'NONE':
+            self.container.led.set_mode(selected)
+        else:
+            if self.container.game_piece_mode == 'cube':
+                self.container.led.set_mode(Led.Mode.CUBE)
+            elif self.container.game_piece_mode == 'cone':
+                self.container.led.set_mode(Led.Mode.CONE)
 
     def isFinished(self) -> bool:
         return False

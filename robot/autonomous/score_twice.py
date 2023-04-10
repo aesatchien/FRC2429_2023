@@ -35,10 +35,9 @@ class ScoreTwice(commands2.SequentialCommandGroup):
         self.addCommands(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics, force='open'))
 
         # drive backwards a bit before starting superstructure stuff
-        self.addCommands(DriveSwerveAutoVelocity(container=self.container, drive=self.container.drive, velocity=2).withTimeout(0.25))
+        self.addCommands(DriveSwerveAutoVelocity(container=self.container, drive=self.container.drive, velocity=0.5).withTimeout(0.25))
 
-        if False: # Stopping here to make sure we've cleared the pole
-
+        if False:
             self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['floor'], wait_to_finish=False))
 
             self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, setpoint=self.container.elevator.positions['bottom'], wait_to_finish=False))
@@ -59,7 +58,7 @@ class ScoreTwice(commands2.SequentialCommandGroup):
             self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, setpoint=self.container.elevator.positions['low'], wait_to_finish=False))
 
             self.addCommands(ArmMove(container=self.container, arm=self.container.arm,
-                                    setpoint=self.container.arm.positions['middle'], wait_to_finish=False).withTimeout(5))
+                                     setpoint=self.container.arm.positions['middle'], wait_to_finish=False).withTimeout(5))
 
             self.addCommands(TurretMove(container=self.container, turret=self.container.turret, setpoint=182, wait_to_finish=False))
 

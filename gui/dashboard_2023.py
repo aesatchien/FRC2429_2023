@@ -298,9 +298,12 @@ class Ui(QtWidgets.QMainWindow):
     # ------------------- INITIALIZING WIDGETS --------------------------
     # set up appropriate entries for all the widgets we care about
     def initialize_widgets(self):
+
         self.widget_dict = {
         'qcombobox_autonomous_routines': {'widget':self.qcombobox_autonomous_routines, 'nt':r'/SmartDashboard/autonomous routines/options', 'command':None,
                                           'selected': r'/SmartDashboard/autonomous routines/selected'},
+        'qlabel_align_to_target_indicator': {'widget': self.qlabel_align_to_target_indicator,
+                                           'nt': '/SmartDashboard/AutoSetupScore/running', 'command': '/SmartDashboard/AutoSetupScore/running'},
         'qlabel_arm_calibration_indicator': {'widget': self.qlabel_arm_calibration_indicator,
                                            'nt': '/SmartDashboard/ArmCalibration/running', 'command': '/SmartDashboard/ArmCalibration/running'},
         'qlabel_arm_retract_indicator': {'widget': self.qlabel_arm_retract_indicator, 'nt': '/SmartDashboard/ArmMoveDown/running',
@@ -315,6 +318,9 @@ class Ui(QtWidgets.QMainWindow):
                                               'nt': '/SmartDashboard/ElevatorMoveDown/running', 'command': '/SmartDashboard/ElevatorMoveDown/running'},
         'qlabel_elevator_up_indicator': {'widget': self.qlabel_elevator_up_indicator,
                                               'nt': '/SmartDashboard/ElevatorMoveUp/running', 'command': '/SmartDashboard/ElevatorMoveUp/running'},
+        'qlabel_game_piece_indicator': {'widget': self.qlabel_game_piece_indicator, 'nt': '/SmartDashboard/cone_selected', 'command': '/SmartDashboard/LedToggle/running',
+                                        'style_on': "border: 7px; border-radius: 7px; background-color:rgb(225, 225, 0); color:rgb(0, 0, 0);",
+                                        'style_off': "border: 7px; border-radius: 7px; background-color:rgb(225, 0, 225); color:rgb(0, 0, 0);"},
         'qlabel_green_target_indicator': {'widget': self.qlabel_green_target_indicator, 'nt': '/SmartDashboard/green_targets_exist', 'command': '/SmartDashboard/AutoStrafeGreen/running'},
         'qlabel_apriltag_target_indicator': {'widget': self.qlabel_apriltag_target_indicator, 'nt': '/SmartDashboard/tag_targets_exist', 'command': '/SmartDashboard/AutoStrafeTag/running'},
         'qlabel_navx_reset_indicator': {'widget': self.qlabel_navx_reset_indicator,
@@ -329,20 +335,12 @@ class Ui(QtWidgets.QMainWindow):
         'qlabel_turret_to_post_indicator': {'widget': self.qlabel_turret_to_post_indicator, 'nt': '/SmartDashboard/TurretMoveByVision/running', 'command': '/SmartDashboard/TurretMoveByVision/running'},
         'qlabel_turret_calibration_indicator': {'widget': self.qlabel_turret_calibration_indicator, 'nt': '/SmartDashboard/TurretInitialize/running',
                                     'command': '/SmartDashboard/TurretInitialize/running'},
-        'qlabel_turret_down_indicator': {'widget': self.qlabel_turret_down_indicator,
-                                            'nt': '/SmartDashboard/TurretMoveDown/running',
-                                            'command': '/SmartDashboard/TurretMoveDown/running'},
-        'qlabel_turret_up_indicator': {'widget': self.qlabel_turret_up_indicator,
-                                          'nt': '/SmartDashboard/TurretMoveUp/running',
-                                          'command': '/SmartDashboard/TurretMoveUp/running'},
+        'qlabel_turret_down_indicator': {'widget': self.qlabel_turret_down_indicator, 'nt': '/SmartDashboard/TurretMoveDown/running', 'command': '/SmartDashboard/TurretMoveDown/running'},
+        'qlabel_turret_up_indicator': {'widget': self.qlabel_turret_up_indicator, 'nt': '/SmartDashboard/TurretMoveUp/running', 'command': '/SmartDashboard/TurretMoveUp/running'},
         'qlabel_upper_pickup_indicator': {'widget': self.qlabel_upper_pickup_indicator, 'nt': '/SmartDashboard/UpperSubstationPickup/running', 'command': '/SmartDashboard/UpperSubstationPickup/running'},
-
-        'qlabel_wrist_calibration_indicator': {'widget': self.qlabel_wrist_calibration_indicator, 'nt': '/SmartDashboard/WristCalibration/running',
-                                         'command': '/SmartDashboard/WristCalibration/running'},
         'qlabel_wrist_down_indicator': {'widget': self.qlabel_wrist_down_indicator, 'nt': '/SmartDashboard/WristMoveDown/running',
                                                'command': '/SmartDashboard/WristMoveDown/running'},
-        'qlabel_wrist_up_indicator': {'widget': self.qlabel_wrist_up_indicator, 'nt': '/SmartDashboard/WristMoveUp/running',
-                                             'command': '/SmartDashboard/WristMoveUp/running'},
+        'qlabel_wrist_up_indicator': {'widget': self.qlabel_wrist_up_indicator, 'nt': '/SmartDashboard/WristMoveUp/running', 'command': '/SmartDashboard/WristMoveUp/running'},
         'qlcd_turret_angle': {'widget':self.qlcd_turret_angle, 'nt':'/SmartDashboard/turret_angle', 'command': None},
         'qlcd_elevator_height': {'widget': self.qlcd_elevator_height, 'nt': '/SmartDashboard/elevator_height', 'command': None},
         'qlcd_arm_extension': {'widget':self.qlcd_arm_extension, 'nt':'/SmartDashboard/arm_extension', 'command': None},
@@ -357,7 +355,7 @@ class Ui(QtWidgets.QMainWindow):
         # get all the entries and add them to the dictionary
         for key, d in self.widget_dict.items():
             if d['nt'] is not None:
-                d.update({'entry':self.ntinst.getEntry(d['nt'])})
+                d.update({'entry': self.ntinst.getEntry(d['nt'])})
             else:
                 d.update({'entry': None})
             if d['command'] is not None:
@@ -387,7 +385,11 @@ class Ui(QtWidgets.QMainWindow):
             if d['entry'] is not None:
                 if 'indicator' in key:
                     #  print(f'Indicator: {key}')
-                    style = style_on if d['entry'].getBoolean(False) else style_off
+                    # allow for a custom style in the widget
+                    if 'style_on' in d.keys():
+                        style = d['style_on'] if d['entry'].getBoolean(False) else d['style_off']
+                    else:
+                        style = style_on if d['entry'].getBoolean(False) else style_off
                     d['widget'].setStyleSheet(style)
                 elif 'lcd' in key:
                     #  print(f'LCD: {key}')

@@ -37,6 +37,7 @@ from commands.gyro_reset import GyroReset
 from commands.co_stow import CoStow
 from commands.manipulator_auto_grab import ManipulatorAutoGrab
 from commands.led_toggle import LedToggle
+from commands.turret_reset import TurretReset
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
@@ -48,7 +49,6 @@ from autonomous.charge_station_balance import ChargeStationBalance
 from autonomous.safe_carry import SafeCarry
 from autonomous.turret_move_by_vision import TurretMoveByVision
 from autonomous.score_by_vision import ScoreByVision
-from autonomous.swerve_score_by_vision import SwerveScoreByVision
 from autonomous.drive_wait import DriveWait
 from autonomous.turret_initialize import TurretInitialize
 from autonomous.upper_substation_pickup import UpperSubstationPickup
@@ -59,6 +59,7 @@ from autonomous.drive_swerve_auto_velocity import DriveSwerveAutoVelocity
 from autonomous.auto_rotate_swerve import AutoRotateSwerve
 from autonomous.auto_strafe_swerve import AutoStrafeSwerve
 from autonomous.swerve_score_by_vision import SwerveScoreByVision
+from autonomous.auto_setup_score import AutoSetupScore
 
 class RobotContainer:
     """
@@ -190,10 +191,13 @@ class RobotContainer:
         self.co_buttonRightAxis = AxisButton(self.co_driver_controller, 3)
 
     def configure_swerve_bindings(self):
-        self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
-        self.buttonX.debounce(0.1).onTrue(SwerveAngleTest(self, swerve=self.drive))
+        # self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
+        self.buttonA.debounce(0.1).onTrue(AutoSetupScore(container=self))
         self.buttonB.debounce(0.1).onTrue(GyroReset(self, swerve=self.drive))
-        self.buttonY.debounce(0.1).onTrue(AutoRotateSwerve(container=self, drive=self.drive,))
+        self.buttonX.debounce(0.1).onTrue(AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision,
+                                                           target_type='tag', auto=True).withTimeout(5))
+        # self.buttonX.debounce(0.1).onTrue(SwerveAngleTest(self, swerve=self.drive))
+        self.buttonY.debounce(0.1).onTrue(AutoRotateSwerve(container=self, drive=self.drive,).withTimeout(2))
 
     def bind_buttons(self):
         # All untested still
@@ -207,10 +211,11 @@ class RobotContainer:
             cmd.runOnce(action=lambda: self.wrist.set_driver_flag(state=False))))
 
         self.buttonDown.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
+        self.buttonUp.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.RAINBOW, 5))
+        self.buttonLeft.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.RSL, 5))
 
-        led_toggle_cmd = LedToggle(container=self)
-        # self.buttonLeftAxis.whenPressed(led_toggle_cmd)
-        self.buttonRightAxis.whenPressed(led_toggle_cmd)
+        self.buttonRightAxis.whenPressed(LedToggle(container=self))
+        # self.buttonLeftAxis.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.VISION_TARGET_SUCCESS, 2))
 
         # bind commands to co-pilot
         # self.co_buttonLB.whenPressed(ManipulatorToggle(self, self.pneumatics, force="close"))
@@ -226,7 +231,8 @@ class RobotContainer:
         # self.co_buttonBack.whenPressed(TurretMove(self, self.turret, setpoint=0, wait_to_finish=False))
 
         self.co_buttonBack.whenPressed(CoStow(container=self))
-        self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision, find_alternate=False))
+        #self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision, find_alternate=False))
+        self.co_buttonStart.whenPressed(TurretReset(container=self, turret=self.turret))  # allow copilot to reset turret
         self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
@@ -329,6 +335,8 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='AutoRotate', data=AutoRotateSwerve(container=self, drive=self.drive, find_closest_heading=True, auto=True).withTimeout(5))
         wpilib.SmartDashboard.putData(key='AutoStrafeTag', data=AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision, target_type='tag', auto=True).withTimeout(5))
         wpilib.SmartDashboard.putData(key='AutoStrafeGreen', data=AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision, target_type='green', auto=True).withTimeout(5))
+        wpilib.SmartDashboard.putData(key='AutoSetupScore', data=AutoSetupScore(container=self))
+        wpilib.SmartDashboard.putData(key='LedToggle', data=LedToggle(container=self))
         #wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
         #wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
 
@@ -348,15 +356,6 @@ class RobotContainer:
         self.autonomous_chooser.addOption('score twice', ScoreTwice(self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
-
-        self.led_modes = wpilib.SendableChooser()
-        wpilib.SmartDashboard.putData('LED', self.led_modes)
-        self.led_modes.setDefaultOption('NONE', 'NONE')
-        self.led_modes.addOption('CONE', Led.Mode.CONE)
-        self.led_modes.addOption('CUBE', Led.Mode.CUBE)
-        self.led_modes.addOption('READY', Led.Mode.READY)
-        self.led_modes.addOption('OFF', Led.Mode.OFF)
-        self.led_modes.addOption('RAINBOW', Led.Mode.RAINBOW)
 
     def get_autonomous_command(self):
         return self.autonomous_chooser.getSelected()

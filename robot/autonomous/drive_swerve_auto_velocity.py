@@ -9,13 +9,14 @@ from subsystems.swerve_constants import DriveConstants as dc
 
 class DriveSwerveAutoVelocity(commands2.CommandBase):  # change the name for your command
 
-    def __init__(self, container, drive: Swerve, velocity, direction='forwards') -> None:
+    def __init__(self, container, drive: Swerve, velocity, direction='forwards', decide_by_turret=False) -> None:
         super().__init__()
         self.setName('DriveSwerveAutoVelocity')  # change this to something appropriate for this command
         self.container = container
         self.drive = drive
         self.addRequirements(self.drive)  # commandsv2 version of requirements
         self.setpoint_velocity = velocity  # in m/s, gets normalized when sent to drive
+        self.decide_by_turret = decide_by_turret  # use this to determine direction for auto scoring
         self.direction = direction
 
     def initialize(self) -> None:
@@ -31,9 +32,17 @@ class DriveSwerveAutoVelocity(commands2.CommandBase):  # change the name for you
             self.drive.set_drive_motor_references(self.setpoint)
 
     def execute(self) -> None:
+
+        sign = 1.0
+        if self.decide_by_turret:  # allow the direction to be determined by the turret position for auto-scoring
+            if -20 < self.container.turret.get_angle() < 170:  # turret in front, therefore scoring middle, drive forwards
+                sign = 1.0
+            else:  # scoring high, drive backwards
+                sign = -1.0
+
         # drive at the velocity passed to the function
         if self.direction == 'forwards':
-            self.drive.drive(self.setpoint_velocity / dc.kMaxSpeedMetersPerSecond, 0, 0, False, False)
+            self.drive.drive(sign * self.setpoint_velocity / dc.kMaxSpeedMetersPerSecond, 0, 0, False, False)
         elif self.direction == 'strafe':
             self.drive.drive(0, self.setpoint_velocity / dc.kMaxSpeedMetersPerSecond, 0, False, False)
 

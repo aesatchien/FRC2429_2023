@@ -15,23 +15,23 @@ import wpilib
 
 class Robot(wpilib.TimedRobot):
     def robotInit(self):
-        can_id = 5  # change as needed
+        can_id = 11  # change as needed
         drivetrain = False
         self.use_absolute_encoder = False
         self.use_alternate_encoder = False
-        self.use_smartmotion = False
+        self.use_smartmotion = True
 
         # if you are going to change position factor, you should also change velocity.
         # smart motion does weird things on the decel if you don't.
         # also note that if you do change these, the PIDs will have to change as well
         # the default values below are good for conversion factors of 1.
-        position_conversion_factor = 120 #3.14 * 4 * 0.0254 / 6.75  # swerve drive motors
+        position_conversion_factor = 3.367 #3.14 * 4 * 0.0254 / 6.75  # swerve drive motors
         #position_conversion_factor = 2 * 3.14 / 21.428  # radians for swerve turning (gear ratio is 150/7)
-        velocity_conversion_factor = position_conversion_factor / 60  # 60 if per sec, otherwise 1
+        velocity_conversion_factor = position_conversion_factor  # 60 if per sec, otherwise 1
 
         self.motor = rev.CANSparkMax(can_id, rev.CANSparkMax.MotorType.kBrushless)
         # self.motor.restoreFactoryDefaults()
-        self.motor.setInverted(False)
+        self.motor.setInverted(True)
 
         if drivetrain:
             self.motor2 = rev.CANSparkMax(can_id + 2, rev.CANSparkMax.MotorType.kBrushless)
@@ -63,15 +63,15 @@ class Robot(wpilib.TimedRobot):
         self.kI = 0
         self.kD = 0
         self.kIz = 0.00001
-        self.kFF = 0.223  # 0.0001
-        self.kMaxOutput = 0.35
-        self.kMinOutput = -0.35
+        self.kFF = 0.000041  # 0.0001
+        self.kMaxOutput = 0.75
+        self.kMinOutput = -0.75
         self.max_rpm = 5700
         self.maxAccum = 0.1
 
         # Smart Motion coefficients
-        self.max_vel = 2000  # rpm
-        self.max_acc = 1500
+        self.max_vel = 30000  # rpm
+        self.max_acc = 30000
         self.min_vel = 0
         self.allowed_err = 0.2
 

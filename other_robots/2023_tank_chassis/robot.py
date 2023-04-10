@@ -6,7 +6,6 @@ import commands2
 
 import robotcontainer
 from robotcontainer import RobotContainer
-from subsystems.led import Led
 
 
 class MyRobot(commands2.TimedCommandRobot):
@@ -31,7 +30,6 @@ class MyRobot(commands2.TimedCommandRobot):
 
     def disabledInit(self) -> None:
         """This function is called once each time the robot enters Disabled mode."""
-        self.container.led.set_indicator(Led.Indicator.RAINBOW)
 
     def disabledPeriodic(self) -> None:
         """This function is called periodically when disabled"""
@@ -40,8 +38,6 @@ class MyRobot(commands2.TimedCommandRobot):
         """This autonomous runs the autonomous command selected by your RobotContainer class."""
 
         self.container.set_start_time()  # putting this after the scheduler is bad
-
-        self.container.drive.navx.reset()  # need to do this in competition
 
         self.autonomousCommand = self.container.get_autonomous_command()
 
@@ -52,7 +48,6 @@ class MyRobot(commands2.TimedCommandRobot):
         """This function is called periodically during autonomous"""
 
     def teleopInit(self) -> None:
-        self.container.led.set_indicator(Led.Indicator.NONE)
 
         self.container.set_start_time()  # putting this after the scheduler is bad
 
@@ -62,8 +57,6 @@ class MyRobot(commands2.TimedCommandRobot):
         # this line or comment it out.
         if self.autonomousCommand:
             self.autonomousCommand.cancel()
-
-        # self.container.drive.navx.reset()  # need to not do this in competition
 
     def teleopPeriodic(self) -> None:
         """This function is called periodically during operator control"""

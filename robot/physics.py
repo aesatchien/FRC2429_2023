@@ -133,19 +133,23 @@ class PhysicsEngine(PhysicsEngine):
         # make a pretend Armcam that reports an apriltag and a green reflective target
         self.camera_dict = {'tags': {}, 'green': {}}
         self.armcam_table = nt.NetworkTableInstance.getDefault().getTable('ArmCam')
+        self.turretcam_table = nt.NetworkTableInstance.getDefault().getTable('BottomCam')
         self.tag_keys = ['targets', 'green']
         # for key in self.camera_dict.keys():
         #     self.camera_dict[key].update({'targets_entry': self.armcam_table.getEntry(f"/{key}/targets")})
         #     self.camera_dict[key].update({'distance_entry': self.armcam_table.getEntry(f"/{key}/distance")})
         #     self.camera_dict[key].update({'rotation_entry': self.armcam_table.getEntry(f"/{key}/rotation")})
         #     self.camera_dict[key].update({'strafe_entry': self.armcam_table.getEntry(f"/{key}/strafe")})
-        for key in self.camera_dict.keys():
+        for key in ['green']:
             self.camera_dict[key].update({'targets_entry': self.armcam_table.getDoubleTopic(f"{key}/targets").publish()})
             self.camera_dict[key].update({'distance_entry': self.armcam_table.getDoubleTopic(f"{key}/distance").publish()})
             self.camera_dict[key].update({'rotation_entry': self.armcam_table.getDoubleTopic(f"{key}/rotation").publish()})
             self.camera_dict[key].update({'strafe_entry': self.armcam_table.getDoubleTopic(f"{key}/strafe").publish()})
-
-
+        for key in ['tags']:
+            self.camera_dict[key].update({'targets_entry': self.turretcam_table.getDoubleTopic(f"{key}/targets").publish()})
+            self.camera_dict[key].update({'distance_entry': self.turretcam_table.getDoubleTopic(f"{key}/distance").publish()})
+            self.camera_dict[key].update({'rotation_entry': self.turretcam_table.getDoubleTopic(f"{key}/rotation").publish()})
+            self.camera_dict[key].update({'strafe_entry': self.turretcam_table.getDoubleTopic(f"{key}/strafe").publish()})
 
     def update_sim(self, now, tm_diff):
         velocity_scale, angular_scale = 10, 10  # faking PWM signals in from -1 to 1, multiply by to x get velocities,

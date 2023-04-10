@@ -29,6 +29,7 @@ class Vision(SubsystemBase):
         self.camera_values = {}
 
         self.armcam_table = NetworkTableInstance.getDefault().getTable('ArmCam')
+        self.turretcam_table = NetworkTableInstance.getDefault().getTable('BottomCam')
         # print(f'Armcam keys: {self.armcam_table.getKeys()}')
 
         #self.armcam_table.putBoolean('training', False)
@@ -44,11 +45,22 @@ class Vision(SubsystemBase):
 
         SmartDashboard.putBoolean('relay_state', self.relay_state)
 
-        for key in self.camera_dict.keys():
+        for key in self.camera_dict.keys():  # colors on top
             self.camera_dict[key].update({'targets_entry': self.armcam_table.getDoubleTopic(f"{key}/targets").subscribe(0)})
             self.camera_dict[key].update({'distance_entry': self.armcam_table.getDoubleTopic(f"{key}/distance").subscribe(0)})
             self.camera_dict[key].update({'strafe_entry': self.armcam_table.getDoubleTopic(f"{key}/strafe").subscribe(0)})
             self.camera_dict[key].update({'rotation_entry': self.armcam_table.getDoubleTopic(f"{key}/rotation").subscribe(0)})
+            self.camera_values[key] = {}
+            self.camera_values[key].update({'targets': 0})
+            self.camera_values[key].update({'distance': 0})
+            self.camera_values[key].update({'rotation': 0})
+            self.camera_values[key].update({'strafe': 0})
+
+        for key in ['tags']:  # tag from bottom
+            self.camera_dict[key].update({'targets_entry': self.turretcam_table.getDoubleTopic(f"{key}/targets").subscribe(0)})
+            self.camera_dict[key].update({'distance_entry': self.turretcam_table.getDoubleTopic(f"{key}/distance").subscribe(0)})
+            self.camera_dict[key].update({'strafe_entry': self.turretcam_table.getDoubleTopic(f"{key}/strafe").subscribe(0)})
+            self.camera_dict[key].update({'rotation_entry': self.turretcam_table.getDoubleTopic(f"{key}/rotation").subscribe(0)})
 
             self.camera_values[key] = {}
             self.camera_values[key].update({'targets': 0})
@@ -67,6 +79,12 @@ class Vision(SubsystemBase):
             self.relay.set(wpilib.Relay.Value.kOff)
             self.relay_state = False
         SmartDashboard.putBoolean('relay_state', self.relay_state)
+
+    def target_available(self, target):
+        if target == 'tags':
+            return self.camera_dict['tags']['targets_entry'].get() > 0
+        elif target == 'green':
+            self.camera_dict['green']['targets_entry'].get() > 0
 
     def get_tag_strafe(self):
         tag_available = self.camera_dict['tags']['targets_entry'].get() > 0

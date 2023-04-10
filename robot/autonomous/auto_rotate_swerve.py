@@ -28,7 +28,7 @@ class AutoRotateSwerve(commands2.CommandBase):
 
         # should we set up a velocity transition, velocities in m/s
         self.rotate_start_time = 0  # do not confuse with the start time status message
-        self.max_velocity = 3.14  # in m/s, so do not forget to normalize when sent to drive function
+        self.max_velocity = 1.57  # in m/s, so do not forget to normalize when sent to drive function
         self.min_velocity = self.max_velocity / 2
         self.decay_rate = 10 #  20 transitions in about 0.25s, 10 is about 0.5 s to transition from high to low
         self.transition_time_center = 0.3  # center time of our transition, in seconds
@@ -53,10 +53,6 @@ class AutoRotateSwerve(commands2.CommandBase):
         pid_output = pid_output if abs(pid_output) <= 1 else 1 * math.copysign(1, pid_output)  # clamp at +/- 1
         target_vel = pid_output * max_allowed_velocity  # meters per second
         SmartDashboard.putNumber('_target_vel', target_vel)  # actual m/s target
-
-        debugging_speed_limit = self.max_velocity   # allow us to set a temporary test limit in m/s to override the max
-        if math.fabs(target_vel) > debugging_speed_limit:
-            target_vel = debugging_speed_limit * math.copysign(1, target_vel)
 
         # remember to scale the velocity for the drive function - divide input by max
         self.drive.drive(xSpeed=0, ySpeed=0, rot=target_vel/dc.kMaxAngularSpeed, fieldRelative=False, rate_limited=False)

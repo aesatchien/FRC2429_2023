@@ -92,6 +92,16 @@ class Turret(SubsystemBase):
         if wpilib.RobotBase.isSimulation():
             SmartDashboard.putNumber('turret_angle', self.angle)
 
+    # add this so the user has an override - basically you align it and can flip back and forth b/w 0 and 180
+    def reset_turret_encoder(self, angle=None):
+        if angle is None:
+            if abs(self.get_angle() - 180) < 20:  # we are near 180, call it zero
+                self.sparkmax_encoder.setPosition(0)
+            else:
+                self.sparkmax_encoder.setPosition(180)
+        else:
+            self.sparkmax_encoder.setPosition(angle)
+
     def periodic(self) -> None:
         self.counter += 1
         if self.counter % 25 == 0:
