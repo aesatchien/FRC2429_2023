@@ -82,10 +82,10 @@ class AutoStrafeSwerve(commands2.CommandBase):
 
         if wpilib.RobotBase.isReal():
             # the real pose strafe direction is incorrect, so how to fix this? put a minus sign in front
-            if abs(self.container.drive.get_angle()) > 90:
-                current_strafe = (self.start_pose.Y() - self.drive.get_pose().Y())
-            else:
+            if abs(self.container.turret.get_angle()) > 90:
                 current_strafe = -(self.start_pose.Y() - self.drive.get_pose().Y())
+            else:
+                current_strafe = (self.start_pose.Y() - self.drive.get_pose().Y())
         else:  # don't have swerve pose working in the sim yet, so fake it
             sim_pose = wpilib.SmartDashboard.getNumberArray('drive_pose', [0, 0, 0])
             current_strafe = self.start_pose.Y() - sim_pose[1]

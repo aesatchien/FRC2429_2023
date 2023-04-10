@@ -105,7 +105,7 @@ class Led(commands2.SubsystemBase):
                         # rainbow
                         hue = (i + self.animation_counter) % constants.k_led_count
                         hue /= constants.k_led_count
-                        hue *= 255
+                        hue *= 180
 
                         led.setHSV(math.floor(hue), 255, 255)
 

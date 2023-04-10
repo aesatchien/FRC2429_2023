@@ -190,12 +190,13 @@ class RobotContainer:
         self.co_buttonRightAxis = AxisButton(self.co_driver_controller, 3)
 
     def configure_swerve_bindings(self):
-        self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
+        # self.buttonA.debounce(0.1).onTrue(SwerveX(container=self, swerve=self.drive))
+        self.buttonA.debounce(0.1).onTrue(AutoSetupScore(container=self))
         self.buttonB.debounce(0.1).onTrue(GyroReset(self, swerve=self.drive))
         self.buttonX.debounce(0.1).onTrue(AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision,
                                                            target_type='tag', auto=True).withTimeout(5))
         # self.buttonX.debounce(0.1).onTrue(SwerveAngleTest(self, swerve=self.drive))
-        self.buttonY.debounce(0.1).onTrue(AutoRotateSwerve(container=self, drive=self.drive,))
+        self.buttonY.debounce(0.1).onTrue(AutoRotateSwerve(container=self, drive=self.drive,).withTimeout(2))
 
     def bind_buttons(self):
         # All untested still
