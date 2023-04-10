@@ -210,6 +210,8 @@ class RobotContainer:
             cmd.runOnce(action=lambda: self.wrist.set_driver_flag(state=False))))
 
         self.buttonDown.whenPressed(ManipulatorToggle(container=self, pneumatics=self.pneumatics))
+        self.buttonUp.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.RAINBOW, 5))
+        self.buttonLeft.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.RSL, 5))
 
         self.buttonRightAxis.whenPressed(LedToggle(container=self))
         # self.buttonLeftAxis.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.VISION_TARGET_SUCCESS, 2))

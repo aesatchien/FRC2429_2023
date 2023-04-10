@@ -20,6 +20,7 @@ class Led(commands2.SubsystemBase):
         VISION_TARGET_SUCCESS = 'VISION_TARGET_SUCCESS'  # flashing blue
         AUTO_STRAFE_COMPLETE = 'AUTO_STRAFE_COMPLETE'  # solid blue
         RAINBOW = 'RAINBOW'
+        RSL = 'RSL'
         NONE = 'NONE'
 
     def __init__(self):
@@ -101,13 +102,23 @@ class Led(commands2.SubsystemBase):
                         # solid blue
                         led.setRGB(0, 0, 255)
 
-                    elif self.indicator == Led.Indicator.RAINBOW:
+                    elif self.indicator == Led.Indicator.RAINBOW: # Haochen emote
                         # rainbow
                         hue = (i + self.animation_counter) % constants.k_led_count
                         hue /= constants.k_led_count
                         hue *= 180
 
                         led.setHSV(math.floor(hue), 255, 255)
+
+                    elif self.indicator == Led.Indicator.RSL: # Haochen emote
+                        # flashing blue
+                        freq = 2  # 10 /s > 2x /s
+                        cycle = math.floor(self.animation_counter / freq)
+
+                        if cycle % 2 == 0:
+                            led.setRGB(0, 0, 0)
+                        else:
+                            led.setRGB(255, 40, 0)
 
                 else:
                     if self.mode == Led.Mode.CONE:
