@@ -28,8 +28,8 @@ class AutoRotateSwerve(commands2.CommandBase):
 
         # should we set up a velocity transition, velocities in m/s
         self.rotate_start_time = 0  # do not confuse with the start time status message
-        self.max_velocity = 1.57  # in m/s, so do not forget to normalize when sent to drive function
-        self.min_velocity = self.max_velocity / 2
+        self.max_velocity = 2  # in m/s, so do not forget to normalize when sent to drive function
+        self.slow_velocity = self.max_velocity / 2
         self.decay_rate = 10 #  20 transitions in about 0.25s, 10 is about 0.5 s to transition from high to low
         self.transition_time_center = 0.3  # center time of our transition, in seconds
 
@@ -48,9 +48,10 @@ class AutoRotateSwerve(commands2.CommandBase):
         # should drive robot a max of ~1 m/s when climbing on fully tilted charge station
 
         current_time = wpilib.Timer.getFPGATimestamp() - self.rotate_start_time
-        max_allowed_velocity = self.calculate_maximum_velocity(current_time) if self.auto else self.min_velocity
+        max_allowed_velocity = self.calculate_maximum_velocity(current_time) if self.auto else self.slow_velocity
         pid_output = self.heading_controller.calculate(self.drive.get_raw_angle(), setpoint=self.heading)
         pid_output = pid_output if abs(pid_output) <= 1 else 1 * math.copysign(1, pid_output)  # clamp at +/- 1
+        pid_output = pid_output if abs(pid_output) >= 0.1 else 0.1 * math.copysign(1, pid_output)  # too slow and you get stuck waiting to move
         target_vel = pid_output * max_allowed_velocity  # meters per second
         SmartDashboard.putNumber('_target_vel', target_vel)  # actual m/s target
 
@@ -76,4 +77,4 @@ class AutoRotateSwerve(commands2.CommandBase):
     # use a logit function to transition from fast initial move to slow one at the end, like this:  ------\_____
     # starts at self.max_velocity and decays to self.min_velocity
     def calculate_maximum_velocity(self, elapsed_time):
-        return self.min_velocity + (self.max_velocity - self.min_velocity) * (1 / (1 + math.exp(-self.decay_rate * (self.transition_time_center - elapsed_time))))
+        return self.slow_velocity + (self.max_velocity - self.slow_velocity) * (1 / (1 + math.exp(-self.decay_rate * (self.transition_time_center - elapsed_time))))
