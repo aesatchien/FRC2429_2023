@@ -66,7 +66,12 @@ class AutoStrafeSwerve(commands2.CommandBase):
             cone_offset = fudge_factor * 0.56  # lateral distance from cone station center to cone poles
             self.target_distance = self.target_distance - cone_offset * math.copysign(1, self.target_distance)
 
-        print(f'Attempting to strafe to cone={cone_mode} using {self.target_type} located {self.target_distance:.1f}m from starting position at {self.start_pose.Y():.1f}m')
+        # reverse the direction we need to travel if the camera is facing backwards,
+        # and also reverse the sign of the error below
+        if abs(self.container.turret.get_angle()) > 90:
+            self.target_distance = -1 * self.target_distance
+
+        print(f'Attempting to strafe to {"cone" if cone_mode else "cube"} using {self.target_type} located {self.target_distance:.1f}m from starting position at {self.start_pose.Y():.1f}m')
 
     def execute(self) -> None:  # 50 loops per second. (0.02 seconds per loop)
         # should drive robot a max of ~1 m/s when climbing on fully tilted charge station

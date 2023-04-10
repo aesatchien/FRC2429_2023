@@ -37,6 +37,7 @@ from commands.gyro_reset import GyroReset
 from commands.co_stow import CoStow
 from commands.manipulator_auto_grab import ManipulatorAutoGrab
 from commands.led_toggle import LedToggle
+from commands.turret_reset import TurretReset
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
@@ -230,7 +231,8 @@ class RobotContainer:
         # self.co_buttonBack.whenPressed(TurretMove(self, self.turret, setpoint=0, wait_to_finish=False))
 
         self.co_buttonBack.whenPressed(CoStow(container=self))
-        self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision, find_alternate=False))
+        #self.co_buttonStart.whenPressed(TurretMoveByVision(self, turret=self.turret, vision=self.vision, find_alternate=False))
+        self.co_buttonStart.whenPressed(TurretReset(container=self, turret=self.turret))  # allow copilot to reset turret
         self.co_buttonLeftAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
         self.co_buttonRightAxis.whenPressed(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
