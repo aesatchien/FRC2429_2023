@@ -4,7 +4,7 @@ from subsystems.arm import Arm
 
 
 class ArmMoveByTurret(commands2.CommandBase):  # change the name for your command
-
+    # LHACK, moves arm to mid or hi based on turret position
     def __init__(self, container, arm: Arm, turret, wait_to_finish = True) -> None:
         # is there really no better way to do this than to create an entire command?
         super().__init__()

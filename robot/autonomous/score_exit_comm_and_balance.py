@@ -6,11 +6,11 @@ from autonomous.drive_swerve_auto_velocity import DriveSwerveAutoVelocity
 from autonomous.drive_and_balance import DriveAndBalance
 
 
-class ScoreExitCommAndBalance(commands2.SequentialCommandGroup):  # change the name for your command
-
+class ScoreExitCommAndBalance(commands2.SequentialCommandGroup):
+    # LHACK, scores, drives over charge station, drives back and balances
     def __init__(self, container) -> None:
         super().__init__()
-        self.setName('DriveAndBalance')  # change this to something appropriate for this command
+        self.setName('ScoreExitCommAndBalance')
         self.container = container
 
         self.addCommands(ScoreHiConeFromStow(self.container))

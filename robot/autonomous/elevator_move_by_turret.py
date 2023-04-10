@@ -3,10 +3,9 @@ from wpilib import SmartDashboard
 from subsystems.elevator import Elevator
 
 
-class ElevatorMoveByTurret(commands2.CommandBase):  # change the name for your command
-
+class ElevatorMoveByTurret(commands2.CommandBase):
+    # LHACK, moves elevator to mid or hi based on turret position
     def __init__(self, container, elevator: Elevator, turret, wait_to_finish=True) -> None:
-        # since it's apparently impossible to use ElevatorMove with an updated setpoint from a SequentialCommandGroup
         super().__init__()
         self.setName('ElevatorMoveByTurret')
         self.wait_to_finish = wait_to_finish

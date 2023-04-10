@@ -13,7 +13,7 @@ from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
 
 class ScoreTwice(commands2.SequentialCommandGroup):
-
+    # LHACK, scores twice. Commented out everything after backing up from grid bc I don't want to tip bot hueneme-style
     def __init__(self, container) -> None:
         super().__init__()
         self.setName('Score Twice')

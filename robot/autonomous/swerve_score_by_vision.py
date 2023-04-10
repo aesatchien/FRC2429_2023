@@ -16,6 +16,7 @@ from .arm_move_by_turret import ArmMoveByTurret
 from .auto_aim_swerve import AutoAimSwerve
 
 class SwerveScoreByVision(commands2.SequentialCommandGroup):
+    # LHACK, lines up and scores piece. Decides whether to score on hi or mid based on turret position. Untested.
     def __init__(self, container):
         super().__init__()
         self.setName("Swerve Score by Vision")
@@ -24,7 +25,7 @@ class SwerveScoreByVision(commands2.SequentialCommandGroup):
 
         self.addCommands(ArmMoveByTurret(container, container.arm, container.turret, wait_to_finish=False))
 
-        self.addCommands(AutoAimSwerve(container, container.drive, container.vision, auto=False).withTimeout(2)) # timeout is for testing in sim
+        self.addCommands(AutoAimSwerve(container, container.drive, container.vision, auto=False).withTimeout(2)) # Should change this to CJH auto_strafe_swerve
 
         self.addCommands(WristMove(container, container.wrist, setpoint=container.wrist.positions['flat'], wait_to_finish=True))
 

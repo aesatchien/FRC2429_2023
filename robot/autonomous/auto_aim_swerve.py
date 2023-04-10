@@ -13,7 +13,7 @@ import math
 from subsystems.vision import Vision
 
 class AutoAimSwerve(commands2.CommandBase):
-
+    # LHACK, probably outmoded by CJH auto_aim_swerve, corrects both fwd/back and strafe based on vision
     def __init__(self, container, drive:Swerve, vision:Vision, target_strafe=0.5, target_forback=0.5, target_type=None, auto=True) -> None:
         super().__init__()
         self.setName('AutoStrafeSwerve')
