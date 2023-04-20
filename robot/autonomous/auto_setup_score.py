@@ -28,7 +28,7 @@ class AutoSetupScore(commands2.SequentialCommandGroup):  # change the name for y
                          vision=self.container.vision, target_type='tag', auto=True).withTimeout(3))
 
         # set elevator to correct height - decide based on turret position
-        self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, wait_to_finish=False,
+        self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator, wait_to_finish=True,
                                       decide_by_turret=True))
 
         # extend arm - decide on distance based on turret position - but what if strafe failed?

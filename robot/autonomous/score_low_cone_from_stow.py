@@ -15,11 +15,12 @@ class ScoreLowConeFromStow(commands2.SequentialCommandGroup):  # change the name
         super().__init__()
         self.setName('ScoreLowConeFromStow')  # change this to something appropriate for this command
         self.container = container
+        # self.container.drive
 
         # Step 1.a
         # raise the elevator , don't wait to end - can go concurrently with other moves
         self.addCommands(ElevatorMove(container=self.container, elevator=self.container.elevator,
-                                      setpoint=self.container.elevator.max_height//2, wait_to_finish=False))
+                                      setpoint=self.container.elevator.positions['low'] + 100, wait_to_finish=False))
         # Step 2.a
         # lower / raise wrist to upper scoring position 45°
         self.addCommands(WristMove(container=self.container, wrist=self.container.wrist, setpoint=Wrist.positions['score'], wait_to_finish=False))
@@ -27,7 +28,7 @@ class ScoreLowConeFromStow(commands2.SequentialCommandGroup):  # change the name
         # Step 2.b
         # extend the arm fully
         self.addCommands(ArmMove(container=self.container, arm=self.container.arm,
-                                 setpoint=self.container.arm.max_extension, wait_to_finish=False).withTimeout(5))
+                                 setpoint=self.container.arm.positions['middle'], wait_to_finish=False).withTimeout(5))
 
         # Step 4
         # Drop the wrist to level

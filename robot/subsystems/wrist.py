@@ -2,6 +2,7 @@
 Wrist subsystem
 Shares the following with networktables:  wrist_position
 """
+import time
 from commands2 import SubsystemBase
 import rev
 import wpilib
@@ -13,7 +14,7 @@ from misc.configure_controllers import configure_sparkmax
 
 class Wrist(SubsystemBase):
     # wrist should probably have four positions that we need to map out
-    positions = {'stow': 93, 'score': 55, 'flat': 0, 'floor': -25}
+    positions = {'stow': 93, 'score': 55, 'op_score': 10, 'flat': 0, 'floor': -25}
 
     def __init__(self):
         super().__init__()
@@ -62,6 +63,12 @@ class Wrist(SubsystemBase):
 
         # initialize the location of the wrist - from absolute encoder
         self.angle = self.abs_encoder.getPosition()
+        # sometimes it does not initialize, so try again
+        if abs(self.angle) < 0.1:
+            print(f'Wrist absolute encoder measurement was {self.angle}; retrying')
+            time.sleep(0.2)  # robot will complain, but it's only on boot up
+            self.angle = self.abs_encoder.getPosition()
+
         if self.angle > 180:  # correct for if we start out negative.  e.g. -10 would come out as 350
             self.angle = self.angle - 360
         self.sparkmax_encoder.setPosition(self.angle)

@@ -53,6 +53,7 @@ class Turret(SubsystemBase):
 
         # same here, and need the turret encoder to be set to analog (jumper change)
         self.analog_abs_encoder = wpilib.AnalogEncoder(constants.k_turret_abs_encoder_port)  # plug the analog encoder into channel 1
+        # self.analog_abs_encoder = wpilib.DutyCycleEncoder(9)
         self.analog_conversion_factor = 360.0  # 5V is 360 degrees
         self.analog_abs_encoder.setDistancePerRotation(self.analog_conversion_factor)
 

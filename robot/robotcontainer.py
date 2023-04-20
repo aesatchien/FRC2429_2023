@@ -38,6 +38,7 @@ from commands.co_stow import CoStow
 from commands.manipulator_auto_grab import ManipulatorAutoGrab
 from commands.led_toggle import LedToggle
 from commands.turret_reset import TurretReset
+from commands.wrist_calibration import WristCalibration
 
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
@@ -60,6 +61,7 @@ from autonomous.auto_rotate_swerve import AutoRotateSwerve
 from autonomous.auto_strafe_swerve import AutoStrafeSwerve
 from autonomous.swerve_score_by_vision import SwerveScoreByVision
 from autonomous.auto_setup_score import AutoSetupScore
+from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
 
 class RobotContainer:
     """
@@ -337,6 +339,7 @@ class RobotContainer:
         wpilib.SmartDashboard.putData(key='AutoStrafeGreen', data=AutoStrafeSwerve(container=self, drive=self.drive, vision=self.vision, target_type='green', auto=True).withTimeout(5))
         wpilib.SmartDashboard.putData(key='AutoSetupScore', data=AutoSetupScore(container=self))
         wpilib.SmartDashboard.putData(key='LedToggle', data=LedToggle(container=self))
+        wpilib.SmartDashboard.putData(WristCalibration(container=self, wrist=self.wrist))
         #wpilib.SmartDashboard.putData(key='DriveMove', data=DriveMove(container=self, drive=self.drive, setpoint=1).withTimeout(5))
         #wpilib.SmartDashboard.putData(key='DriveAndBalance',data=DriveAndBalance(container=self).withTimeout(10))
 
@@ -354,6 +357,7 @@ class RobotContainer:
         self.autonomous_chooser.addOption('score with swerve', SwerveScoreByVision(self))
         self.autonomous_chooser.addOption('score hi exit community and balance', ScoreExitCommAndBalance(self))
         self.autonomous_chooser.addOption('score twice', ScoreTwice(self))
+        self.autonomous_chooser.addOption('score low cone froms stow', ScoreLowConeFromStow(container=self))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
 

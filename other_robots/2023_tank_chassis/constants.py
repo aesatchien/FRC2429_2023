@@ -44,7 +44,7 @@ k_right_motor2_port = 2
 
 # --------------  BUCKET  ---------------
 k_bucket = 5
-k_bucket_conversion_factor = 360/7.0
+k_bucket_conversion_factor = 360/21.0
 k_PID_dict_vel_bucket = {'kP': 0.00001, 'kI': 0, 'kD': 0.00001, 'kIz': 2e-4, 'kFF': 8.1e-7, 'kArbFF':0,
                          'kMaxOutput': 0.9, 'kMinOutput': -0.9, 'SM_MaxVel':35000,
                          'SM_MaxAccel':35000}

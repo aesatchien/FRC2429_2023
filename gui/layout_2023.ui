@@ -676,7 +676,7 @@ background-color:rgb(0, 20, 250);</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>262</y>
+         <y>224</y>
          <width>161</width>
          <height>31</height>
         </rect>
@@ -712,7 +712,7 @@ background-color:rgb(80, 235, 0);</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>227</y>
+         <y>190</y>
          <width>161</width>
          <height>31</height>
         </rect>
@@ -865,6 +865,42 @@ background-color:rgb(80, 235, 0);</string>
         <string>APRIL
 TAG
  DETECTED</string>
+       </property>
+       <property name="textFormat">
+        <enum>Qt::AutoText</enum>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+      </widget>
+      <widget class="QLabel2" name="qlabel_wrist_calibration_indicator">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>258</y>
+         <width>161</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="font">
+        <font>
+         <family>MS Shell Dlg 2</family>
+         <pointsize>11</pointsize>
+         <weight>75</weight>
+         <italic>false</italic>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">border: 7px;
+border-radius: 7px;
+background-color:rgb(80, 235, 0);</string>
+       </property>
+       <property name="text">
+        <string>Calibrate Wrist</string>
        </property>
        <property name="textFormat">
         <enum>Qt::AutoText</enum>

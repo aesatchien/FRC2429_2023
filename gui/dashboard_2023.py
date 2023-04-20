@@ -338,6 +338,8 @@ class Ui(QtWidgets.QMainWindow):
         'qlabel_turret_down_indicator': {'widget': self.qlabel_turret_down_indicator, 'nt': '/SmartDashboard/TurretMoveDown/running', 'command': '/SmartDashboard/TurretMoveDown/running'},
         'qlabel_turret_up_indicator': {'widget': self.qlabel_turret_up_indicator, 'nt': '/SmartDashboard/TurretMoveUp/running', 'command': '/SmartDashboard/TurretMoveUp/running'},
         'qlabel_upper_pickup_indicator': {'widget': self.qlabel_upper_pickup_indicator, 'nt': '/SmartDashboard/UpperSubstationPickup/running', 'command': '/SmartDashboard/UpperSubstationPickup/running'},
+        'qlabel_wrist_calibration_indicator': {'widget': self.qlabel_wrist_calibration_indicator,
+                                           'nt': '/SmartDashboard/WristCalibration/running', 'command': '/SmartDashboard/WristCalibration/running'},
         'qlabel_wrist_down_indicator': {'widget': self.qlabel_wrist_down_indicator, 'nt': '/SmartDashboard/WristMoveDown/running',
                                                'command': '/SmartDashboard/WristMoveDown/running'},
         'qlabel_wrist_up_indicator': {'widget': self.qlabel_wrist_up_indicator, 'nt': '/SmartDashboard/WristMoveUp/running', 'command': '/SmartDashboard/WristMoveUp/running'},
