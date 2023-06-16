@@ -44,3 +44,4 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+robot/input_log.txt
