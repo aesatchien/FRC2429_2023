@@ -23,9 +23,11 @@ class PlaybackAuto(commands2.CommandBase):  # change the name for your command
 
     def execute(self) -> None:
         current_inputs = self.input_log[self.line_count]
+
         self.container.drive.drive(current_inputs['driver_controller']['axis']['axis0'],
                                    current_inputs['driver_controller']['axis']['axis1'],
-                                   current_inputs['driver_controller']['axis']['axis4'])
+                                   current_inputs['driver_controller']['axis']['axis4'],
+                                   fieldRelative=True, rate_limited=True, keep_angle=True)
 
         self.line_count += 1
 
