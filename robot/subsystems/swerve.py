@@ -217,17 +217,6 @@ class Swerve (SubsystemBase):
         """Resets the drive encoders to currently read a position of 0."""
         [m.resetEncoders() for m in self.swerve_modules]
 
-    def toggle_recording(self) -> None:
-        self.recording = not self.recording
-        self.recording_start_time = self.counter
-        if self.recording:
-            if wpilib.RobotBase.isSimulation():
-                self.input_log = open('input_log.txt', 'w')
-            else:
-                self.input_log = open('/home/lvuser/input_log.txt', 'w')
-        else:
-            self.input_log.close()
-
     def zeroHeading(self) -> None:
         """Zeroes the heading of the robot."""
         self.gyro.reset()

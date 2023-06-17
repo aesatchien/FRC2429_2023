@@ -45,3 +45,4 @@ var/
 .installed.cfg
 *.egg
 robot/input_log.txt
+robot/input_log.json

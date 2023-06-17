@@ -19,7 +19,7 @@ from subsystems.wrist import Wrist
 from subsystems.pneumatics import Pneumatics
 
 from misc.axis_button import AxisButton
-from commands.toggle_recording import ToggleRecording
+from commands.record_auto import RecordAuto
 from commands_unused.drive_velocity_stick import DriveByJoystickVelocity
 from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
@@ -120,14 +120,6 @@ class RobotContainer:
         self.vision = Vision()
         self.led = Led()
 
-        # Create these if they don't exist
-        if wpilib.RobotBase.isSimulation():
-            input_log = open('input_log.txt', 'a')
-            input_log.close()
-        else:
-            input_log = open('/home/lvuser/input_log.txt', 'a')
-            input_log.close()
-
         self.game_piece_mode = 'cone'
 
         self.configure_joysticks()
@@ -221,7 +213,7 @@ class RobotContainer:
 
         self.buttonRightAxis.whenPressed(LedToggle(container=self))
 
-        self.buttonLB.whenPressed(ToggleRecording(self, self.drive))
+        self.buttonLB.whenPressed(RecordAuto(container=self))
 
         # self.buttonLeftAxis.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.VISION_TARGET_SUCCESS, 2))
 
@@ -361,10 +353,6 @@ class RobotContainer:
         self.autonomous_chooser.addOption('score with swerve', SwerveScoreByVision(self))
         self.autonomous_chooser.addOption('score hi exit community and balance', ScoreExitCommAndBalance(self))
         self.autonomous_chooser.addOption('score twice', ScoreTwice(self))
-        if wpilib.RobotBase.isSimulation():
-            self.autonomous_chooser.addOption('playback auto', PlaybackAuto(self, open('input_log.txt', 'r'), self.drive))
-        else:
-            self.autonomous_chooser.addOption('playback auto', PlaybackAuto(self, open('/home/lvuser/input_log.txt', 'r'), self.drive))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
 

@@ -1,17 +1,17 @@
 import commands2
 import io
+import json
 from wpilib import SmartDashboard
 from subsystems.swerve import Swerve
 
 class PlaybackAuto(commands2.CommandBase):  # change the name for your command
 
-    def __init__(self, container, swerve_log: io.TextIOWrapper, swerve: Swerve) -> None:
+    def __init__(self, container, input_log_path) -> None:
         super().__init__()
         self.setName('Playback Auto')  # change this to something appropriate for this command
         self.container = container
-        self.swerve = swerve
-        self.swerve_recording = [line.rstrip() for line in swerve_log]
-        self.line_count = 0 
+        with open(input_log_path, 'r') as input_json:
+            self.input_log = json.load(input_json)
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -19,19 +19,18 @@ class PlaybackAuto(commands2.CommandBase):  # change the name for your command
         print("\n" + f"** Started {self.getName()} at {self.start_time} s **", flush=True)
         SmartDashboard.putString("alert",
                                  f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
+        self.line_count = 0
 
     def execute(self) -> None:
-        if self.line_count < len(self.swerve_recording):
-            split_params = self.swerve_recording[self.line_count].split(', ')
-            converted_params = [float(split_params[0]), float(split_params[1]), float(split_params[2]),
-                        bool(split_params[3]), bool(split_params[4]), bool(split_params[5])]
-
-            self.swerve.drive(*converted_params)
+        current_inputs = self.input_log[self.line_count]
+        self.container.drive.drive(current_inputs['driver_controller']['axis']['axis0'],
+                                   current_inputs['driver_controller']['axis']['axis1'],
+                                   current_inputs['driver_controller']['axis']['axis4'])
 
         self.line_count += 1
 
     def isFinished(self) -> bool:
-        return self.line_count < len(self.swerve_recording)
+        return self.line_count < len(self.input_log)
 
     def end(self, interrupted: bool) -> None:
         end_time = self.container.get_enabled_time()
