@@ -12,7 +12,6 @@ class RecordAuto(commands2.CommandBase):  # change the name for your command
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
-        print('** INITIALIZING RECORDAUTO **')
         self.start_time = round(self.container.get_enabled_time(), 2)
         print("\n" + f"** Started {self.getName()} at {self.start_time} s **", flush=True)
         SmartDashboard.putString("alert",
@@ -32,7 +31,6 @@ class RecordAuto(commands2.CommandBase):  # change the name for your command
         }
 
     def execute(self) -> None:
-        print('** EXECUTING RECORDAUTO **')
         # Get driver inputs
         for axis in range(0, 6):
             self.input_data['driver_controller']['axis'][f'axis{axis}'] = self.container.driver_controller.getRawAxis(axis)

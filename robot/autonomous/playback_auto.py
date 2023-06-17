@@ -4,11 +4,12 @@ import json
 from wpilib import SmartDashboard
 from subsystems.swerve import Swerve
 
-class PlaybackAuto(commands2.CommandBase):  # change the name for your command
+class PlaybackAuto(commands2.CommandBase):
+    # look, ma, no path planning!
 
     def __init__(self, container, input_log_path) -> None:
         super().__init__()
-        self.setName('Playback Auto')  # change this to something appropriate for this command
+        self.setName('Playback Auto')
         self.container = container
         with open(input_log_path, 'r') as input_json:
             self.input_log = json.load(input_json)
