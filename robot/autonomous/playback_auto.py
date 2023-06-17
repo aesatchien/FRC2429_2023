@@ -7,12 +7,11 @@ class PlaybackAuto(commands2.CommandBase):  # change the name for your command
 
     def __init__(self, container, swerve_log: io.TextIOWrapper, swerve: Swerve) -> None:
         super().__init__()
-        self.setName('Sample Name')  # change this to something appropriate for this command
+        self.setName('Playback Auto')  # change this to something appropriate for this command
         self.container = container
         self.swerve = swerve
         self.swerve_recording = [line.rstrip() for line in swerve_log]
-        self.line_count = 0 # because I don't know how time.time() relates to iterations, change this
-        # self.addRequirements(self.container.)  # commandsv2 version of requirements
+        self.line_count = 0 
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -22,13 +21,17 @@ class PlaybackAuto(commands2.CommandBase):  # change the name for your command
                                  f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
 
     def execute(self) -> None:
-        split_params = self.swerve_recording[self.line_count].split(', ')
-        if self.line_count < self.swerve_recording.length():
-            self.swerve.drive(split_params[0], split_params[1], split_params[2], split_params[3], split_params[4], split_params[5])
+        if self.line_count < len(self.swerve_recording):
+            split_params = self.swerve_recording[self.line_count].split(', ')
+            converted_params = [float(split_params[0]), float(split_params[1]), float(split_params[2]),
+                        bool(split_params[3]), bool(split_params[4]), bool(split_params[5])]
+
+            self.swerve.drive(*converted_params)
+
         self.line_count += 1
 
     def isFinished(self) -> bool:
-        return self.line_count < self.swerve_recording.length()
+        return self.line_count < len(self.swerve_recording)
 
     def end(self, interrupted: bool) -> None:
         end_time = self.container.get_enabled_time()

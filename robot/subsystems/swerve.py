@@ -144,9 +144,8 @@ class Swerve (SubsystemBase):
             rotation_commanded = self.perform_keep_angle(xSpeed, ySpeed, rot)  # call the 1706 keep angle routine to maintain rotation
 
         if self.recording:
-            self.input_log.write(str(xSpeed)+', '+str(ySpeed)+', '+str(rot)+str(fieldRelative)+', '+str(rate_limited)+', '+str(keep_angle)+'\n')
+            self.input_log.write(f'{xSpeed}, {ySpeed}, {rot}, {fieldRelative}, {rate_limited}, {keep_angle}\n')
             self.input_log.flush()
-            print(str(xSpeed)+', '+str(ySpeed)+', '+str(rot)+str(fieldRelative)+', '+str(rate_limited)+', '+str(keep_angle))
 
         # Convert the commanded speeds into the correct units for the drivetrain
         xSpeedDelivered = xSpeedCommanded * dc.kMaxSpeedMetersPerSecond
@@ -226,6 +225,8 @@ class Swerve (SubsystemBase):
                 self.input_log = open('input_log.txt', 'w')
             else:
                 self.input_log = open('/home/lvuser/input_log.txt', 'w')
+        else:
+            self.input_log.close()
 
     def zeroHeading(self) -> None:
         """Zeroes the heading of the robot."""

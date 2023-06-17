@@ -5,6 +5,7 @@ from subsystems.swerve import Swerve
 class ToggleRecording(commands2.CommandBase):  # change the name for your command
 
     def __init__(self, container, swerve: Swerve) -> None:
+        # let's have this toggle recording on all subsystems
         super().__init__()
         self.setName('Sample Name')  # change this to something appropriate for this command
         self.swerve = swerve

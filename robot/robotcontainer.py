@@ -123,11 +123,10 @@ class RobotContainer:
         # Create these if they don't exist
         if wpilib.RobotBase.isSimulation():
             input_log = open('input_log.txt', 'a')
-            input_log.close
-            self.drive.toggle_recording() # testing to see if it logs anything
+            input_log.close()
         else:
             input_log = open('/home/lvuser/input_log.txt', 'a')
-            input_log.close
+            input_log.close()
 
         self.game_piece_mode = 'cone'
 
@@ -369,3 +368,5 @@ class RobotContainer:
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
 
+    def get_autonomous_command(self):
+        return self.autonomous_chooser.getSelected()
