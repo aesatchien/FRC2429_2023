@@ -213,7 +213,12 @@ class RobotContainer:
 
         self.buttonRightAxis.whenPressed(LedToggle(container=self))
 
-        self.buttonLB.whenPressed(RecordAuto(container=self))
+        if wpilib.RobotBase.isReal:
+            # this log doesn't work with Windows machines
+            self.buttonLB.whenPressed(RecordAuto(container=self, input_log_path='/home/lvuser/input_log.json'))
+        else:
+            # this log would get wiped with all new deploys
+            self.buttonLB.whenPressed(RecordAuto(container=self, input_log_path='input_log.json'))
 
         # self.buttonLeftAxis.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.VISION_TARGET_SUCCESS, 2))
 
@@ -353,7 +358,7 @@ class RobotContainer:
         self.autonomous_chooser.addOption('score with swerve', SwerveScoreByVision(self))
         self.autonomous_chooser.addOption('score hi exit community and balance', ScoreExitCommAndBalance(self))
         self.autonomous_chooser.addOption('score twice', ScoreTwice(self))
-        self.autonomous_chooser.addOption('playback auto', PlaybackAuto(self, '/home/lvuser/input_log.json'))
+        self.autonomous_chooser.addOption('playback auto', PlaybackAuto(container=self, input_log_path='/home/lvuser/input_log.json'))
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
 

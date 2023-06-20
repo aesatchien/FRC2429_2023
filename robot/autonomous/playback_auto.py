@@ -1,8 +1,11 @@
 import commands2
 import os
 import json
+import math
 from wpilib import SmartDashboard
-from subsystems.swerve import Swerve
+from subsystems.swerve_constants import DriveConstants
+from commands.manipulator_toggle import ManipulatorToggle
+import constants
 
 class PlaybackAuto(commands2.CommandBase):
     # look, ma, no path planning!
@@ -12,8 +15,6 @@ class PlaybackAuto(commands2.CommandBase):
         self.setName('Playback Auto')
         self.container = container
         # create it if it doesn't exist
-        print('INPUT LOG PATH: ', input_log_path)
-        print('PWD: ', os.getcwd())
         temp_file = open(input_log_path, 'a')
         temp_file.close()
         with open(input_log_path, 'r') as input_json:
@@ -25,17 +26,45 @@ class PlaybackAuto(commands2.CommandBase):
         print("\n" + f"** Started {self.getName()} at {self.start_time} s **", flush=True)
         SmartDashboard.putString("alert",
                                  f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
-        self.line_count = 0
+        self.line_count = 1
 
     def execute(self) -> None:
         current_inputs = self.input_log[self.line_count]
+        previous_inputs = self.input_log[self.line_count-1]
+
         SmartDashboard.putNumber("Cycle Number: ", self.line_count)
-        self.container.drive.drive(current_inputs['driver_controller']['axis']['axis0'],
-                                   current_inputs['driver_controller']['axis']['axis1'],
-                                   current_inputs['driver_controller']['axis']['axis4'],
+
+        if current_inputs['driver_controller']['button']['LB']:
+            slowmode_multiplier = constants.k_slowmode_multiplier
+        elif current_inputs['driver_controller']['axis']['axis2']:
+            slowmode_multiplier = 1.5 * constants.k_slowmode_multiplier
+        else: 
+            slowmode_multiplier = 1
+
+        self.container.drive.drive(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis1']),
+                                   self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis0']),
+                                   -self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis4']),
                                    fieldRelative=True, rate_limited=True, keep_angle=True)
+        
+        if current_inputs['driver_controller']['button']['POVDown'] and not previous_inputs['driver_controller']['button']['POVDown']:
+            commands2.ScheduleCommand(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics))
+            # Get only rising edges. Not sure this is necessary
+            previous_inputs['driver_controller']['button']['POVDown'] = True
 
         self.line_count += 1
+
+    # stuff from drive_by_joystick_swerve- might it be better and DRYer to have it in the subsystem?
+    def apply_deadband(self, value, db_low=DriveConstants.k_inner_deadband, db_high=DriveConstants.k_outer_deadband):
+        if abs(value) < db_low:
+            return 0
+        elif abs(value) > db_high:
+            return 1 * math.copysign(1, value)
+        else:
+            return value
+
+    def input_transform(self, value, a=0.9, b=0.1):
+        db_value = self.apply_deadband(value)
+        return a * db_value**3 + b * db_value
 
     def isFinished(self) -> bool:
         return self.line_count >= len(self.input_log)

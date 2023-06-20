@@ -5,10 +5,11 @@ from wpilib import SmartDashboard
 
 class RecordAuto(commands2.CommandBase):  # change the name for your command
 
-    def __init__(self, container) -> None:
+    def __init__(self, container, input_log_path: str) -> None:
         super().__init__()
         self.setName('Start Recording')
         self.container = container
+        self.input_log_path = input_log_path
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -46,6 +47,9 @@ class RecordAuto(commands2.CommandBase):  # change the name for your command
         self.input_data['driver_controller']['button']['LS'] = self.container.driver_controller.getRawButton(9)
         self.input_data['driver_controller']['button']['RS'] = self.container.driver_controller.getRawButton(10)
 
+        self.input_data['driver_controller']['button']['POVDown'] = self.driver_controller.getPOV(180)
+
+
         # Get operator inputs
         for axis in range(0, 6):
             self.input_data['driver_controller']['axis'][f'axis{axis}'] = self.container.co_driver_controller.getRawAxis(axis)
@@ -73,7 +77,7 @@ class RecordAuto(commands2.CommandBase):  # change the name for your command
         return True
 
     def end(self, interrupted: bool) -> None:
-        with open('/home/lvuser/input_log.json', 'w') as input_json:
+        with open(self.input_log_path, 'w') as input_json:
             json.dump(self.input_log, input_json)
 
         end_time = self.container.get_enabled_time()
