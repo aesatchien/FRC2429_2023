@@ -73,7 +73,7 @@ class RecordAuto(commands2.CommandBase):  # change the name for your command
         return True
 
     def end(self, interrupted: bool) -> None:
-        with open('input_log.json', 'w') as input_json:
+        with open('/home/lvuser/input_log.json', 'w') as input_json:
             json.dump(self.input_log, input_json)
 
         end_time = self.container.get_enabled_time()

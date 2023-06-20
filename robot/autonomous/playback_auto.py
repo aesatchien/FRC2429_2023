@@ -1,5 +1,5 @@
 import commands2
-import io
+import os
 import json
 from wpilib import SmartDashboard
 from subsystems.swerve import Swerve
@@ -11,6 +11,11 @@ class PlaybackAuto(commands2.CommandBase):
         super().__init__()
         self.setName('Playback Auto')
         self.container = container
+        # create it if it doesn't exist
+        print('INPUT LOG PATH: ', input_log_path)
+        print('PWD: ', os.getcwd())
+        temp_file = open(input_log_path, 'a')
+        temp_file.close()
         with open(input_log_path, 'r') as input_json:
             self.input_log = json.load(input_json)
 
@@ -24,7 +29,7 @@ class PlaybackAuto(commands2.CommandBase):
 
     def execute(self) -> None:
         current_inputs = self.input_log[self.line_count]
-
+        SmartDashboard.putNumber("Cycle Number: ", self.line_count)
         self.container.drive.drive(current_inputs['driver_controller']['axis']['axis0'],
                                    current_inputs['driver_controller']['axis']['axis1'],
                                    current_inputs['driver_controller']['axis']['axis4'],
@@ -33,7 +38,7 @@ class PlaybackAuto(commands2.CommandBase):
         self.line_count += 1
 
     def isFinished(self) -> bool:
-        return self.line_count < len(self.input_log)
+        return self.line_count >= len(self.input_log)
 
     def end(self, interrupted: bool) -> None:
         end_time = self.container.get_enabled_time()
