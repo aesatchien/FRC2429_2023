@@ -14,14 +14,14 @@ class PlaybackAuto(commands2.CommandBase):
         super().__init__()
         self.setName('Playback Auto')
         self.container = container
-        # create it if it doesn't exist
-        temp_file = open(input_log_path, 'a')
-        temp_file.close()
-        with open(input_log_path, 'r') as input_json:
-            self.input_log = json.load(input_json)
+        self.input_log_path = input_log_path
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
+
+        with open(self.input_log_path, 'r') as input_json:
+            self.input_log = json.load(input_json)
+
         self.start_time = round(self.container.get_enabled_time(), 2)
         print("\n" + f"** Started {self.getName()} at {self.start_time} s **", flush=True)
         SmartDashboard.putString("alert",
@@ -32,7 +32,9 @@ class PlaybackAuto(commands2.CommandBase):
         current_inputs = self.input_log[self.line_count]
         previous_inputs = self.input_log[self.line_count-1]
 
-        SmartDashboard.putNumber("Cycle Number: ", self.line_count)
+        print('\nFWD: ' + str(current_inputs['driver_controller']['axis']['axis1']), flush=True)
+        print('STRAFE: ' + str(current_inputs['driver_controller']['axis']['axis0']), flush=True)
+        print('ROT: ' + str(current_inputs['driver_controller']['axis']['axis4']) + '\n', flush=True)
 
         if current_inputs['driver_controller']['button']['LB']:
             slowmode_multiplier = constants.k_slowmode_multiplier
@@ -46,10 +48,10 @@ class PlaybackAuto(commands2.CommandBase):
                                    -self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis4']),
                                    fieldRelative=True, rate_limited=True, keep_angle=True)
         
-        if current_inputs['driver_controller']['button']['POVDown'] and not previous_inputs['driver_controller']['button']['POVDown']:
+        # Get only rising edges. Not sure this is necessary
+        if current_inputs['driver_controller']['button']['POV'] == 180 and not previous_inputs['driver_controller']['button']['POV'] == 180:
+            print("* * ! TOGGLING MANIPULATOR ! * *")
             commands2.ScheduleCommand(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics))
-            # Get only rising edges. Not sure this is necessary
-            previous_inputs['driver_controller']['button']['POVDown'] = True
 
         self.line_count += 1
 
