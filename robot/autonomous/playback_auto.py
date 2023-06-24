@@ -52,28 +52,28 @@ class PlaybackAuto(commands2.CommandBase):
 
         self.command_dict = {
             'UP': {
-                'turret': TurretMove(self, self.turret, direction="up", wait_to_finish=False),
-                'elevator': ElevatorMove(self, self.elevator, direction="up", wait_to_finish=False, drive_controls=True),
-                'arm': ArmMove(self, self.arm, direction="up", wait_to_finish=False),
-                'wrist': WristMove(self, self.wrist, direction="down", wait_to_finish=False),
+                'turret': TurretMove(self.container, self.container.turret, direction="up", wait_to_finish=False),
+                'elevator': ElevatorMove(self.container, self.container.elevator, direction="up", wait_to_finish=False, drive_controls=True),
+                'arm': ArmMove(self.container, self.container.arm, direction="up", wait_to_finish=False),
+                'wrist': WristMove(self.container, self.container.wrist, direction="down", wait_to_finish=False),
             },
             'DOWN': {
-                'turret': TurretMove(self, self.turret, direction="down", wait_to_finish=False),
-                'elevator': ElevatorMove(self, self.elevator, direction="down", wait_to_finish=False, drive_controls=True),
-                'arm': ArmMove(self, self.arm, direction="down", wait_to_finish=False),
-                'wrist': WristMove(self, self.wrist, direction="up", wait_to_finish=False),
+                'turret': TurretMove(self.container, self.container.turret, direction="down", wait_to_finish=False),
+                'elevator': ElevatorMove(self.container, self.container.elevator, direction="down", wait_to_finish=False, drive_controls=True),
+                'arm': ArmMove(self.container, self.container.arm, direction="down", wait_to_finish=False),
+                'wrist': WristMove(self.container, self.container.wrist, direction="up", wait_to_finish=False),
             },
             'UP_DRIVE': {
-                'turret': GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=1),
-                'elevator': GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=1),
-                'arm': GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=1),
-                'wrist': GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=1, invert_axis=True),
+                'turret': GenericDrive(self.container, self.container.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=1),
+                'elevator': GenericDrive(self.container, self.container.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=1),
+                'arm': GenericDrive(self.container, self.container.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=1),
+                'wrist': GenericDrive(self.container, self.container.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=1, invert_axis=True),
             },
             'DOWN_DRIVE': {
-                'turret': GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=-1),
-                'elevator': GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=-1),
-                'arm': GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=-1),
-                'wrist': GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=-1, invert_axis=True),
+                'turret': GenericDrive(self, self.container.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=-1),
+                'elevator': GenericDrive(self, self.container.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=-1),
+                'arm': GenericDrive(self, self.container.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=-1),
+                'wrist': GenericDrive(self, self.container.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=-1, invert_axis=True),
             },
             'NONE': {
                 'none': cmd.nothing(),
@@ -125,12 +125,12 @@ class PlaybackAuto(commands2.CommandBase):
                                                            target_type='tag', auto=True).withTimeout(5))
 
         if current_inputs['driver_controller']['button']['Y'] and not previous_inputs['driver_controller']['button']['Y']:
-            commands2.CommandScheduler.getInstance().schedule(AutoRotateSwerve(container=self, drive=self.drive,).withTimeout(2))
+            commands2.CommandScheduler.getInstance().schedule(AutoRotateSwerve(container=self, drive=self.container.drive,).withTimeout(2))
 
         if current_inputs['driver_controller']['button']['RB'] and not previous_inputs['driver_controller']['button']['RB']:
-            commands2.CommandScheduler.getInstance().schedule(cmd.runOnce(action=lambda: self.wrist.set_driver_flag(state=True)).andThen(
+            commands2.CommandScheduler.getInstance().schedule(cmd.runOnce(action=lambda: self.container.wrist.set_driver_flag(state=True)).andThen(
                                                             ReleaseAndStow(container=self).withTimeout(4)).andThen(
-                                                            cmd.runOnce(action=lambda: self.wrist.set_driver_flag(state=False))))
+                                                            cmd.runOnce(action=lambda: self.container.wrist.set_driver_flag(state=False))))
             
         if current_inputs['driver_controller']['button']['Back'] and not previous_inputs['driver_controller']['button']['Back']:
             commands2.CommandScheduler.getInstance().schedule(CompressorToggle(container=self.container, pneumatics=self.container.pneumatics,
