@@ -35,6 +35,7 @@ class PlaybackAuto(commands2.CommandBase):
         print('\nFWD: ' + str(current_inputs['driver_controller']['axis']['axis1']), flush=True)
         print('STRAFE: ' + str(current_inputs['driver_controller']['axis']['axis0']), flush=True)
         print('ROT: ' + str(current_inputs['driver_controller']['axis']['axis4']) + '\n', flush=True)
+        # Problem is after here
 
         if current_inputs['driver_controller']['button']['LB']:
             slowmode_multiplier = constants.k_slowmode_multiplier

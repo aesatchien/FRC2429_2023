@@ -20,6 +20,9 @@ class RecordAuto(commands2.CommandBase):  # change the name for your command
 
         self.counter = 0
         self.input_log = []
+
+    def execute(self) -> None:
+
         self.input_data = {
             'driver_controller': {
                 'axis': {},
@@ -31,7 +34,6 @@ class RecordAuto(commands2.CommandBase):  # change the name for your command
             }
         }
 
-    def execute(self) -> None:
         # Get driver inputs
         for axis in range(0, 6):
             self.input_data['driver_controller']['axis'][f'axis{axis}'] = self.container.driver_controller.getRawAxis(axis)
