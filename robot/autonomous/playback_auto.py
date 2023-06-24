@@ -40,9 +40,9 @@ class PlaybackAuto(commands2.CommandBase):
         else: 
             slowmode_multiplier = 1
 
-        print('\n FWD: ' + str(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis1'])))
-        print('STRAFE: ' + str(self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis0'])))
-        print('ROT: ' + str(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis4'])) + '\n')
+        # print('\n FWD: ' + str(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis1'])))
+        # print('STRAFE: ' + str(self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis0'])))
+        # print('ROT: ' + str(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis4'])) + '\n')
 
         self.container.drive.drive(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis1']),
                                    self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis0']),
@@ -51,8 +51,8 @@ class PlaybackAuto(commands2.CommandBase):
         
         # Get only rising edges. Not sure this is necessary
         if current_inputs['driver_controller']['button']['POV'] == 180 and not previous_inputs['driver_controller']['button']['POV'] == 180:
-            print("* * ! TOGGLING MANIPULATOR ! * *")
-            commands2.ScheduleCommand(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics))
+            commands2.CommandScheduler.getInstance().schedule(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics))
+            # commands2.ScheduleCommand(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics))
 
         self.line_count += 1
 
