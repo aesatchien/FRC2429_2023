@@ -1,5 +1,5 @@
 import commands2
-import os
+import commands2.cmd as cmd
 import json
 import math
 from wpilib import SmartDashboard
@@ -7,15 +7,78 @@ from subsystems.swerve_constants import DriveConstants
 from commands.manipulator_toggle import ManipulatorToggle
 import constants
 
+from subsystems.led import Led
+
+from commands.arm_move import ArmMove
+from commands.turret_move import TurretMove
+from commands.turret_toggle import TurretToggle
+from commands.elevator_move import ElevatorMove
+from commands.wrist_move import WristMove
+from commands.manipulator_toggle import ManipulatorToggle
+from commands.compressor_toggle import CompressorToggle
+from commands.generic_drive import GenericDrive  # Siraaj's way of moving all subsystems
+from commands.toggle_high_pickup import ToggleHighPickup
+from commands.gyro_reset import GyroReset
+from commands.co_stow import CoStow
+from commands.manipulator_auto_grab import ManipulatorAutoGrab
+from commands.turret_reset import TurretReset
+
+from autonomous.auto_rotate_swerve import AutoRotateSwerve
+from autonomous.auto_strafe_swerve import AutoStrafeSwerve
+from autonomous.auto_setup_score import AutoSetupScore
+
 class PlaybackAuto(commands2.CommandBase):
     # look, ma, no path planning!
+    # this is basically another robotcontainer, but I don't think there's a better way to do this.
 
     def __init__(self, container, input_log_path) -> None:
         super().__init__()
+
         self.setName('Playback Auto')
         self.container = container
         self.input_log_path = input_log_path
+        # Take over all subsystems
         self.addRequirements(self.container.drive)
+        self.addRequirements(self.container.turret)
+        self.addRequirements(self.container.arm)
+        self.addRequirements(self.container.wrist)
+        self.addRequirements(self.container.elevator)
+        self.addRequirements(self.container.pneumatics)
+        self.addRequirements(self.container.vision)
+        self.addRequirements(self.container.led)
+
+
+        self.subsystem_list = ['turret', 'elevator', 'wrist', 'arm']
+
+        self.command_dict = {
+            'UP': {
+                'turret': TurretMove(self, self.turret, direction="up", wait_to_finish=False),
+                'elevator': ElevatorMove(self, self.elevator, direction="up", wait_to_finish=False, drive_controls=True),
+                'arm': ArmMove(self, self.arm, direction="up", wait_to_finish=False),
+                'wrist': WristMove(self, self.wrist, direction="down", wait_to_finish=False),
+            },
+            'DOWN': {
+                'turret': TurretMove(self, self.turret, direction="down", wait_to_finish=False),
+                'elevator': ElevatorMove(self, self.elevator, direction="down", wait_to_finish=False, drive_controls=True),
+                'arm': ArmMove(self, self.arm, direction="down", wait_to_finish=False),
+                'wrist': WristMove(self, self.wrist, direction="up", wait_to_finish=False),
+            },
+            'UP_DRIVE': {
+                'turret': GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=1),
+                'elevator': GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=1),
+                'arm': GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=1),
+                'wrist': GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=1, invert_axis=True),
+            },
+            'DOWN_DRIVE': {
+                'turret': GenericDrive(self, self.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=-1),
+                'elevator': GenericDrive(self, self.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=-1),
+                'arm': GenericDrive(self, self.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=-1),
+                'wrist': GenericDrive(self, self.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=-1, invert_axis=True),
+            },
+            'NONE': {
+                'none': cmd.nothing(),
+            }
+        }
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -30,6 +93,9 @@ class PlaybackAuto(commands2.CommandBase):
         self.line_count = 1
 
     def execute(self) -> None:
+
+        # --------------- SWERVE ---------------
+
         current_inputs = self.input_log[self.line_count]
         previous_inputs = self.input_log[self.line_count-1]
 
@@ -40,19 +106,88 @@ class PlaybackAuto(commands2.CommandBase):
         else: 
             slowmode_multiplier = 1
 
-        # print('\n FWD: ' + str(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis1'])))
-        # print('STRAFE: ' + str(self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis0'])))
-        # print('ROT: ' + str(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis4'])) + '\n')
-
         self.container.drive.drive(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis1']),
                                    self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis0']),
                                    -self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis4']),
                                    fieldRelative=True, rate_limited=False, keep_angle=True)
         
-        # Get only rising edges. Not sure this is necessary
+
+        # --------------- DRIVER CONTROLLER ---------------
+
+        if current_inputs['driver_controller']['button']['A'] and not previous_inputs['driver_controller']['button']['A']:
+            commands2.CommandScheduler.getInstance().schedule(AutoSetupScore(container=self.container))
+
+        if current_inputs['driver_controller']['button']['B'] and not previous_inputs['driver_controller']['button']['B']:
+            commands2.CommandScheduler.getInstance().schedule(GyroReset(container=self.container, swerve=self.container.swerve))
+
+        if current_inputs['driver_controller']['button']['X'] and not previous_inputs['driver_controller']['button']['X']:
+            commands2.CommandScheduler.getInstance().schedule(AutoStrafeSwerve(container=self.container, drive=self.container.drive, vision=self.container.vision,
+                                                           target_type='tag', auto=True).withTimeout(5))
+
+        if current_inputs['driver_controller']['button']['Y'] and not previous_inputs['driver_controller']['button']['Y']:
+            commands2.CommandScheduler.getInstance().schedule(AutoRotateSwerve(container=self, drive=self.drive,).withTimeout(2))
+
+        if current_inputs['driver_controller']['button']['RB'] and not previous_inputs['driver_controller']['button']['RB']:
+            commands2.CommandScheduler.getInstance().schedule(cmd.runOnce(action=lambda: self.wrist.set_driver_flag(state=True)).andThen(
+                                                            ReleaseAndStow(container=self).withTimeout(4)).andThen(
+                                                            cmd.runOnce(action=lambda: self.wrist.set_driver_flag(state=False))))
+            
+        if current_inputs['driver_controller']['button']['Back'] and not previous_inputs['driver_controller']['button']['Back']:
+            commands2.CommandScheduler.getInstance().schedule(CompressorToggle(container=self.container, pneumatics=self.container.pneumatics,
+                                                                               force='stop'))
+
+        if current_inputs['driver_controller']['button']['Start'] and not previous_inputs['driver_controller']['button']['Start']:
+            commands2.CommandScheduler.getInstance().schedule(CompressorToggle(container=self.container, pneumatics=self.container.pneumatics,
+                                                                               force='start'))
+
+        if current_inputs['driver_controller']['button']['POV'] == 0 and not previous_inputs['driver_controller']['button']['POV'] == 0:
+            commands2.CommandScheduler.getInstance().schedule(self.led.set_indicator_with_timeout(Led.Indicator.RAINBOW, 5))
+
         if current_inputs['driver_controller']['button']['POV'] == 180 and not previous_inputs['driver_controller']['button']['POV'] == 180:
-            commands2.CommandScheduler.getInstance().schedule(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics))
-            # commands2.ScheduleCommand(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics))
+                    commands2.CommandScheduler.getInstance().schedule(ManipulatorToggle(container=self.container, pneumatics=self.container.pneumatics))
+
+        if current_inputs['driver_controller']['button']['POV'] == 270 and not previous_inputs['driver_controller']['button']['POV'] == 270:
+                    commands2.CommandScheduler.getInstance().schedule(self.led.set_indicator_with_timeout(Led.Indicator.RSL, 5))
+
+
+        # --------------- OPERATOR CONTROLLER ---------------
+
+
+        subsystem_keys = [self.subsystem_list[i] for i, key in enumerate(['A', 'B', 'X', 'Y']) if current_inputs['co_driver_controller']['button'][key]]
+
+        if current_inputs['co_driver_controller']['button']['POV'] == 0:
+            for subsystem in subsystem_keys: self.command_dict['UP_DRIVE'][subsystem].execute() # this is very sketchy
+
+        if current_inputs['co_driver_controller']['button']['POV'] == 90 and not previous_inputs['co_driver_controller']['button']['POV'] == 90:
+            for subsystem in subsystem_keys: commands2.CommandScheduler.getInstance().schedule(self.command_dict['UP'][subsystem]) 
+
+        if current_inputs['co_driver_controller']['button']['POV'] == 180:
+            for subsystem in subsystem_keys: self.command_dict['DOWN_DRIVE'][subsystem].execute()
+
+        if current_inputs['co_driver_controller']['button']['POV'] == 270 and not previous_inputs['co_driver_controller']['button']['POV'] == 270:
+            for subsystem in subsystem_keys: commands2.CommandScheduler.getInstance().schedule(self.command_dict['DOWN'][subsystem]) 
+
+        if current_inputs['co_driver_controller']['button']['LB'] and not previous_inputs['co_driver_controller']['button']['LB']:
+            commands2.CommandScheduler.getInstance.schedule(ToggleHighPickup(container=self.container, turret=self.container.turret, elevator=self.container.elevator,
+                                                                              wrist=self.container.wrist, pneumatics=self.container.pneumatics, vision=self.container.vision))
+
+        if current_inputs['co_driver_controller']['button']['RB'] and not previous_inputs['co_driver_controller']['button']['RB']:
+            ManipulatorAutoGrab(container=self.container, pneumatics=self.container.pneumatics).execute() # again very sketchy.
+
+        if current_inputs['co_driver_controller']['button']['Back'] and not previous_inputs['co_driver_controller']['button']['Back']:
+            commands2.CommandScheduler.getInstance.schedule(CoStow(container=self))
+
+        if current_inputs['co_driver_controller']['button']['Start'] and not previous_inputs['co_driver_controller']['button']['Start']:
+            commands2.CommandScheduler.getInstance.schedule(TurretReset(container=self, turret=self.turret))
+
+        if current_inputs['co_driver_controller']['button']['LS'] and not previous_inputs['co_driver_controller']['button']['LS']:
+            commands2.CommandScheduler.getInstance.schedule(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
+
+        if current_inputs['co_driver_controller']['axis']['axis2'] > 0.2 and not previous_inputs['co_driver_controller']['axis']['axis2'] > 0.2:
+            commands2.CommandScheduler.getInstance.schedule(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
+
+        if current_inputs['co_driver_controller']['axis']['axis3'] > 0.2 and not previous_inputs['co_driver_controller']['axis']['axis3'] > 0.2:
+            commands2.CommandScheduler.getInstance.schedule(TurretToggle(container=self, turret=self.turret, wait_to_finish=False))
 
         self.line_count += 1
 

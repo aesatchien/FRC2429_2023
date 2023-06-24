@@ -215,10 +215,10 @@ class RobotContainer:
 
         if wpilib.RobotBase.isReal():
             # this log doesn't work with Windows machines
-            self.buttonLB.whenPressed(RecordAuto(container=self, input_log_path='/home/lvuser/input_log.json'))
+            self.buttonRight.whenPressed(RecordAuto(container=self, input_log_path='/home/lvuser/input_log.json'))
         else:
             # this log would get wiped with all new deploys
-            self.buttonLB.whenPressed(RecordAuto(container=self, input_log_path='input_log.json'))
+            self.buttonRight.whenPressed(RecordAuto(container=self, input_log_path='input_log.json'))
 
         # self.buttonLeftAxis.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.VISION_TARGET_SUCCESS, 2))
 
