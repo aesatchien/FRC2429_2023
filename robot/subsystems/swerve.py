@@ -20,7 +20,6 @@ class Swerve (SubsystemBase):
         super().__init__()
 
         self.counter = 0
-        self.recording = False
 
         # Create SwerveModules
         self.frontLeft = SwerveModule(
@@ -142,10 +141,6 @@ class Swerve (SubsystemBase):
 
         if keep_angle:
             rotation_commanded = self.perform_keep_angle(xSpeed, ySpeed, rot)  # call the 1706 keep angle routine to maintain rotation
-
-        if self.recording:
-            self.input_log.write(f'{xSpeed}, {ySpeed}, {rot}, {fieldRelative}, {rate_limited}, {keep_angle}\n')
-            self.input_log.flush()
 
         # Convert the commanded speeds into the correct units for the drivetrain
         xSpeedDelivered = xSpeedCommanded * dc.kMaxSpeedMetersPerSecond

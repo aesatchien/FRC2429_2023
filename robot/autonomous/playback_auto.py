@@ -15,6 +15,7 @@ class PlaybackAuto(commands2.CommandBase):
         self.setName('Playback Auto')
         self.container = container
         self.input_log_path = input_log_path
+        self.addRequirements(self.container.drive)
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -32,11 +33,6 @@ class PlaybackAuto(commands2.CommandBase):
         current_inputs = self.input_log[self.line_count]
         previous_inputs = self.input_log[self.line_count-1]
 
-        print('\nFWD: ' + str(current_inputs['driver_controller']['axis']['axis1']), flush=True)
-        print('STRAFE: ' + str(current_inputs['driver_controller']['axis']['axis0']), flush=True)
-        print('ROT: ' + str(current_inputs['driver_controller']['axis']['axis4']) + '\n', flush=True)
-        # Problem is after here
-
         if current_inputs['driver_controller']['button']['LB']:
             slowmode_multiplier = constants.k_slowmode_multiplier
         elif current_inputs['driver_controller']['axis']['axis2']:
@@ -44,10 +40,14 @@ class PlaybackAuto(commands2.CommandBase):
         else: 
             slowmode_multiplier = 1
 
+        print('\n FWD: ' + str(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis1'])))
+        print('STRAFE: ' + str(self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis0'])))
+        print('ROT: ' + str(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis4'])) + '\n')
+
         self.container.drive.drive(-self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis1']),
                                    self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis0']),
                                    -self.input_transform(slowmode_multiplier*current_inputs['driver_controller']['axis']['axis4']),
-                                   fieldRelative=True, rate_limited=True, keep_angle=True)
+                                   fieldRelative=True, rate_limited=False, keep_angle=True)
         
         # Get only rising edges. Not sure this is necessary
         if current_inputs['driver_controller']['button']['POV'] == 180 and not previous_inputs['driver_controller']['button']['POV'] == 180:
