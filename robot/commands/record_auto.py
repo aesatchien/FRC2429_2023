@@ -65,8 +65,11 @@ class RecordAuto(commands2.CommandBase):  # change the name for your command
         self.input_data['co_driver_controller']['button']['RB'] = self.container.co_driver_controller.getRawButton(6)
         self.input_data['co_driver_controller']['button']['Back'] = self.container.co_driver_controller.getRawButton(7)
         self.input_data['co_driver_controller']['button']['Start'] = self.container.co_driver_controller.getRawButton(8)
-        #  self.input_data['co_driver_controller']['button']['LS'] = self.container.co_driver_controller.getRawButton(9)
+        self.input_data['co_driver_controller']['button']['LS'] = self.container.co_driver_controller.getRawButton(9)
         #  self.input_data['co_driver_controller']['button']['RS'] = self.container.co_driver_controller.getRawButton(10)
+
+        self.input_data['co_driver_controller']['button']['POV'] = self.container.driver_controller.getPOV()
+
         # Add captured inputs to the list
         self.input_log.append(self.input_data)
         self.counter += 1

@@ -1,7 +1,8 @@
-import commands2
-import commands2.cmd as cmd
 import json
 import math
+from typing import Tuple
+import commands2
+import commands2.cmd as cmd
 from wpilib import SmartDashboard
 from subsystems.swerve_constants import DriveConstants
 from commands.manipulator_toggle import ManipulatorToggle
@@ -26,6 +27,7 @@ from commands.turret_reset import TurretReset
 from autonomous.auto_rotate_swerve import AutoRotateSwerve
 from autonomous.auto_strafe_swerve import AutoStrafeSwerve
 from autonomous.auto_setup_score import AutoSetupScore
+from autonomous.release_and_stow import ReleaseAndStow
 
 class PlaybackAuto(commands2.CommandBase):
     # look, ma, no path planning!
@@ -79,6 +81,9 @@ class PlaybackAuto(commands2.CommandBase):
                 'none': cmd.nothing(),
             }
         }
+        
+        # create an attribute so we don't construct a new object each time
+        self.manipulator_auto_grab = ManipulatorAutoGrab(container=self.container, pneumatics=self.container.pneumatics)
 
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
@@ -90,6 +95,8 @@ class PlaybackAuto(commands2.CommandBase):
         print("\n" + f"** Started {self.getName()} at {self.start_time} s **", flush=True)
         SmartDashboard.putString("alert",
                                  f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
+        self.prev_debounced_val = False
+        self.debounced_val = False
         self.line_count = 1
 
     def execute(self) -> None:
@@ -156,13 +163,13 @@ class PlaybackAuto(commands2.CommandBase):
         subsystem_keys = [self.subsystem_list[i] for i, key in enumerate(['A', 'B', 'X', 'Y']) if current_inputs['co_driver_controller']['button'][key]]
 
         if current_inputs['co_driver_controller']['button']['POV'] == 0:
-            for subsystem in subsystem_keys: self.command_dict['UP_DRIVE'][subsystem].execute() # this is very sketchy
+            for subsystem in subsystem_keys: self.run_while_held(('co_driver_controller', 'button', 'POV'), command=self.command_dict['UP_DRIVE'][subsystem], pov_value=0)
 
         if current_inputs['co_driver_controller']['button']['POV'] == 90 and not previous_inputs['co_driver_controller']['button']['POV'] == 90:
             for subsystem in subsystem_keys: commands2.CommandScheduler.getInstance().schedule(self.command_dict['UP'][subsystem]) 
 
         if current_inputs['co_driver_controller']['button']['POV'] == 180:
-            for subsystem in subsystem_keys: self.command_dict['DOWN_DRIVE'][subsystem].execute()
+            for subsystem in subsystem_keys: self.run_while_held(('co_driver_controller', 'button', 'POV'), command=self.command_dict['DOWN_DRIVE'][subsystem], pov_value=180)
 
         if current_inputs['co_driver_controller']['button']['POV'] == 270 and not previous_inputs['co_driver_controller']['button']['POV'] == 270:
             for subsystem in subsystem_keys: commands2.CommandScheduler.getInstance().schedule(self.command_dict['DOWN'][subsystem]) 
@@ -171,8 +178,7 @@ class PlaybackAuto(commands2.CommandBase):
             commands2.CommandScheduler.getInstance.schedule(ToggleHighPickup(container=self.container, turret=self.container.turret, elevator=self.container.elevator,
                                                                               wrist=self.container.wrist, pneumatics=self.container.pneumatics, vision=self.container.vision))
 
-        if current_inputs['co_driver_controller']['button']['RB'] and not previous_inputs['co_driver_controller']['button']['RB']:
-            ManipulatorAutoGrab(container=self.container, pneumatics=self.container.pneumatics).execute() # again very sketchy.
+        self.run_while_held(('co_driver_controller', 'button', 'RB'), command=self.manipulator_auto_grab)
 
         if current_inputs['co_driver_controller']['button']['Back'] and not previous_inputs['co_driver_controller']['button']['Back']:
             commands2.CommandScheduler.getInstance.schedule(CoStow(container=self))
@@ -206,6 +212,28 @@ class PlaybackAuto(commands2.CommandBase):
 
     def isFinished(self) -> bool:
         return self.line_count >= len(self.input_log)
+
+    def run_while_held(self, button_keys: Tuple[str, ...], command: commands2.Command, pov_value=None, ignored_bools: int = 5):
+        last_button_vals = []
+        if self.line_count >= ignored_bools: 
+            for back_index in range(self.line_count-ignored_bools, self.line_count):
+                if pov_value:
+                    last_button_vals.append(self.input_log[back_index][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value)
+                else:
+                    last_button_vals.append(self.input_log[back_index][button_keys[0]][button_keys[1]][button_keys[2]])
+
+            self.debounced_val = max(set(last_button_vals), key=last_button_vals.count)
+
+        else: self.debounced_val = False
+
+        if not self.prev_debounced_val and self.debounced_val:
+            command.initialize()
+        elif self.debounced_val:
+            command.execute()
+        elif self.prev_debounced_val and not self.debounced_val:
+            command.end(False)
+
+        self.prev_debounced_val = self.debounced_val
 
     def end(self, interrupted: bool) -> None:
         end_time = self.container.get_enabled_time()
