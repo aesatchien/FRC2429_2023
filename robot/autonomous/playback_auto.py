@@ -32,7 +32,6 @@ from autonomous.release_and_stow import ReleaseAndStow
 from autonomous.playback_swerve import PlaybackSwerve
 
 class PlaybackAuto(commands2.CommandBase):
-    # look, ma, no path planning!
     # this is basically another robotcontainer, but I don't think there's a better way to do this.
 
     def __init__(self, container, input_log_path: str) -> None:
@@ -41,7 +40,6 @@ class PlaybackAuto(commands2.CommandBase):
         self.setName('Playback Auto')
         self.container = container
         self.input_log_path = input_log_path
-        self.container.drive.setDefaultCommand
 
         self.subsystem_list = ['turret', 'elevator', 'wrist', 'arm']
 
@@ -65,10 +63,10 @@ class PlaybackAuto(commands2.CommandBase):
                 'wrist': GenericDrive(self.container, self.container.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=1, invert_axis=True),
             },
             'DOWN_DRIVE': {
-                'turret': GenericDrive(self, self.container.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=-1),
-                'elevator': GenericDrive(self, self.container.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=-1),
-                'arm': GenericDrive(self, self.container.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=-1),
-                'wrist': GenericDrive(self, self.container.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=-1, invert_axis=True),
+                'turret': GenericDrive(self.container, self.container.turret, max_velocity=constants.k_PID_dict_vel_turret["SM_MaxVel"], input_type='dpad', direction=-1),
+                'elevator': GenericDrive(self.container, self.container.elevator, max_velocity=constants.k_PID_dict_vel_elevator["SM_MaxVel"], input_type='dpad', direction=-1),
+                'arm': GenericDrive(self.container, self.container.arm, max_velocity=constants.k_PID_dict_vel_arm["SM_MaxVel"], input_type='dpad', direction=-1),
+                'wrist': GenericDrive(self.container, self.container.wrist, max_velocity=constants.k_PID_dict_vel_wrist["SM_MaxVel"], control_type='velocity', input_type='dpad', direction=-1, invert_axis=True),
             },
             'NONE': {
                 'none': cmd.nothing(),
@@ -86,8 +84,6 @@ class PlaybackAuto(commands2.CommandBase):
 
         self.container.drive.setDefaultCommand(PlaybackSwerve(self.container, self.input_log_path, field_oriented=constants.k_field_centric, rate_limited=constants.k_rate_limited))
 
-        self.prev_debounced_val = False
-        self.debounced_val = False
         self.line_count = 1
 
         self.start_time = round(self.container.get_enabled_time(), 2)
@@ -171,25 +167,25 @@ class PlaybackAuto(commands2.CommandBase):
             for subsystem in subsystem_keys: commands2.CommandScheduler.getInstance().schedule(self.command_dict['DOWN'][subsystem]) 
 
         if current_inputs['co_driver_controller']['button']['LB'] and not previous_inputs['co_driver_controller']['button']['LB']:
-            commands2.CommandScheduler.getInstance.schedule(ToggleHighPickup(container=self.container, turret=self.container.turret, elevator=self.container.elevator,
+            commands2.CommandScheduler.getInstance().schedule(ToggleHighPickup(container=self.container, turret=self.container.turret, elevator=self.container.elevator,
                                                                               wrist=self.container.wrist, pneumatics=self.container.pneumatics, vision=self.container.vision))
 
         self.run_while_held(('co_driver_controller', 'button', 'RB'), command=self.manipulator_auto_grab)
 
         if current_inputs['co_driver_controller']['button']['Back'] and not previous_inputs['co_driver_controller']['button']['Back']:
-            commands2.CommandScheduler.getInstance.schedule(CoStow(container=self.container))
+            commands2.CommandScheduler.getInstance().schedule(CoStow(container=self.container))
 
         if current_inputs['co_driver_controller']['button']['Start'] and not previous_inputs['co_driver_controller']['button']['Start']:
-            commands2.CommandScheduler.getInstance.schedule(TurretReset(container=self.container, turret=self.container.turret))
+            commands2.CommandScheduler.getInstance().schedule(TurretReset(container=self.container, turret=self.container.turret))
 
         if current_inputs['co_driver_controller']['button']['LS'] and not previous_inputs['co_driver_controller']['button']['LS']:
-            commands2.CommandScheduler.getInstance.schedule(TurretToggle(container=self, turret=self.container.turret, wait_to_finish=False))
+            commands2.CommandScheduler.getInstance().schedule(TurretToggle(container=self, turret=self.container.turret, wait_to_finish=False))
 
         if current_inputs['co_driver_controller']['axis']['axis2'] > 0.2 and not previous_inputs['co_driver_controller']['axis']['axis2'] > 0.2:
-            commands2.CommandScheduler.getInstance.schedule(TurretToggle(container=self, turret=self.container.turret, wait_to_finish=False))
+            commands2.CommandScheduler.getInstance().schedule(TurretToggle(container=self, turret=self.container.turret, wait_to_finish=False))
 
         if current_inputs['co_driver_controller']['axis']['axis3'] > 0.2 and not previous_inputs['co_driver_controller']['axis']['axis3'] > 0.2:
-            commands2.CommandScheduler.getInstance.schedule(TurretToggle(container=self, turret=self.container.turret, wait_to_finish=False))
+            commands2.CommandScheduler.getInstance().schedule(TurretToggle(container=self, turret=self.container.turret, wait_to_finish=False))
 
         self.line_count += 1
 
@@ -219,24 +215,26 @@ class PlaybackAuto(commands2.CommandBase):
         db_value = self.apply_deadband(value)
         return a * db_value**3 + b * db_value
 
-    def run_while_held(self, button_keys: Tuple[str, ...], command: commands2.Command, pov_value=None, ignored_bools: int = 5):
+    def run_while_held(self, button_keys: Tuple[str, ...], command: commands2.Command, pov_value=None, window_size: int = 5):
         last_button_vals = []
-        if self.line_count >= ignored_bools: 
-            for back_index in range(self.line_count-ignored_bools, self.line_count):
+        if self.line_count >= window_size+1: 
+            for back_index in range(self.line_count-window_size, self.line_count):
                 if pov_value:
                     last_button_vals.append(self.input_log[back_index][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value)
                 else:
                     last_button_vals.append(self.input_log[back_index][button_keys[0]][button_keys[1]][button_keys[2]])
 
-            self.debounced_val = max(set(last_button_vals), key=last_button_vals.count)
+            debounced_val = max(set(last_button_vals), key=last_button_vals.count)
+            last_button_vals.pop()
+            last_button_vals.append(self.line_count-(window_size+1))
+            prev_debounced_val = max(set(last_button_vals), key=last_button_vals.count)
 
-        else: self.debounced_val = False
+        else: debounced_val = prev_debounced_val = False
 
-        if not self.prev_debounced_val and self.debounced_val:
+        if not prev_debounced_val and debounced_val:
             command.initialize()
-        elif self.debounced_val:
+        elif debounced_val:
             command.execute()
-        elif self.prev_debounced_val and not self.debounced_val:
+        elif prev_debounced_val and not debounced_val:
             command.end(False)
-
-        self.prev_debounced_val = self.debounced_val
+        

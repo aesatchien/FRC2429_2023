@@ -31,7 +31,7 @@ class PlaybackSwerve(commands2.CommandBase):  # change the name for your command
                                  f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
 
     def execute(self) -> None:
-
+        self.line_count = min(round((self.container.get_enabled_time()) * 50), 749)
         current_inputs = self.input_log[self.line_count]
         previous_inputs = self.input_log[self.line_count-1]
 
@@ -48,7 +48,7 @@ class PlaybackSwerve(commands2.CommandBase):  # change the name for your command
                                    fieldRelative=True, rate_limited=False, keep_angle=True)
 
     def isFinished(self) -> bool:
-        return self.line_count > len(self.input_log)
+        return self.line_count >= len(self.input_log)
 
     def end(self, interrupted: bool) -> None:
         end_time = self.container.get_enabled_time()
