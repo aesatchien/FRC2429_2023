@@ -215,21 +215,28 @@ class PlaybackAuto(commands2.CommandBase):
         db_value = self.apply_deadband(value)
         return a * db_value**3 + b * db_value
 
-    def run_while_held(self, button_keys: Tuple[str, ...], command: commands2.Command, pov_value=None, window_size: int = 5):
+    def run_while_held(self, button_keys: Tuple[str, ...], command: commands2.Command, pov_value=None, window_size: int = 2):
         last_button_vals = []
         if self.line_count >= window_size+1: 
-            for back_index in range(self.line_count-window_size, self.line_count):
-                if pov_value:
+            if pov_value != None:
+                for back_index in range(self.line_count-window_size+1, self.line_count+1):
                     last_button_vals.append(self.input_log[back_index][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value)
-                else:
+
+                debounced_val = max(set(last_button_vals), key=last_button_vals.count)
+                last_button_vals.pop()
+                last_button_vals.append(self.input_log[self.line_count-(window_size+1)][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value)
+
+            else:
+                for back_index in range(self.line_count-window_size+1, self.line_count+1):
                     last_button_vals.append(self.input_log[back_index][button_keys[0]][button_keys[1]][button_keys[2]])
 
-            debounced_val = max(set(last_button_vals), key=last_button_vals.count)
-            last_button_vals.pop()
-            last_button_vals.append(self.line_count-(window_size+1))
+                debounced_val = max(set(last_button_vals), key=last_button_vals.count)
+                last_button_vals.pop()
+                last_button_vals.append(self.input_log[self.line_count-(window_size+1)][button_keys[0]][button_keys[1]][button_keys[2]])
             prev_debounced_val = max(set(last_button_vals), key=last_button_vals.count)
 
         else: debounced_val = prev_debounced_val = False
+        print(f'prev debounced val: {prev_debounced_val}, debounced val: {debounced_val} for {command.getName()}')
 
         if not prev_debounced_val and debounced_val:
             command.initialize()

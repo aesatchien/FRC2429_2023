@@ -31,7 +31,8 @@ class PlaybackSwerve(commands2.CommandBase):  # change the name for your command
                                  f"** Started {self.getName()} at {self.start_time - self.container.get_enabled_time():2.2f} s **")
 
     def execute(self) -> None:
-        self.line_count = min(round((self.container.get_enabled_time()) * 50), 749)
+        self.line_count = round((self.container.get_enabled_time()) * 50)
+        if self.line_count > 749: return
         current_inputs = self.input_log[self.line_count]
         previous_inputs = self.input_log[self.line_count-1]
 
