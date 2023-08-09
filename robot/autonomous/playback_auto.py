@@ -154,13 +154,13 @@ class PlaybackAuto(commands2.CommandBase):
 
         subsystem_keys = [self.subsystem_list[i] for i, key in enumerate(['A', 'B', 'X', 'Y']) if current_inputs['co_driver_controller']['button'][key]]
 
-        if current_inputs['co_driver_controller']['button']['POV'] == 0:
+        if current_inputs['co_driver_controller']['button']['POV'] == 0 or previous_inputs['co_driver_controller']['button']['POV'] == 0:
             for subsystem in subsystem_keys: self.run_while_held(('co_driver_controller', 'button', 'POV'), command=self.command_dict['UP_DRIVE'][subsystem], pov_value=0)
 
         if current_inputs['co_driver_controller']['button']['POV'] == 90 and not previous_inputs['co_driver_controller']['button']['POV'] == 90:
             for subsystem in subsystem_keys: commands2.CommandScheduler.getInstance().schedule(self.command_dict['UP'][subsystem]) 
 
-        if current_inputs['co_driver_controller']['button']['POV'] == 180:
+        if current_inputs['co_driver_controller']['button']['POV'] == 180 or previous_inputs['co_driver_controller']['button']['POV'] == 180:
             for subsystem in subsystem_keys: self.run_while_held(('co_driver_controller', 'button', 'POV'), command=self.command_dict['DOWN_DRIVE'][subsystem], pov_value=180)
 
         if current_inputs['co_driver_controller']['button']['POV'] == 270 and not previous_inputs['co_driver_controller']['button']['POV'] == 270:
@@ -215,33 +215,23 @@ class PlaybackAuto(commands2.CommandBase):
         db_value = self.apply_deadband(value)
         return a * db_value**3 + b * db_value
 
-    def run_while_held(self, button_keys: Tuple[str, ...], command: commands2.Command, pov_value=None, window_size: int = 2):
-        last_button_vals = []
-        if self.line_count >= window_size+1: 
-            if pov_value != None:
-                for back_index in range(self.line_count-window_size+1, self.line_count+1):
-                    last_button_vals.append(self.input_log[back_index][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value)
+    def run_while_held(self, button_keys: Tuple[str, ...], command: commands2.Command, pov_value=None):
+        if pov_value != None:
+            print("matching pov value")
+            current_val = self.input_log[self.line_count][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value
+            prev_val = self.input_log[self.line_count-1][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value
 
-                debounced_val = max(set(last_button_vals), key=last_button_vals.count)
-                last_button_vals.pop()
-                last_button_vals.append(self.input_log[self.line_count-(window_size+1)][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value)
+        else: 
+            print("grabbing directly")
+            current_val = self.input_log[self.line_count][button_keys[0]][button_keys[1]][button_keys[2]]
+            prev_val = self.input_log[self.line_count-1][button_keys[0]][button_keys[1]][button_keys[2]]
 
-            else:
-                for back_index in range(self.line_count-window_size+1, self.line_count+1):
-                    last_button_vals.append(self.input_log[back_index][button_keys[0]][button_keys[1]][button_keys[2]])
+        print(f"current_val: {current_val}, prev_val: {prev_val} for {command.getName()}")
 
-                debounced_val = max(set(last_button_vals), key=last_button_vals.count)
-                last_button_vals.pop()
-                last_button_vals.append(self.input_log[self.line_count-(window_size+1)][button_keys[0]][button_keys[1]][button_keys[2]])
-            prev_debounced_val = max(set(last_button_vals), key=last_button_vals.count)
-
-        else: debounced_val = prev_debounced_val = False
-        print(f'prev debounced val: {prev_debounced_val}, debounced val: {debounced_val} for {command.getName()}')
-
-        if not prev_debounced_val and debounced_val:
+        if current_val and not prev_val:
             command.initialize()
-        elif debounced_val:
+        elif current_val and prev_val:
             command.execute()
-        elif prev_debounced_val and not debounced_val:
-            command.end(False)
-        
+        elif prev_val and not current_val:
+            command.end(interrupted=True)
+
