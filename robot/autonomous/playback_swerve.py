@@ -32,7 +32,10 @@ class PlaybackSwerve(commands2.CommandBase):  # change the name for your command
 
     def execute(self) -> None:
         self.line_count = round((self.container.get_enabled_time()) * 50)
-        if self.line_count > 749: return
+        if self.line_count > 749: 
+            self.container.drive.drive(0, 0, 0, fieldRelative=True, rate_limited=False, keep_angle=True)
+            return
+
         current_inputs = self.input_log[self.line_count]
         previous_inputs = self.input_log[self.line_count-1]
 

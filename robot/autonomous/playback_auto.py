@@ -217,16 +217,12 @@ class PlaybackAuto(commands2.CommandBase):
 
     def run_while_held(self, button_keys: Tuple[str, ...], command: commands2.Command, pov_value=None):
         if pov_value != None:
-            print("matching pov value")
             current_val = self.input_log[self.line_count][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value
             prev_val = self.input_log[self.line_count-1][button_keys[0]][button_keys[1]][button_keys[2]] == pov_value
 
         else: 
-            print("grabbing directly")
             current_val = self.input_log[self.line_count][button_keys[0]][button_keys[1]][button_keys[2]]
             prev_val = self.input_log[self.line_count-1][button_keys[0]][button_keys[1]][button_keys[2]]
-
-        print(f"current_val: {current_val}, prev_val: {prev_val} for {command.getName()}")
 
         if current_val and not prev_val:
             command.initialize()

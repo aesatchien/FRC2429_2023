@@ -41,7 +41,6 @@ class GenericDrive(commands2.CommandBase):
 
     def execute(self) -> None:  # nothing to do, the sparkmax is doing all the work
         # get stick value and invert if necessary (if using Y-axis)
-        print('Executing generic drive')
         if self.input_type == 'stick':
             stick = self.container.co_driver_controller.getRawAxis(self.axis)
 
