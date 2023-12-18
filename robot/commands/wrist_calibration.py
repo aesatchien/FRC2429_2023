@@ -13,6 +13,9 @@ class WristCalibration(commands2.CommandBase):
         self.wrist = wrist
         self.addRequirements(self.wrist)  # commandsv2 version of requirements
 
+    def runsWhenDisabled(self):  # ok to run when disabled - override the base method
+        return True
+    
     def initialize(self) -> None:
         self.print_start_message()
         absolute_angle = self.wrist.abs_encoder.getPosition()

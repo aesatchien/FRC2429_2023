@@ -81,7 +81,7 @@ class Turret(SubsystemBase):
         """
         if mode == 'smartmotion':
             # use smartmotion to send you there quickly
-            self.pid_controller.setReference(angle, rev.CANSparkMax.ControlType.kSmartMotion)
+            self.pid_controller.setReference(angle, rev.CANSparkMax.ControlType.kSmartMotion, )
         elif mode == 'position':
             # just use the position PID
             self.pid_controller.setReference(angle, rev.CANSparkMax.ControlType.kPosition)
@@ -95,11 +95,14 @@ class Turret(SubsystemBase):
 
     # add this so the user has an override - basically you align it and can flip back and forth b/w 0 and 180
     def reset_turret_encoder(self, angle=None):
+        self.pid_controller.setReference(0, rev.CANSparkMax.ControlType.kVelocity, pidSlot=0)
         if angle is None:
             if abs(self.get_angle() - 180) < 20:  # we are near 180, call it zero
                 self.sparkmax_encoder.setPosition(0)
+                self.setpoint = 0
             else:
                 self.sparkmax_encoder.setPosition(180)
+                self.setpoint = 180
         else:
             self.sparkmax_encoder.setPosition(angle)
 

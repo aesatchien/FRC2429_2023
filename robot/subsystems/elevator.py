@@ -107,3 +107,4 @@ class Elevator(SubsystemBase):
             self.is_moving = abs(self.sparkmax_encoder.getVelocity()) > 1000  #
 
             SmartDashboard.putNumber('elevator_height', self.height)
+            SmartDashboard.putNumber('elevator_tof', self.elevator_height_sensor.getRange())

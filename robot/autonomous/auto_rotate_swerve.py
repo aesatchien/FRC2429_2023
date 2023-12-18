@@ -33,12 +33,16 @@ class AutoRotateSwerve(commands2.CommandBase):
         self.decay_rate = 10 #  20 transitions in about 0.25s, 10 is about 0.5 s to transition from high to low
         self.transition_time_center = 0.3  # center time of our transition, in seconds
 
+        self.delta_heading = 0  # enable skipping if delta angle is less than some amount
+
     def initialize(self) -> None:
         """Called just before this Command runs the first time."""
         self.rotate_start_time = wpilib.Timer.getFPGATimestamp()
 
         if self.find_closest_heading:
             self.heading = 0 if abs(self.drive.get_yaw()) < 90 else 180
+
+        self.delta_heading = abs(self.drive.get_yaw() - self.heading)
 
         self.print_start_message()
         # setting initial speed to angle so that when we hold button it doesn't rapidly switch between 0 and proper speed
@@ -59,7 +63,7 @@ class AutoRotateSwerve(commands2.CommandBase):
         self.drive.drive(xSpeed=0, ySpeed=0, rot=target_vel/dc.kMaxAngularSpeed, fieldRelative=False, rate_limited=False)
         
     def isFinished(self) -> bool:
-        return self.heading_controller.atSetpoint()
+        return self.heading_controller.atSetpoint() or self.delta_heading < 5
 
     def end(self, interrupted: bool) -> None:
         # self.container.drive.setX()  # will not stay this way unless we are in autonomous

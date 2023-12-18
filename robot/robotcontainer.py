@@ -351,7 +351,7 @@ class RobotContainer:
         self.autonomous_chooser.addOption('drive 2m', DriveSwerveAutoVelocity(self, self.drive, velocity=1).withTimeout(2))
         self.autonomous_chooser.setDefaultOption('score hi and chill', ScoreHiConeFromStow(self))
         self.autonomous_chooser.addOption('score hi and move near', ScoreHiAndMove(self, distance=2.5))
-        self.autonomous_chooser.addOption('score hi and move far', ScoreHiAndMove(self, distance=4))
+        self.autonomous_chooser.addOption('score hi and move far', ScoreHiAndMove(self, distance=4.5))
         self.autonomous_chooser.addOption('drive and balance', DriveAndBalance(self).withTimeout(15))
         self.autonomous_chooser.addOption('score hi, drive and balance', ScoreDriveAndBalance(self).withTimeout(15))
         self.autonomous_chooser.addOption('score with swerve', SwerveScoreByVision(self))

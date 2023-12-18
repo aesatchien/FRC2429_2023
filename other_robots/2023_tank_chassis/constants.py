@@ -6,8 +6,8 @@ changes.
 2023 robot for team 2429 - the blockheads
 """
 
-k_competition_mode = True  # use for compressor and some joystick settings
-k_burn_flash = True  # if we want to burn the settings to the sparkmaxes
+k_competition_mode = False  # use for compressor and some joystick settings
+k_burn_flash = False  # if we want to burn the settings to the sparkmaxes
 k_enable_soft_limts = True
 
 # --------------  OI  ---------------
@@ -31,16 +31,16 @@ k_controller_turret_axis = 4
 # --------------  DRIVETRAIN  ---------------
 # The CAN IDs for the drivetrain SparkMAX motor controllers
 # For when turret is front
-# k_left_motor1_port = 1
-# k_left_motor2_port = 2
-# k_right_motor1_port = 3
-# k_right_motor2_port = 4
+k_left_motor1_port = 1
+k_left_motor2_port = 2
+k_right_motor1_port = 3
+k_right_motor2_port = 4
 
 # For when battery is front
-k_left_motor1_port = 3
-k_left_motor2_port = 4
-k_right_motor1_port = 1
-k_right_motor2_port = 2
+# k_left_motor1_port = 3
+# k_left_motor2_port = 4
+# k_right_motor1_port = 1
+# k_right_motor2_port = 2
 
 # --------------  BUCKET  ---------------
 k_bucket = 5

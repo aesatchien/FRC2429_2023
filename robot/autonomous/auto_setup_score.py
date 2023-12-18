@@ -36,10 +36,10 @@ class AutoSetupScore(commands2.SequentialCommandGroup):  # change the name for y
                                       decide_by_turret=True))
         # send the wrist to whatever
         self.addCommands(WristMove(container=self.container, wrist=self.container.wrist,
-                                   setpoint=35, wait_to_finish=False))
+                                   setpoint=55, wait_to_finish=False))
 
         # drive forward - should get this from the tag if we can / make it optional
         # added a get direction from turret to velocity as well
-        self.addCommands(DriveSwerveAutoVelocity(container=self.container, drive=self.container.drive,
-                                                velocity=0.5, decide_by_turret=True).withTimeout(0.25))
+        # self.addCommands(DriveSwerveAutoVelocity(container=self.container, drive=self.container.drive,
+        #                                         velocity=0.5, decide_by_turret=True).withTimeout(0.25))
 

@@ -70,7 +70,7 @@ class Swerve (SubsystemBase):
         # Slew rate filter variables for controlling lateral acceleration
         self.currentRotation, self.currentTranslationDir, self.currentTranslationMag  = 0.0, 0.0, 0.0
 
-        self.fwd_magLimiter = SlewRateLimiter(dc.kMagnitudeSlewRate)
+        self.fwd_magLimiter = SlewRateLimiter(0.9 * dc.kMagnitudeSlewRate)
         self.strafe_magLimiter = SlewRateLimiter(dc.kMagnitudeSlewRate)
         self.rotLimiter = SlewRateLimiter(dc.kRotationalSlewRate)
         self.prevTime = wpilib.Timer.getFPGATimestamp()
