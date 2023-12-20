@@ -20,8 +20,6 @@ class Swerve (SubsystemBase):
         super().__init__()
 
         self.counter = 0
-        # safety
-        # how do i put a drive base watchdog in here?
 
         # Create SwerveModules
         self.frontLeft = SwerveModule(

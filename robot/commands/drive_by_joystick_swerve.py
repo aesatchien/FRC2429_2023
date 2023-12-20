@@ -35,7 +35,6 @@ class DriveByJoystickSwerve(commands2.CommandBase):
     def execute(self) -> None:
 
         # setting a slow mode here - not sure if it's the best way - may want a debouncer on it
-        # put debouncer in a weird and probably improvable way
 
         if self.debouncer.calculate(self.container.driver_controller.getRawButton(5)):
             slowmode_multiplier = constants.k_slowmode_multiplier

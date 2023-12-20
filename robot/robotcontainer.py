@@ -19,6 +19,7 @@ from subsystems.wrist import Wrist
 from subsystems.pneumatics import Pneumatics
 
 from misc.axis_button import AxisButton
+from commands.record_auto import RecordAuto
 from commands_unused.drive_velocity_stick import DriveByJoystickVelocity
 from commands.arm_move import ArmMove
 from commands.turret_move import TurretMove
@@ -40,6 +41,7 @@ from commands.led_toggle import LedToggle
 from commands.turret_reset import TurretReset
 from commands.wrist_calibration import WristCalibration
 
+from autonomous.playback_auto import PlaybackAuto
 from autonomous.arm_calibration import ArmCalibration
 from autonomous.score_hi_cone_from_stow import ScoreHiConeFromStow
 from autonomous.score_low_cone_from_stow import ScoreLowConeFromStow
@@ -111,9 +113,7 @@ class RobotContainer:
         # The robot's subsystems
         if constants.k_use_swerve:
             self.drive = Swerve()
-        else:
-            pass
-            #  self.drive = Drivetrain()
+
         self.turret = Turret()
         self.arm = Arm()
         self.wrist = Wrist()
@@ -129,9 +129,6 @@ class RobotContainer:
         self.configure_swerve_bindings()
 
         self.initialize_dashboard()
-
-        # Set up default drive command
-        # if wpilib.RobotBase.isSimulation():
 
         self.led.setDefaultCommand(LedLoop(container=self))
 
@@ -217,6 +214,14 @@ class RobotContainer:
         self.buttonLeft.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.RSL, 5))
 
         self.buttonRightAxis.whenPressed(LedToggle(container=self))
+
+        if wpilib.RobotBase.isReal():
+            # this log doesn't work with Windows machines
+            self.buttonRight.whenPressed(RecordAuto(container=self, input_log_path='/home/lvuser/input_log.json'))
+        else:
+            # this log would get wiped with all new deploys
+            self.buttonRight.whenPressed(RecordAuto(container=self, input_log_path='input_log.json'))
+
         # self.buttonLeftAxis.whenPressed(self.led.set_indicator_with_timeout(Led.Indicator.VISION_TARGET_SUCCESS, 2))
 
         # bind commands to co-pilot
@@ -345,7 +350,6 @@ class RobotContainer:
 
         # populate autonomous routines
         self.autonomous_chooser = wpilib.SendableChooser()
-        print("Putting datas")
         wpilib.SmartDashboard.putData('autonomous routines', self.autonomous_chooser)
         self.autonomous_chooser.setDefaultOption('_ do nothing', DriveWait(self, duration=1))
         self.autonomous_chooser.addOption('drive 2m', DriveSwerveAutoVelocity(self, self.drive, velocity=1).withTimeout(2))
@@ -357,7 +361,14 @@ class RobotContainer:
         self.autonomous_chooser.addOption('score with swerve', SwerveScoreByVision(self))
         self.autonomous_chooser.addOption('score hi exit community and balance', ScoreExitCommAndBalance(self))
         self.autonomous_chooser.addOption('score twice', ScoreTwice(self))
+
         self.autonomous_chooser.addOption('score low cone froms stow', ScoreLowConeFromStow(container=self))
+
+        if wpilib.RobotBase.isReal():
+            self.autonomous_chooser.addOption('playback auto', PlaybackAuto(container=self, input_log_path='/home/lvuser/input_log.json'))
+        else:
+            self.autonomous_chooser.addOption('playback auto', PlaybackAuto(container=self, input_log_path='input_log.json'))
+
         # self.autonomous_chooser.addOption('low cone from stow', ScoreLowConeFromStow(self))
         # self.autonomous_chooser.addOption('balance on station', ChargeStationBalance(container=self, drive=self.drive).withTimeout(10))
 
